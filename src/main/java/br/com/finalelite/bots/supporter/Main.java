@@ -95,6 +95,7 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new RenameCommand());
         commandHandler.registerCommand(new SpamCommand());
         commandHandler.registerCommand(new CloseCommand());
+        commandHandler.registerCommand(new MsgCommand());
 
 
         try {
@@ -151,7 +152,11 @@ public class Main extends ListenerAdapter {
                     "Caso tenha dúvidas ou queira reportar um bug ou um hacker use o <#" + config.getSupportChannelId() + ">.\n\n" +
                     "Para comprar VIP acesse nossa loja https://finalelite.com.br").build()).complete();
         } catch (IOException e) {
-            e.printStackTrace();
+            pv.sendMessage(new MessageBuilder("Olá, seja bem-vindo ao Discord do Final Elite.\n" +
+                    //"Leia as <#regras>\n" +
+                    "Caso tenha dúvidas ou queira reportar um bug ou um hacker use o <#" + config.getSupportChannelId() + ">.\n\n" +
+                    "Para comprar VIP acesse nossa loja https://finalelite.com.br").build()).complete();
+//            e.printStackTrace();
         }
     }
 
