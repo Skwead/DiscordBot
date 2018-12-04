@@ -52,6 +52,10 @@ public class Main extends ListenerAdapter {
                         .categoryId("12345")
                         .closedCategoryId("12345")
                         .staffRoleId("123")
+                        .vipTitanId("1234")
+                        .vipDuqueId("123123")
+                        .vipLordId("123455")
+                        .vipCondeId("123123")
                         .sqlAddress("localhost")
                         .sqlPort(3306)
                         .sqlUsername("root")
@@ -96,7 +100,9 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new SpamCommand());
         commandHandler.registerCommand(new CloseCommand());
         commandHandler.registerCommand(new MsgCommand());
-
+        commandHandler.registerCommand(new VIPCommand());
+        commandHandler.registerCommand(new UserIdCommand());
+        commandHandler.registerCommand(new InvoicesCommand());
 
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();

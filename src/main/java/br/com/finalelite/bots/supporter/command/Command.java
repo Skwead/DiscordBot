@@ -34,7 +34,7 @@ public abstract class Command {
         return deleteAfter(removeSeconds, msg);
     }
 
-    private Message deleteAfter(int removeSeconds, Message msg) {
+    public Message deleteAfter(int removeSeconds, Message msg) {
         if (removeSeconds == -1)
             return msg;
 

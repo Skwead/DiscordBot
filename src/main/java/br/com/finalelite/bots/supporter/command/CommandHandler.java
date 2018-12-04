@@ -35,7 +35,7 @@ public class CommandHandler {
         if (!commands.containsKey(command))
             return false;
 
-        var rawArgs = rawContent.substring(prefix.length() + command.length());
+        var rawArgs = rawContent.substring(prefix.length() + command.length()).replaceAll("\\s+", " ");
         var args = new String[0];
         if (rawArgs.contains(" "))
             args = rawArgs.substring(1).split(" ");

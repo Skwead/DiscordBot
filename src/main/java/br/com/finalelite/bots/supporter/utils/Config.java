@@ -10,6 +10,10 @@ public class Config {
     private final String staffRoleId;
     private final String supportChannelId;
     private final String categoryId;
+    private final String vipTitanId;
+    private final String vipDuqueId;
+    private final String vipLordId;
+    private final String vipCondeId;
     private final String closedCategoryId;
     private final String sqlAddress;
     private final int sqlPort;

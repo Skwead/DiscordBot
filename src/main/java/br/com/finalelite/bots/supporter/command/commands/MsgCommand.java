@@ -33,12 +33,13 @@ public class MsgCommand extends Command {
 
     static {
         addMessage("bemvindo", "Olá ${user-mention}, seja bem-vindo ao nosso suporte. Como posso ajudar?");
-        addMessage("obrigado", "Obrigado por entrar em contanto com nosso suporte. Estaremos aqui caso precise de ajuda.");
-        addMessage("resolvido", "Seu problema foi resolvido? Se sim, você já pode fechar esse chat. Use `!fechar`.");
-        addMessage("tagvip", "Para que possamos adicionar sua tag VIP no Discord, precisamos que você informe o seu Nick, o VIP adquirido e o ID da compra.");
-        addMessage("ativarvip", "Para que ativar seu VIP no Minecraft, precisamos do email usado no cadastro do site e seu Nick no jogo.");
-        addMessage("bug", "Obrigado por reportar esse problema. Nós passaremos para nossa equipe de desenvolvimento.");
-        addMessage("jogador", "Obrigado por reportar esse jogador. Nós analisaremos a sua denuncia e tomaremos as devidas atitudes.");
+        addMessage("obrigado", "${user-mention}, obrigado por entrar em contanto com nosso suporte. Estaremos aqui caso precise de ajuda.");
+        addMessage("resolvido", "${user-mention}, seu problema foi resolvido? Se sim, você já pode fechar esse chat. Use `!fechar`.");
+        addMessage("tagvip", "${user-mention}, para que possamos adicionar sua tag VIP no Discord, precisamos que você informe o seu Nick, o VIP adquirido, o ID da compra e a forma de pagamento (Paypal ou MercadoPago).");
+        addMessage("ativarvip", "${user-mention}, para que ativar seu VIP no Minecraft, precisamos do email usado no cadastro do site e seu Nick no jogo.");
+        addMessage("sugestao", "${user-mention}, obrigado pela sugestão, ela será analisada e poderá ser aplicada no servidor.");
+        addMessage("bug", "${user-mention}, obrigado por reportar esse problema. Nós passaremos para nossa equipe de desenvolvimento.");
+        addMessage("jogador", "${user-mention}, obrigado por reportar esse jogador. Nós analisaremos a sua denuncia e tomaremos as devidas atitudes.");
 
         addPlaceHolder("user-mention", (ticket, author, message, channel, guild) -> Main.getJda().getUserById(ticket.getUserId()).getAsMention());
     }
