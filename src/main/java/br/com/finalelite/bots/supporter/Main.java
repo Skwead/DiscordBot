@@ -2,7 +2,7 @@ package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.*;
-import br.com.finalelite.bots.supporter.command.commands.commands.MsgCommand;
+import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.utils.Config;
 import br.com.finalelite.bots.supporter.utils.Database;
 import com.google.common.base.Charsets;
