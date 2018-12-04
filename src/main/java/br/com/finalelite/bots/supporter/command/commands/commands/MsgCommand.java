@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.commands;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
