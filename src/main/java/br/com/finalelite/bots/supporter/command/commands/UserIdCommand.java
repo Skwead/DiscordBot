@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 public class UserIdCommand extends Command {
 
     public UserIdCommand() {
-        super("getid", true, false, true, true);
+        super("getid", true, false, true, true, true);
     }
 
     @Override

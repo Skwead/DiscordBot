@@ -12,7 +12,7 @@ public class RenameCommand extends Command {
 
 
     public RenameCommand() {
-        super("renomear", true, false, true, true);
+        super("renomear", true, false, true, true, false);
     }
 
     @Override

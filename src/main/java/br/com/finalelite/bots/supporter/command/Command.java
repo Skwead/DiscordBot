@@ -12,8 +12,9 @@ public abstract class Command {
     private final boolean usableInSupportChannel;
     private final boolean usableInOpenedCategory;
     private final boolean usableInClosedCategory;
+    private final boolean usableInStaffChannel;
 
-    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String args[]);
+    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
 
 
     public Message sendError(MessageChannel channel, User user, String message) {

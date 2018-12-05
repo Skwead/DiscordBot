@@ -9,6 +9,7 @@ public class Config {
     private final String token;
     private final String staffRoleId;
     private final String supportChannelId;
+    private final String staffChannelId;
     private final String categoryId;
     private final String vipTitanId;
     private final String vipDuqueId;

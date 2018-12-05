@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class CloseCommand extends Command {
     public CloseCommand() {
-        super("fechar", false, false, true, false);
+        super("fechar", false, false, true, false, false);
     }
 
     @Override

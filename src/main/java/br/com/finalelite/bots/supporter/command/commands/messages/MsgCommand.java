@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class MsgCommand extends Command {
     public MsgCommand() {
-        super("msg", true, false, true, false);
+        super("msg", true, false, true, false, true);
     }
 
     private static Map<String, String> messages = new HashMap<>();
@@ -40,8 +40,15 @@ public class MsgCommand extends Command {
         addMessage("sugestao", "${user-mention}, obrigado pela sugestão, ela será analisada e poderá ser aplicada no servidor.");
         addMessage("bug", "${user-mention}, obrigado por reportar esse problema. Nós passaremos para nossa equipe de desenvolvimento.");
         addMessage("jogador", "${user-mention}, obrigado por reportar esse jogador. Nós analisaremos a sua denuncia e tomaremos as devidas atitudes.");
+        addMessage("lista", "Lista: ${list}.");
 
-        addPlaceHolder("user-mention", (ticket, author, message, channel, guild) -> Main.getJda().getUserById(ticket.getUserId()).getAsMention());
+        addPlaceHolder("user-mention", (ticket, author, message, channel, guild) -> {
+            if (ticket == null)
+                return "";
+            else
+                return Main.getJda().getUserById(ticket.getUserId()).getAsMention();
+        });
+        addPlaceHolder("list", (ticket, author, message, channel, guild) -> String.join(", ", messages.keySet()));
     }
 
     @Override
@@ -56,7 +63,7 @@ public class MsgCommand extends Command {
 
     private static String format(String text, Message message, Guild guild, TextChannel channel, User author) {
         try {
-            val ticket = Main.getDb().getTicketByChannelId(channel.getId());
+            val ticket = channel.getId().equals(Main.getConfig().getStaffChannelId()) ? null : Main.getDb().getTicketByChannelId(channel.getId());
             val pattern = Pattern.compile("\\$\\{.*}");
             val matcher = pattern.matcher(text);
             var newText = text;

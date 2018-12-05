@@ -46,6 +46,10 @@ public class CommandHandler {
             return false;
         }
 
+        if (textChannel.getId().equals(Main.getConfig().getStaffChannelId()) && !executedCommand.isUsableInStaffChannel()) {
+            return false;
+        }
+
         if (textChannel.getId().equals(Main.getConfig().getSupportChannelId()) && !executedCommand.isUsableInSupportChannel()) {
             return false;
         }

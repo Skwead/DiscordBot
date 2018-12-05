@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class SupportCommand extends Command {
     public SupportCommand() {
-        super("suporte", false, true, false, false);
+        super("suporte", false, true, false, false, false);
     }
 
     @Override

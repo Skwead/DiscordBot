@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class InvoicesCommand extends Command {
     public InvoicesCommand() {
-        super("compras", true, false, true, true);
+        super("compras", true, false, true, true, true);
     }
 
     @Override

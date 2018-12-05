@@ -17,7 +17,7 @@ import java.util.Collections;
 
 public class DeleteCommand extends Command {
     public DeleteCommand() {
-        super("deletar", true, false, false, true);
+        super("deletar", true, false, false, true, false);
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class SpamCommand extends Command {
     public SpamCommand() {
-        super("spam", true, false, true, false);
+        super("spam", true, false, true, false, false);
     }
 
     @Override

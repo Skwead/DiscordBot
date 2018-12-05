@@ -50,6 +50,7 @@ public class Main extends ListenerAdapter {
                 val defaultConfig = Config.builder()
                         .token("your token")
                         .supportChannelId("32123")
+                        .staffChannelId("31231123")
                         .categoryId("12345")
                         .closedCategoryId("12345")
                         .staffRoleId("123")
@@ -187,7 +188,7 @@ public class Main extends ListenerAdapter {
         if (parent == null)
             return;
 
-        if (!channel.getId().equals(config.getSupportChannelId()) &&
+        if ((!channel.getId().equals(config.getSupportChannelId()) && !channel.getId().equals(config.getStaffChannelId())) &&
                 (!parent.getId().equals(config.getCategoryId()) && !parent.getId().equals(config.getClosedCategoryId())))
             return;
 
