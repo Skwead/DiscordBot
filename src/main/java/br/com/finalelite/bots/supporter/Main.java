@@ -103,7 +103,10 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new CloseCommand());
         commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new VIPCommand());
-        commandHandler.registerCommand(new UserIdCommand());
+        commandHandler.registerCommand(new GetUserIdCommand());
+        commandHandler.registerCommand(new GetNickCommand());
+        commandHandler.registerCommand(new SetNickCommand());
+        commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new InvoicesCommand());
 
         try {
@@ -164,7 +167,6 @@ public class Main extends ListenerAdapter {
                     //"Leia as <#regras>\n" +
                     "Caso tenha dúvidas ou queira reportar um bug ou um hacker use o <#" + config.getSupportChannelId() + ">.\n\n" +
                     "Para comprar VIP acesse nossa loja https://finalelite.com.br").build()).complete();
-//            e.printStackTrace();
         }
     }
 

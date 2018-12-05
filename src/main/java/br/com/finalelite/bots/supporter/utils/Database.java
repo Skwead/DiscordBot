@@ -3,11 +3,9 @@ package br.com.finalelite.bots.supporter.utils;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
-import br.com.finalelite.bots.supporter.vip.VIPRole;
 import com.gitlab.pauloo27.core.sql.*;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import net.dv8tion.jda.core.entities.User;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -137,10 +135,49 @@ public class Database {
         }
     }
 
-    public boolean registerVIP(String nickname, User discordUser, VIPRole role, String email, long userId, long paymentId) {
+    public void setUsername(long id, String name) {
+        val connection = sql.getConnection();
         try {
-            enabledVIPS.insert(new EzInsert("nickname, discordId, userId, paymentId, email, vipRoleId",
-                    nickname, discordUser.getId(), userId, paymentId, email, role.ordinal()));
+            val st = connection.prepareStatement("UPDATE finalelite.users SET username = ? WHERE id  = ?");
+            st.setString(1, name);
+            st.setLong(2, id);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getUsername(long id) {
+        val connection = sql.getConnection();
+        try {
+            val st = connection.prepareStatement("SELECT username FROM finalelite.users WHERE id  = ?");
+            st.setLong(1, id);
+            val rs = st.executeQuery();
+            if (rs.next())
+                return rs.getString("username");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getDiscordIdByInvoiceId(long invoiceId) {
+        val connection = sql.getConnection();
+        try {
+            val st = connection.prepareStatement("SELECT discordId FROM enabled_vips WHERE invoiceId  = ?");
+            st.setLong(1, invoiceId);
+            val rs = st.executeQuery();
+            if (rs.next())
+                return rs.getString("discordId");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean registerVIP(String discordId, long invoiceId) {
+        try {
+            enabledVIPS.insert(new EzInsert("discordId, invoiceId", discordId, invoiceId));
             return true;
         } catch (SQLException e) {
             return false;

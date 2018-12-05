@@ -8,29 +8,27 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-public class UserIdCommand extends Command {
+public class GetNickCommand extends Command {
 
-    public UserIdCommand() {
-        super("getid", true, false, true, true, true);
+    public GetNickCommand() {
+        super("getnick", true, false, true, true, true);
     }
 
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         if (args.length != 1) {
-            sendError(textChannel, author, "use `!getid <email>`.", 15);
+            sendError(textChannel, author, "use `!getnick <id>`.", 10);
             message.delete().complete();
             return;
         }
 
-        val email = args[0];
-        val x = Main.getDb().getUserIdByEmail(email);
-        if (x == -1) {
-            sendError(textChannel, author, String.format("nenhum usuário não registrado com o email `%s`.", email));
+        try {
+            val id = Long.parseLong(args[0]);
+            sendSuccess(textChannel, author, String.format("o nick de `%d` é `%s`.", id, Main.getDb().getUsername(id)));
+        } catch (NumberFormatException e) {
+            sendError(textChannel, author, "id inválido. Use `!getnick <id>`.", 10);
             message.delete().complete();
-            return;
         }
-        sendSuccess(textChannel, author, String.format("o ID do usuário registrado com o email `%s` é .", email, x));
-        message.delete().complete();
     }
 
 }
