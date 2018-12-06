@@ -17,7 +17,7 @@ public class SetNickCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         if (args.length != 2) {
-            sendError(textChannel, author, "use `!setnick <id> <novo nome>`.", 10);
+            sendError(textChannel, author, "use `!setnick <id do usuario> <novo nome>`.", 10);
             message.delete().complete();
             return;
         }
@@ -25,10 +25,14 @@ public class SetNickCommand extends Command {
         val newName = args[1];
         try {
             val id = Long.parseLong(args[0]);
-            Main.getDb().setUsername(id, newName);
+            val result = Main.getDb().setUsername(id, newName);
+            if (result == 1) {
+                sendError(textChannel, author, String.format("o nick %s já está em uso.", newName));
+                return;
+            }
             sendSuccess(textChannel, author, "nick alterado.");
         } catch (NumberFormatException e) {
-            sendError(textChannel, author, "id inválido. Use `!setnick <id> <novo nome>`.", 10);
+            sendError(textChannel, author, "id inválido. Use `!setnick <id do usuario> <novo nome>`.", 10);
             message.delete().complete();
         }
     }

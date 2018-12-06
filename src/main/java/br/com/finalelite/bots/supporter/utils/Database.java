@@ -140,16 +140,20 @@ public class Database {
         }
     }
 
-    public void setUsername(long id, String name) {
+    public byte setUsername(long id, String name) {
         val connection = sql.getConnection();
         try {
             val st = connection.prepareStatement("UPDATE finalelite.users SET username = ? WHERE id  = ?");
             st.setString(1, name);
             st.setLong(2, id);
             st.executeUpdate();
+            return 0;
         } catch (SQLException e) {
+            if (e.getMessage().startsWith("Duplicate entry"))
+                return 1;
             reconnectSQL(e);
         }
+        return 2;
     }
 
     public String getUsername(long id) {

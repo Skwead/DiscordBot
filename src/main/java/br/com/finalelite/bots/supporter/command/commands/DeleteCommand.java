@@ -59,7 +59,7 @@ public class DeleteCommand extends Command {
             val writer = Files.newWriter(tempFile, StandardCharsets.UTF_8);
             val list = channel.getIterableHistory().complete();
             Collections.reverse(list);
-            list.stream().forEach((msg) -> {
+            list.forEach((msg) -> {
                 try {
                     writer.write(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a X dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw()));
                 } catch (IOException e) {
@@ -80,7 +80,7 @@ public class DeleteCommand extends Command {
             e.printStackTrace();
             return;
         }
-        log.sendFile(tempFile).complete();
+        log.sendFile(tempFile, String.format("%s (%d) criado por %s", ticket.getSubject(), ticket.getId(), Main.getJda().getUserById(ticket.getUserId()).getAsMention())).complete();
         tempFile.delete();
         guild.getTextChannelById(channel.getId()).delete().complete();
     }
