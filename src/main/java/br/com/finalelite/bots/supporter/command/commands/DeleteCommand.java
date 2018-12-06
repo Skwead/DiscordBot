@@ -3,17 +3,12 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
-import com.google.common.io.Files;
 import lombok.val;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 
 public class DeleteCommand extends Command {
     public DeleteCommand() {
@@ -38,50 +33,10 @@ public class DeleteCommand extends Command {
             e.printStackTrace();
             return;
         }
-        val tempFile = new File("tmp/history-" + ticket.getId() + ".txt");
-        try {
-            Files.createParentDirs(tempFile);
-        } catch (IOException e) {
-            sendError(channel, author, "um erro ocorreu ao tentar criar a log.");
-            message.delete().complete();
-            e.printStackTrace();
-            return;
-        }
-        try {
-            tempFile.createNewFile();
-        } catch (IOException e) {
-            sendError(channel, author, "um erro ocorreu ao tentar criar a log.");
-            message.delete().complete();
-            e.printStackTrace();
-            return;
-        }
-        try {
-            val writer = Files.newWriter(tempFile, StandardCharsets.UTF_8);
-            val list = channel.getIterableHistory().complete();
-            Collections.reverse(list);
-            list.forEach((msg) -> {
-                try {
-                    writer.write(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a X dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw()));
-                } catch (IOException e) {
-                    sendError(channel, author, "um erro ocorreu ao tentar criar a log.");
-                    e.printStackTrace();
-                    message.delete().complete();
-                }
-            });
-            try {
-                writer.flush();
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            sendError(channel, author, "um erro ocorreu ao tentar criar a log.");
-            message.delete().complete();
-            e.printStackTrace();
-            return;
-        }
-        log.sendFile(tempFile, String.format("%s (%d) criado por %s", ticket.getSubject(), ticket.getId(), Main.getJda().getUserById(ticket.getUserId()).getAsMention())).complete();
-        tempFile.delete();
+        val sb = new StringBuilder();
+        val messageList = channel.getIterableHistory().complete();
+        messageList.forEach(msg -> sb.append(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a X dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw())));
+        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()), new MessageBuilder(String.format("%s (%d) criado por %s", ticket.getSubject(), ticket.getId(), Main.getJda().getUserById(ticket.getUserId()).getAsMention())).build()).complete();
         guild.getTextChannelById(channel.getId()).delete().complete();
     }
 }

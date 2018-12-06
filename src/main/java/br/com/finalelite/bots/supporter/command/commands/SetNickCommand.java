@@ -27,7 +27,7 @@ public class SetNickCommand extends Command {
             val id = Long.parseLong(args[0]);
             val result = Main.getDb().setUsername(id, newName);
             if (result == 1) {
-                sendError(textChannel, author, String.format("o nick %s já está em uso.", newName));
+                sendError(textChannel, author, String.format("o nick `%s` já está em uso.", newName));
                 return;
             }
             sendSuccess(textChannel, author, "nick alterado.");
