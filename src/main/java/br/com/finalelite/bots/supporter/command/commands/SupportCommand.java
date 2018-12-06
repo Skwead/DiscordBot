@@ -5,14 +5,12 @@ import br.com.finalelite.bots.supporter.command.Command;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
 public class SupportCommand extends Command {
     public SupportCommand() {
@@ -69,8 +67,8 @@ public class SupportCommand extends Command {
         newChannel.getManager()
                 .sync()
                 .complete();
-        newChannel.getManager().putPermissionOverride(guild.getMember(author),
-                Arrays.asList(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY), null).complete();
+
+        AddCommand.addUser(newChannel, guild.getMember(author));
 
         try {
             val warnMsg = sendSuccess(channel, author, "aguarde...");
@@ -87,5 +85,7 @@ public class SupportCommand extends Command {
             message.delete().complete();
             e.printStackTrace();
         }
+
     }
+
 }

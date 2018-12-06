@@ -101,6 +101,8 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new DeleteCommand());
         commandHandler.registerCommand(new RenameCommand());
         commandHandler.registerCommand(new SpamCommand());
+        commandHandler.registerCommand(new RemoveCommand());
+        commandHandler.registerCommand(new AddCommand());
         commandHandler.registerCommand(new CloseCommand());
         commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new VIPCommand());
