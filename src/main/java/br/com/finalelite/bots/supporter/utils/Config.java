@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class Config {
     private final String token;
+    private final String ownerId;
     private final String staffRoleId;
     private final String supportChannelId;
     private final String staffChannelId;

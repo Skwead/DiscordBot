@@ -1,15 +1,20 @@
 package br.com.finalelite.bots.supporter.utils;
 
+import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
 import com.gitlab.pauloo27.core.sql.*;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import net.dv8tion.jda.core.MessageBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class Database {
@@ -105,7 +110,7 @@ public class Database {
             }
             return invoices;
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
         return null;
     }
@@ -119,7 +124,7 @@ public class Database {
             if (rs.next())
                 return new Invoice(rs.getLong("id"), rs.getLong("user_id"), rs.getInt("price_id"), rs.getBoolean("paid"));
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
         return null;
     }
@@ -131,7 +136,7 @@ public class Database {
             st.setLong(1, id);
             st.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
     }
 
@@ -143,7 +148,7 @@ public class Database {
             st.setLong(2, id);
             st.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
     }
 
@@ -156,7 +161,7 @@ public class Database {
             if (rs.next())
                 return rs.getString("username");
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
         return null;
     }
@@ -170,18 +175,21 @@ public class Database {
             if (rs.next())
                 return rs.getString("discordId");
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
         return null;
     }
 
-    public boolean registerVIP(String discordId, long invoiceId) {
+    public byte registerVIP(String discordId, long invoiceId) {
         try {
             enabledVIPS.insert(new EzInsert("discordId, invoiceId", discordId, invoiceId));
-            return true;
+            return 0;
         } catch (SQLException e) {
-            return false;
+            if (e.getMessage().startsWith("Duplicate entry"))
+                return 1;
+            reconnectSQL(e);
         }
+        return 2;
     }
 
     public long getUserIdByEmail(String email) {
@@ -192,8 +200,60 @@ public class Database {
             if (rs.next())
                 return rs.getLong("id");
         } catch (SQLException e) {
-            e.printStackTrace();
+            reconnectSQL(e);
         }
         return -1;
+    }
+
+    public void handleException(Exception e) {
+        val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
+        val sb = new StringBuilder();
+        sb.append("**Algo de errado não está certo:**\n");
+        sb.append(e.getMessage()).append("\n");
+        sb.append(e.getCause()).append("\n");
+        Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> sb.append(stackTraceElement.toString()).append("\n"));
+        val lines = Arrays.asList(sb.toString().split("\n"));
+        val times = lines.size() / 10;
+        IntStream.range(0, times == 0 ? 1 : times).forEach(time -> {
+            val tempLines = lines.stream().skip(time * 10).limit(10).collect(Collectors.toCollection(ArrayList::new));
+            tempLines.add(time == 0 ? 1 : 0, "```java");
+            tempLines.add("```");
+            pv.sendMessage(new MessageBuilder(String.join("\n", tempLines)).build()).complete();
+        });
+    }
+
+//    private <T> T tryThreeTimes(String operationName, Operation<T> supplier) {
+//        for (int i = 0; i < 3; i++) {
+//            val result = supplier.run();
+//            val exception = result.getKey();
+//            val value = result.getValue();
+//            if (exception == null)
+//                return value;
+//            else if (exception instanceof SQLException)
+//                reconnectSQL((SQLException) exception);
+//            else
+//                handleException(exception);
+//        }
+//        Main.shutdown("FAILED 3 TIMES: " + operationName);
+//        System.exit(-3);
+//        return null;
+//    }
+//
+//    @FunctionalInterface
+//    private interface Operation<T> {
+//        Map.Entry<Exception, T> run();
+//    }
+
+    public void reconnectSQL(SQLException e) {
+        e.printStackTrace();
+        handleException(e);
+        try {
+            sql.connect();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            handleException(e1);
+            Main.shutdown("Shutting down...");
+            System.exit(-3);
+        }
     }
 }

@@ -49,6 +49,7 @@ public class Main extends ListenerAdapter {
                 file.createNewFile();
                 val defaultConfig = Config.builder()
                         .token("your token")
+                        .ownerId("999123")
                         .supportChannelId("32123")
                         .staffChannelId("31231123")
                         .categoryId("12345")
@@ -130,6 +131,8 @@ public class Main extends ListenerAdapter {
 
     public static void shutdown(String reason) {
         System.out.printf("Shutting down. %s%n", reason);
+        val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
+        pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete();
         jda.shutdownNow();
     }
 
