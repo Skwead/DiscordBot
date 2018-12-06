@@ -52,7 +52,7 @@ public class VIPCommand extends Command {
                 return;
             }
             val result = Main.getDb().registerVIP(user.getId(), invoice.getId());
-            if (!result) {
+            if (result == 1) {
                 sendError(textChannel, author, "informações já usadas para ativar um VIP.", 15);
                 message.delete().complete();
                 return;
