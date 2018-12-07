@@ -38,7 +38,7 @@ public class DeleteCommand extends Command {
         val messageList = channel.getIterableHistory().complete();
         Collections.reverse(messageList);
         messageList.forEach(msg -> sb.append(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a X dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw())));
-        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()), new MessageBuilder(String.format("%s (%d) criado por %s", ticket.getSubject(), ticket.getId(), Main.getJda().getUserById(ticket.getUserId()).getAsMention())).build()).complete();
+        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()), new MessageBuilder(String.format("%s: %s (%d) criado por %s", channel.getName(), ticket.getSubject(), ticket.getId(), Main.getJda().getUserById(ticket.getUserId()).getAsMention())).build()).complete();
         guild.getTextChannelById(channel.getId()).delete().complete();
     }
 }
