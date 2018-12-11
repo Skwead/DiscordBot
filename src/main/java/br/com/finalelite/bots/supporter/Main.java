@@ -68,6 +68,8 @@ public class Main extends ListenerAdapter {
                     .sqlDatabase("database")
                     .build();
             ConfigManager.saveConfigToFile(defaultConfig);
+            System.out.println("Default config file created, please, configure and run the bot again.");
+            System.exit(0);
         }
 
         loadConfig();
@@ -82,7 +84,10 @@ public class Main extends ListenerAdapter {
             System.exit(-3);
         }
 
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Database.handleException(throwable));
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            throwable.printStackTrace();
+            Database.handleException(throwable);
+        });
 
         commandHandler = new CommandHandler("!");
 

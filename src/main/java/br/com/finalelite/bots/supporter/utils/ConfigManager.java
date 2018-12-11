@@ -21,8 +21,6 @@ public class ConfigManager {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             writer.write(gson.toJson(config));
             writer.close();
-            System.out.println("Default config file created, please, configure and run the bot again.");
-            System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
