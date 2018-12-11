@@ -40,7 +40,7 @@ public class MsgConfigCommand extends Command {
             return;
         }
 
-        if (args.length != 3) {
+        if (args.length < 3) {
             sendError(textChannel, author, String.format("use `/!msgconfig <%s> <atalho> <mensagem>`.", action));
             message.delete().complete();
             return;

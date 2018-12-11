@@ -49,6 +49,10 @@ public class MsgCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
+        if (args.length == 0) {
+            message.delete().complete();
+            return;
+        }
         val arg = args[0];
         val msg = messages.get(arg.toLowerCase());
         if (msg != null)
