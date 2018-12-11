@@ -34,7 +34,7 @@ public class MsgCommand extends Command {
             else
                 return Main.getJda().getUserById(ticket.getUserId()).getAsMention();
         });
-        addPlaceHolder("list", (ticket, author, message, channel, guild) -> String.join(", ", messages.keySet()));
+        addPlaceHolder("list", (ticket, author, message, channel, guild) -> "`" + String.join(", ", messages.keySet()) + "`");
     }
 
     @Override
