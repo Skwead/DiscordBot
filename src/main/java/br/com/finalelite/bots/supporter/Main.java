@@ -82,6 +82,8 @@ public class Main extends ListenerAdapter {
             System.exit(-3);
         }
 
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Database.handleException(throwable));
+
         commandHandler = new CommandHandler("!");
 
         commandHandler.registerCommand(new SayCommand());

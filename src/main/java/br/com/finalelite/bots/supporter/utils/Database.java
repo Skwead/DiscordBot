@@ -209,7 +209,7 @@ public class Database {
         return -1;
     }
 
-    public void handleException(Exception e) {
+    public static void handleException(Throwable e) {
         val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
         val sb = new StringBuilder();
         sb.append("**Algo de errado não está certo:**\n");
@@ -225,28 +225,6 @@ public class Database {
             pv.sendMessage(new MessageBuilder(String.join("\n", tempLines)).build()).complete();
         });
     }
-
-//    private <T> T tryThreeTimes(String operationName, Operation<T> supplier) {
-//        for (int i = 0; i < 3; i++) {
-//            val result = supplier.run();
-//            val exception = result.getKey();
-//            val value = result.getValue();
-//            if (exception == null)
-//                return value;
-//            else if (exception instanceof SQLException)
-//                reconnectSQL((SQLException) exception);
-//            else
-//                handleException(exception);
-//        }
-//        Main.shutdown("FAILED 3 TIMES: " + operationName);
-//        System.exit(-3);
-//        return null;
-//    }
-//
-//    @FunctionalInterface
-//    private interface Operation<T> {
-//        Map.Entry<Exception, T> run();
-//    }
 
     public void reconnectSQL(SQLException e) {
         e.printStackTrace();
