@@ -69,7 +69,7 @@ public class MsgConfigCommand extends Command {
             val config = Main.getConfig();
             if (!config.getMessages().containsKey(shortcut)) {
                 message.delete().complete();
-                sendError(textChannel, author, "não foi encontrada uma mensagem com o atalho`%s`. Use `!msgconfig add` para criar uma.");
+                sendError(textChannel, author, String.format("não foi encontrada uma mensagem com o atalho `%s`. Use `!msgconfig add` para criar uma.", shortcut));
                 return;
             }
 
