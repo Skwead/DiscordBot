@@ -9,6 +9,9 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class MsgConfigCommand extends Command {
 
     public MsgConfigCommand() {
@@ -27,7 +30,7 @@ public class MsgConfigCommand extends Command {
         val shortcut = args[1];
 
         if (!(action.equalsIgnoreCase("remover") || action.equalsIgnoreCase("editar") || action.equalsIgnoreCase("add"))) {
-            sendError(textChannel, author, "use `/!msgconfig <add/remover/editar> <atalho> [<mensagem>]`.");
+            sendError(textChannel, author, "use `!msgconfig <add/remover/editar> <atalho> [<mensagem>]`.");
             message.delete().complete();
             return;
         }
@@ -41,12 +44,12 @@ public class MsgConfigCommand extends Command {
         }
 
         if (args.length < 3) {
-            sendError(textChannel, author, String.format("use `/!msgconfig <%s> <atalho> <mensagem>`.", action));
+            sendError(textChannel, author, String.format("use `!msgconfig %s <atalho> <mensagem>`.", action));
             message.delete().complete();
             return;
         }
 
-        val text = args[2];
+        val text = String.join(" ", Arrays.stream(args).skip(2).collect(Collectors.toList()));
 
         if (action.equalsIgnoreCase("add")) {
             val config = Main.getConfig();
