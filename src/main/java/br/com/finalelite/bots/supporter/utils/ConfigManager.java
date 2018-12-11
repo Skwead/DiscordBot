@@ -13,18 +13,18 @@ public class ConfigManager {
 
     public static void saveConfigToFile(Config config) {
         val file = new File("config.json");
-        if (!file.exists()) {
-            try {
+        try {
+            if (!file.exists())
                 file.createNewFile();
-                val writer = Files.newWriter(file, Charsets.UTF_8);
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                writer.write(gson.toJson(config));
-                writer.close();
-                System.out.println("Default config file created, please, configure and run the bot again.");
-                System.exit(0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            val writer = Files.newWriter(file, Charsets.UTF_8);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            writer.write(gson.toJson(config));
+            writer.close();
+            System.out.println("Default config file created, please, configure and run the bot again.");
+            System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
