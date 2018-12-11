@@ -55,7 +55,7 @@ public class MsgConfigCommand extends Command {
             val config = Main.getConfig();
             if (config.getMessages().containsKey(shortcut)) {
                 message.delete().complete();
-                sendError(textChannel, author, "uma mensagem já existe com o atalho `%s`, Use `!msgconfig editar` para editar ou `!msgconfig remover` para apagar.");
+                sendError(textChannel, author, String.format("uma mensagem já existe com o atalho `%s`, Use `!msgconfig editar` para editar ou `!msgconfig remover` para apagar.", shortcut));
                 return;
             }
 
