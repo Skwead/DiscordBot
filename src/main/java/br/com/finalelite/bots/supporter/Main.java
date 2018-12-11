@@ -3,12 +3,10 @@ package br.com.finalelite.bots.supporter;
 import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.*;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
+import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigCommand;
 import br.com.finalelite.bots.supporter.utils.Config;
+import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import br.com.finalelite.bots.supporter.utils.Database;
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
@@ -30,6 +28,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class Main extends ListenerAdapter {
 
@@ -45,44 +44,33 @@ public class Main extends ListenerAdapter {
     public static void main(String[] args) {
         val file = new File("config.json");
         if (!file.exists()) {
-            try {
-                file.createNewFile();
-                val defaultConfig = Config.builder()
-                        .token("your token")
-                        .ownerId("999123")
-                        .supportChannelId("32123")
-                        .staffChannelId("31231123")
-                        .categoryId("12345")
-                        .closedCategoryId("12345")
-                        .staffRoleId("123")
-                        .vipTitanId("1234")
-                        .vipDuqueId("123123")
-                        .vipLordId("123455")
-                        .vipCondeId("123123")
-                        .sqlAddress("localhost")
-                        .sqlPort(3306)
-                        .sqlUsername("root")
-                        .sqlPassword("1234")
-                        .sqlDatabase("database")
-                        .build();
-                val writer = Files.newWriter(file, Charsets.UTF_8);
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                writer.write(gson.toJson(defaultConfig));
-                writer.close();
-                System.out.println("Default config file created, please, configure and run the bot again.");
-                System.exit(0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            val messages = new HashMap<String, String>();
+            messages.put("welcome", "Hello ${user-mention}, how can we help you today?");
+            messages.put("bye", "Thank you ${user-mention}, we're here to help.");
+            val defaultConfig = Config.builder()
+                    .token("your token")
+                    .ownerId("999123")
+                    .welcomeMessage("Welcome to the party.")
+                    .supportChannelId("32123")
+                    .messages(messages)
+                    .staffChannelId("31231123")
+                    .categoryId("12345")
+                    .closedCategoryId("12345")
+                    .staffRoleId("123")
+                    .vipTitanId("1234")
+                    .vipDuqueId("123123")
+                    .vipLordId("123455")
+                    .vipCondeId("123123")
+                    .sqlAddress("localhost")
+                    .sqlPort(3306)
+                    .sqlUsername("root")
+                    .sqlPassword("1234")
+                    .sqlDatabase("database")
+                    .build();
+            ConfigManager.saveConfigToFile(defaultConfig);
         }
 
-        try {
-            config = new Gson().fromJson(String.join("\n", Files.readLines(file, Charsets.UTF_8)), Config.class);
-        } catch (IOException e) {
-            System.out.println("Cannot load the config file.");
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        loadConfig();
 
         db = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
@@ -107,6 +95,7 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new VIPCommand());
         commandHandler.registerCommand(new GetUserIdCommand());
+        commandHandler.registerCommand(new MsgConfigCommand());
         commandHandler.registerCommand(new GetNickCommand());
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
@@ -131,6 +120,11 @@ public class Main extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
     }
 
+
+    public static void loadConfig() {
+        config = ConfigManager.loadConfigFromFile();
+    }
+
     public static void shutdown(String reason) {
         System.out.printf("Shutting down. %s%n", reason);
         val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
@@ -152,6 +146,9 @@ public class Main extends ListenerAdapter {
         if (pv == null)
             return;
 
+        if (config.getWelcomeMessage() == null)
+            return;
+
         try {
             val connection = (HttpURLConnection) new URL(user.getAvatarUrl()).openConnection();
             connection.addRequestProperty("User-Agent", "Mozilla/4.76");
@@ -163,15 +160,9 @@ public class Main extends ListenerAdapter {
             graphic.drawImage(baseImage, 0, 0, null);
             val bytes = new ByteArrayOutputStream();
             ImageIO.write(image, "png", bytes);
-            pv.sendFile(bytes.toByteArray(), "welcome.png", new MessageBuilder("Olá, seja bem-vindo ao Discord do Final Elite.\n" +
-                    //"Leia as <#regras>\n" +
-                    "Caso tenha dúvidas ou queira reportar um bug ou um hacker use o <#" + config.getSupportChannelId() + ">.\n\n" +
-                    "Para comprar VIP acesse nossa loja https://finalelite.com.br").build()).complete();
+            pv.sendFile(bytes.toByteArray(), "welcome.png", new MessageBuilder(config.getWelcomeMessage()).build()).complete();
         } catch (IOException e) {
-            pv.sendMessage(new MessageBuilder("Olá, seja bem-vindo ao Discord do Final Elite.\n" +
-                    //"Leia as <#regras>\n" +
-                    "Caso tenha dúvidas ou queira reportar um bug ou um hacker use o <#" + config.getSupportChannelId() + ">.\n\n" +
-                    "Para comprar VIP acesse nossa loja https://finalelite.com.br").build()).complete();
+            pv.sendMessage(new MessageBuilder(config.getWelcomeMessage()).build()).complete();
         }
     }
 
