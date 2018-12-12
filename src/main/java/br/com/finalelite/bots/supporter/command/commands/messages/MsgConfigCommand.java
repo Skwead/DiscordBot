@@ -49,7 +49,7 @@ public class MsgConfigCommand extends Command {
             return;
         }
 
-        val text = String.join(" ", Arrays.stream(args).skip(2).collect(Collectors.toList()));
+        val text = String.join(" ", Arrays.stream(args).skip(2).collect(Collectors.toList())).replace("\\n", "\n");
 
         if (action.equalsIgnoreCase("add")) {
             val config = Main.getConfig();
