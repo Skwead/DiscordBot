@@ -42,6 +42,7 @@ public class Main extends ListenerAdapter {
     private static CommandHandler commandHandler;
 
     public static void main(String[] args) {
+        // create the config if not exists
         val file = new File("config.json");
         if (!file.exists()) {
             val messages = new HashMap<String, String>();
@@ -72,25 +73,32 @@ public class Main extends ListenerAdapter {
             System.exit(0);
         }
 
+        // l o a d t h e c o n f i g
         loadConfig();
+        // belive you or not
 
+        // connect to the db
         db = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
             db.connect();
             System.out.println("Connected to MySQL.");
         } catch (SQLException | ClassNotFoundException e) {
+            // or not
             System.out.println("Cannot connect to database.");
             e.printStackTrace();
             System.exit(-3);
         }
 
+        // add a handler, this will send the stacktrace to the owner in the DM
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             throwable.printStackTrace();
             Database.handleException(throwable);
         });
 
+        // create a command handler with '!' as prefix
         commandHandler = new CommandHandler("!");
 
+        // register many commands
         commandHandler.registerCommand(new SayCommand());
         commandHandler.registerCommand(new SupportCommand());
         commandHandler.registerCommand(new DeleteCommand());
@@ -107,15 +115,17 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new InvoicesCommand());
+        // \o/
 
+        // try to connect to Discord
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();
             System.out.println("Logged.");
             if (jda.getGuilds().size() == 0)
                 System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
-            else if (jda.getGuilds().size() > 1) {
+            else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
-            }
+            // it's kinda gay, maybe change in the future?
             jda.getPresence().setGame(Game.of(Game.GameType.WATCHING, "vídeos do Willzy enquanto ajudo os jogadores", "https://finalelite.com.br"));
             jda.addEventListener(new Main());
         } catch (InterruptedException | LoginException e) {
@@ -124,6 +134,7 @@ public class Main extends ListenerAdapter {
             System.exit(-2);
         }
 
+        // add a handler to the exit event, just to send to the bot owner
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
     }
 
@@ -135,40 +146,45 @@ public class Main extends ListenerAdapter {
     public static void shutdown(String reason) {
         System.out.printf("Shutting down. %s%n", reason);
         val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
-        pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete();
-        jda.shutdownNow();
+        pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete(); // warn the bot owner
+        jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
     }
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
+        // lets block someone of "steal" my bot
         if (jda.getGuilds().size() == 0)
-            return;
+            return; // oh, okay this is the first guild
+        // grr, seems like someone else get the bot invite
         shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
     }
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        // send a welcome message to the new user :)
         val user = event.getUser();
         val pv = event.getUser().openPrivateChannel().complete();
-        if (pv == null)
+        if (pv == null) // i don't know if this is possible, but lets check
             return;
 
-        if (config.getWelcomeMessage() == null)
+        if (config.getWelcomeMessage() == null) // oh, there's no welcome message :(
             return;
 
         try {
+            // get the user picture and put in the server's image
             val connection = (HttpURLConnection) new URL(user.getAvatarUrl()).openConnection();
-            connection.addRequestProperty("User-Agent", "Mozilla/4.76");
-            val userImage = ImageIO.read(connection.getInputStream());
-            val baseImage = ImageIO.read(Main.class.getResourceAsStream("/image.png"));
-            val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB);
+            connection.addRequestProperty("User-Agent", "Mozilla/4.76"); // avoid 403 errors
+            val userImage = ImageIO.read(connection.getInputStream()); // get the user avatar
+            val baseImage = ImageIO.read(Main.class.getResourceAsStream("/image.png")); // get the base image
+            val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB); // create some place to build the image
             val graphic = image.getGraphics();
-            graphic.drawImage(userImage, 367, 26, 178, 178, null);
-            graphic.drawImage(baseImage, 0, 0, null);
+            graphic.drawImage(userImage, 367, 26, 178, 178, null); // draw the user avatar
+            graphic.drawImage(baseImage, 0, 0, null); // draw the base image
             val bytes = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", bytes);
-            pv.sendFile(bytes.toByteArray(), "welcome.png", new MessageBuilder(config.getWelcomeMessage()).build()).complete();
+            ImageIO.write(image, "png", bytes); // get the bytes
+            pv.sendFile(bytes.toByteArray(), "welcome.png", new MessageBuilder(config.getWelcomeMessage()).build()).complete(); // send
         } catch (IOException e) {
+            // >:( we cannot send the image, so lets just send the message
             pv.sendMessage(new MessageBuilder(config.getWelcomeMessage()).build()).complete();
         }
     }
@@ -180,23 +196,29 @@ public class Main extends ListenerAdapter {
         val author = message.getAuthor();
         val textChannel = event.getTextChannel();
 
-        if (author.getId().equals(jda.getSelfUser().getId()))
-            return;
+        if (author.getId().equals(jda.getSelfUser().getId())) // comment this line if you're a "s a d b o y"
+            return; // this one too
 
         if (channel.getType() == ChannelType.PRIVATE) {
+            // lets disable message in the DM
             channel.sendMessage("Não respondo via DM ainda, por isso, utilize o chat <#" + config.getSupportChannelId() + "> para executar os comandos.").complete();
             return;
         }
 
+        // okay, if it's not a private channel, so its a text channel, right?
         val parent = textChannel.getParent();
 
+        // check if there's a parent category
         if (parent == null)
             return;
 
+        // check if the bot have to handle something in this channel
+        // the bot have to handle things in the support channel, in the staff channel (used by staff to test the bot), in the main category and in the closed category
         if ((!channel.getId().equals(config.getSupportChannelId()) && !channel.getId().equals(config.getStaffChannelId())) &&
                 (!parent.getId().equals(config.getCategoryId()) && !parent.getId().equals(config.getClosedCategoryId())))
             return;
 
+        // okay, lets handle the command. If this is a invalid command and it's executed in the support channel, delete this spam message
         if (!commandHandler.handle(event) && channel.getId().equals(config.getSupportChannelId()))
             message.delete().complete();
     }

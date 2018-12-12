@@ -32,6 +32,7 @@ public class Database {
     public void connect() throws SQLException, ClassNotFoundException {
         sql = new EzSQL(EzSQLType.MYSQL)
                 .withAddress(address, port)
+                // look, a gambiarra
                 .withDefaultDatabase(database + "?autoReconnect=true")
                 .withLogin(username, password);
 
@@ -53,6 +54,7 @@ public class Database {
                         .withColumn(new EzColumnBuilder("discordId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE)));
     }
 
+    // checks if the user has commited spam
     public boolean canCreateTicket(String userId) throws SQLException {
         val rs = tickets.select(new EzSelect("userId")
                 .where().equals("userId", userId)
@@ -60,6 +62,7 @@ public class Database {
         return !rs.next();
     }
 
+    // creates a ticket and return a instance
     public Ticket createReturningTicket(String userId, String messageId, String subject, String channelId) throws SQLException {
         tickets.insert(new EzInsert("userId, subject, channelId, status, messageId", userId, subject, channelId, TicketStatus.OPENED.ordinal(), messageId)).close();
         val rs = tickets.select(new EzSelect("id")
@@ -72,6 +75,7 @@ public class Database {
         return new Ticket(id, userId, messageId, channelId, subject, TicketStatus.OPENED);
     }
 
+    // gets the ticket by the channel id
     public Ticket getTicketByChannelId(String channelId) throws SQLException {
         val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
                 .where().equals("channelId", channelId)).getResultSet();
@@ -83,14 +87,17 @@ public class Database {
         return ticket;
     }
 
+    // closes a ticket
     public void closeTicket(Ticket ticket) throws SQLException {
         tickets.update(new EzUpdate().set("status", TicketStatus.CLOSED.ordinal()).where().equals("id", ticket.getId())).close();
     }
 
+    // marks ticket as spam
     public void markTicketAsSpam(Ticket ticket) throws SQLException {
         tickets.update(new EzUpdate().set("status", TicketStatus.SPAM.ordinal()).where().equals("id", ticket.getId())).close();
     }
 
+    // checks if the user has an opened ticket
     public boolean hasOpenedTicket(String userId) throws SQLException {
         val rs = tickets.select(new EzSelect("userId")
                 .where().equals("userId", userId)
@@ -98,6 +105,7 @@ public class Database {
         return !rs.next();
     }
 
+    // gets the invoices by an email
     public List<Invoice> getInvoicesByEmail(String email) {
         val connection = sql.getConnection();
         try {
@@ -115,6 +123,7 @@ public class Database {
         return null;
     }
 
+    // gets a invoice by its id
     public Invoice getInvoiceById(long id) {
         val connection = sql.getConnection();
         try {
@@ -129,6 +138,7 @@ public class Database {
         return null;
     }
 
+    // set the invoice paid status to true (or 1)
     public void setInvoicePaid(long id) {
         val connection = sql.getConnection();
         try {
@@ -140,6 +150,7 @@ public class Database {
         }
     }
 
+    // changes the username used in the site
     public byte setUsername(long id, String name) {
         val connection = sql.getConnection();
         try {
@@ -156,6 +167,7 @@ public class Database {
         return 2;
     }
 
+    // gets the username
     public String getUsername(long id) {
         val connection = sql.getConnection();
         try {
@@ -170,6 +182,7 @@ public class Database {
         return null;
     }
 
+    // gets the discord used to active an invoice
     public String getDiscordIdByInvoiceId(long invoiceId) {
         val connection = sql.getConnection();
         try {
@@ -184,11 +197,14 @@ public class Database {
         return null;
     }
 
+
+    // registers a vip to a invoice (to avoid 2 people to use the same invoice)
     public byte registerVIP(String discordId, long invoiceId) {
         try {
             enabledVIPS.insert(new EzInsert("discordId, invoiceId", discordId, invoiceId));
             return 0;
         } catch (SQLException e) {
+            // haha, someone trying to use the same invoice to get the VIP?
             if (e.getMessage().startsWith("Duplicate entry"))
                 return 1;
             reconnectSQL(e);
@@ -196,6 +212,7 @@ public class Database {
         return 2;
     }
 
+    // gets the user if by the email used in the site
     public long getUserIdByEmail(String email) {
         try {
             val st = sql.getConnection().prepareStatement("SELECT id from finalelite.users WHERE email = ?");
@@ -209,6 +226,7 @@ public class Database {
         return -1;
     }
 
+    // handle a exception (send to the bot owner) (i don't know its in this class)
     public static void handleException(Throwable e) {
         val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
         val sb = new StringBuilder();
@@ -226,6 +244,7 @@ public class Database {
         });
     }
 
+    // try to reconnect to the SQL (sometimes in the life we get timed out
     public void reconnectSQL(SQLException e) {
         e.printStackTrace();
         handleException(e);
@@ -234,7 +253,8 @@ public class Database {
         } catch (SQLException e1) {
             e1.printStackTrace();
             handleException(e1);
-            Main.shutdown("Shutting down...");
+            // oh boy, we're fired, lets just stop the bot
+            Main.shutdown("Cannot reconnect to SQL");
             System.exit(-3);
         }
     }
