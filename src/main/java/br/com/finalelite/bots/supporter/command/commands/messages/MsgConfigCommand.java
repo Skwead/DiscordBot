@@ -21,7 +21,7 @@ public class MsgConfigCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         if (args.length < 2) {
-            sendError(textChannel, author, "use `/!msgconfig <add/remover/editar/ph> [<atalho>] [<mensagem>]`.");
+            sendError(textChannel, author, "use `/!msgconfig <add/remover/editar> [<atalho>] [<mensagem>]`.");
             message.delete().complete();
             return;
         }
