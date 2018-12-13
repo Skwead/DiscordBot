@@ -22,7 +22,7 @@ public class SupportCommand extends Command {
         val subject = String.join(" ", args);
 
         if (subject.replace(" ", "").isEmpty()) {
-            sendError(channel, author, "use `suporte <assunto>`.", 10);
+            sendError(channel, author, "use `!suporte <assunto>`.", 10);
             message.delete().complete();
             return;
         }
