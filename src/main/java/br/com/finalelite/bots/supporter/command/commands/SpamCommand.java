@@ -25,6 +25,8 @@ public class SpamCommand extends Command {
             System.out.println(channel.getName());
 //            channel.getManager().setName("\uD83D\uDDA4-" + channel.getName().substring(channel.getName().indexOf("-"))).complete();
             channel.getManager().setName("\uD83D\uDDA4-" + "kkk").complete();
+            guild = Main.getJda().getGuildById(guild.getId());
+            channel = guild.getTextChannelById(channel.getId());
             System.out.println(channel.getName());
             DeleteCommand.deleteTicket(message, guild, channel, author);
         } catch (SQLException e) {
