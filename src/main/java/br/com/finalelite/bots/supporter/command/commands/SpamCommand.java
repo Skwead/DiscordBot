@@ -20,8 +20,11 @@ public class SpamCommand extends Command {
             ticket = Main.getDb().getTicketByChannelId(channel.getId());
             guild.getTextChannelById(Main.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
             Main.getDb().markTicketAsSpam(ticket);
+            System.out.println(channel.getName());
             channel.getManager().setName("\uD83D\uDDA4-" + channel.getName().substring(channel.getName().indexOf("-"))).complete();
-            DeleteCommand.deleteTicket(message, guild, guild.getTextChannelById(channel.getId()), author);
+            val x = guild.getTextChannelById(channel.getId());
+            System.out.println(x.getName());
+            DeleteCommand.deleteTicket(message, guild, x, author);
         } catch (SQLException e) {
             sendError(channel, author, "um erro ocorreu ao tentar marcar o ticket como spam.");
             message.delete().complete();
@@ -29,11 +32,4 @@ public class SpamCommand extends Command {
         }
     }
 
-    private void removePerms(MessageChannel channel, Guild guild) {
-        val targetChannel = guild.getTextChannelById(channel.getId());
-        targetChannel.getManager()
-                .setParent(guild.getCategoryById(Main.getConfig().getClosedCategoryId()))
-                .sync()
-                .complete();
-    }
 }
