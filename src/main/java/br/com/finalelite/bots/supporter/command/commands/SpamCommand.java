@@ -35,7 +35,6 @@ public class SpamCommand extends Command {
         val targetChannel = guild.getTextChannelById(channel.getId());
         targetChannel.getManager()
                 .setParent(guild.getCategoryById(Main.getConfig().getClosedCategoryId()))
-                .setName("\uD83D\uDDA4-" + targetChannel.getName().substring(targetChannel.getName().indexOf("-")))
                 .sync()
                 .complete();
     }
