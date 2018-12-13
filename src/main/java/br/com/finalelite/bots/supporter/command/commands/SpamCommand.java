@@ -23,6 +23,7 @@ public class SpamCommand extends Command {
             removePerms(channel, guild);
             sendSuccess(channel, author, "ticket marcado como spam.");
             message.delete().complete();
+            DeleteCommand.deleteTicket(message, guild, channel, author);
         } catch (SQLException e) {
             sendError(channel, author, "um erro ocorreu ao tentar marcar o ticket como spam.");
             message.delete().complete();

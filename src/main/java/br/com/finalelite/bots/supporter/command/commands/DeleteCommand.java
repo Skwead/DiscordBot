@@ -18,6 +18,10 @@ public class DeleteCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
+        deleteTicket(message, guild, channel, author);
+    }
+
+    public static void deleteTicket(Message message, Guild guild, TextChannel channel, User author) {
         Channel logChannel;
         if (guild.getTextChannelsByName("tickets-log", false).size() == 0) {
             logChannel = guild.getController().createTextChannel("tickets-log").setParent(guild.getCategoryById(Main.getConfig().getClosedCategoryId())).complete();

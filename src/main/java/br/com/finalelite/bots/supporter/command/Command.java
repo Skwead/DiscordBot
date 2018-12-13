@@ -17,25 +17,25 @@ public abstract class Command {
     public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
 
 
-    public Message sendError(MessageChannel channel, User user, String message) {
+    public static Message sendError(MessageChannel channel, User user, String message) {
         return sendError(channel, user, message, -1);
     }
 
-    public Message sendSuccess(MessageChannel channel, User user, String message) {
+    public static Message sendSuccess(MessageChannel channel, User user, String message) {
         return sendSuccess(channel, user, message, -1);
     }
 
-    public Message sendError(MessageChannel channel, User user, String message, int removeSeconds) {
+    public static Message sendError(MessageChannel channel, User user, String message, int removeSeconds) {
         val msg = channel.sendMessage(String.format(":x: %s, %s", user.getAsMention(), message)).complete();
         return deleteAfter(removeSeconds, msg);
     }
 
-    public Message sendSuccess(MessageChannel channel, User user, String message, int removeSeconds) {
+    public static Message sendSuccess(MessageChannel channel, User user, String message, int removeSeconds) {
         val msg = channel.sendMessage(String.format(":white_check_mark: %s, %s", user.getAsMention(), message)).complete();
         return deleteAfter(removeSeconds, msg);
     }
 
-    public Message deleteAfter(int removeSeconds, Message msg) {
+    public static Message deleteAfter(int removeSeconds, Message msg) {
         if (removeSeconds == -1)
             return msg;
 
