@@ -17,7 +17,7 @@ public class HelpCommand extends Command {
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val sb = new StringBuilder();
         Main.getCommandHandler().getCommandMap().values().forEach(command ->
-                sb.append("\n   - ").append(command.getName()).append(": ").append(command.getDescription()));
+                sb.append("\n   - **!").append(command.getName()).append("**: ").append(command.getDescription()));
         sendSuccess(textChannel, author, "Comandos: " + sb.toString());
     }
 }
