@@ -128,8 +128,7 @@ public class Main extends ListenerAdapter {
                 System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
             else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
-            // it's kinda gay, maybe change in the future?
-            jda.getPresence().setGame(Game.of(Game.GameType.WATCHING, "vídeos do Willzy enquanto ajudo os jogadores", "https://finalelite.com.br"));
+            jda.getPresence().setGame(config.getPresence().toGame());
             jda.addEventListener(new Main());
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
