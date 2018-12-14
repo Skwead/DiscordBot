@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class VIPCommand extends Command {
 
     public VIPCommand() {
-        super("vip", "ativa o VIP para o usuário a partir do id da compra", true, false, true, true, true);
+        super("vip", "ativa o VIP para o usuário a partir do ID da compra", true, false, true, true, true);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class MsgCommand extends Command {
     public MsgCommand() {
-        super("msg", "envia uma mensagem pre-definido", true, false, true, false, true);
+        super("msg", "envia uma mensagem pre-definida", true, false, true, false, true);
     }
 
     private final static Map<String, String> messages = Main.getConfig().getMessages();
