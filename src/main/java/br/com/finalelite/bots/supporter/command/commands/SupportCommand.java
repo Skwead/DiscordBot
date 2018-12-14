@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class SupportCommand extends Command {
     public SupportCommand() {
-        super("suporte", false, true, false, false, false);
+        super("suporte", "cria um novo ticket", false, true, false, false, false);
     }
 
     @Override

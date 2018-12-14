@@ -13,7 +13,7 @@ import java.util.Collections;
 
 public class DeleteCommand extends Command {
     public DeleteCommand() {
-        super("deletar", true, false, false, true, false);
+        super("deletar", "deleta o ticket, enviando para o canal de logs", true, false, false, true, false);
     }
 
     @Override

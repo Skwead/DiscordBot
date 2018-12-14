@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.entities.*;
 public class RemoveCommand extends Command {
 
     public RemoveCommand() {
-        super("remover", true, false, true, false, false);
+        super("remover", "remove um usuário do ticket",true, false, true, false, false);
     }
 
     @Override

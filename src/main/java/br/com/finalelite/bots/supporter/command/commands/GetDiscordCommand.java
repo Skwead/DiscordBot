@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 public class GetDiscordCommand extends Command {
 
     public GetDiscordCommand() {
-        super("getdiscord", true, false, true, true, true);
+        super("getdiscord", "pega o Discord usado na ativação de um VIP a partir do ID da compra", true, false, true, true, true);
     }
 
     @Override

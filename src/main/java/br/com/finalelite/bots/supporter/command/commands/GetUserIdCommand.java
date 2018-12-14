@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 public class GetUserIdCommand extends Command {
 
     public GetUserIdCommand() {
-        super("getid", true, false, true, true, true);
+        super("getid", "pega o identificador único do usuário a partir do email", true, false, true, true, true);
     }
 
     @Override

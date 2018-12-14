@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class MsgConfigCommand extends Command {
 
     public MsgConfigCommand() {
-        super("msgconfig", true, false, false, false, true);
+        super("msgconfig", "configura as mensagens pre-definidas", true, false, false, false, true);
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.entities.*;
 public abstract class Command {
 
     private final String name;
+    private final String description;
     private final boolean isStaffOnly;
     private final boolean usableInSupportChannel;
     private final boolean usableInOpenedCategory;
@@ -15,7 +16,6 @@ public abstract class Command {
     private final boolean usableInStaffChannel;
 
     public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
-
 
     public static Message sendError(MessageChannel channel, User user, String message) {
         return sendError(channel, user, message, -1);

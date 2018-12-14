@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class VIPCommand extends Command {
 
     public VIPCommand() {
-        super("vip", true, false, true, true, true);
+        super("vip", "ativa o VIP para o usuário a partir do id da compra", true, false, true, true, true);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class VIPCommand extends Command {
                 message.delete().complete();
                 return;
             }
-            Main.getDb().setInvoicePaid(id);
+//            Main.getDb().setInvoicePaid(id);
             guild.getController().addRolesToMember(guild.getMemberById(user.getId()), guild.getRoleById(invoice.getVip().getRoleId())).complete();
             sendSuccess(textChannel, author, String.format("VIP ativado para a compra ID `%d`.", id));
             message.delete().complete();

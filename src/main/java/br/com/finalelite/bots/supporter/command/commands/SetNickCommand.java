@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 public class SetNickCommand extends Command {
 
     public SetNickCommand() {
-        super("setnick", true, false, true, true, true);
+        super("setnick", "muda o nick do usuário no cadastro do site",true, false, true, true, true);
     }
 
     @Override

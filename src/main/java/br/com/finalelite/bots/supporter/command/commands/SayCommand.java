@@ -11,7 +11,7 @@ public class SayCommand extends Command {
 
 
     public SayCommand() {
-        super("say", true, true, true, true, true);
+        super("say", "faz o bot enviar uma mensagem", true, true, true, true, true);
     }
 
     @Override

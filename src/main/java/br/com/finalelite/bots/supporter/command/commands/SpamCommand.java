@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public class SpamCommand extends Command {
     public SpamCommand() {
-        super("spam", true, false, true, false, false);
+        super("spam", "marca um ticket como spam e o deleta", true, false, true, false, false);
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class AddCommand extends Command {
 
     public AddCommand() {
-        super("add", true, false, true, false, false);
+        super("add", "adiciona um usuário ao ticket",true, false, true, false, false);
     }
 
     @Override

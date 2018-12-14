@@ -19,6 +19,10 @@ public class CommandHandler {
         commands.put(command.getName().toLowerCase(), command);
     }
 
+    public Map<String, Command> getCommandMap() {
+        return commands;
+    }
+
     public boolean handle(MessageReceivedEvent event) {
         val message = event.getMessage();
         val author = event.getAuthor();
@@ -71,7 +75,6 @@ public class CommandHandler {
         if (parent.getId().equals(Main.getConfig().getClosedCategoryId()) && !executedCommand.isUsableInClosedCategory()) {
             return false;
         }
-
 
         // if passed it all, finally run the command
         executedCommand.run(message, guild, textChannel, author, args);

@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 public class GetNickCommand extends Command {
 
     public GetNickCommand() {
-        super("getnick", true, false, true, true, true);
+        super("getnick", "pega o nome do usuário usado no cadastro do site", true, false, true, true, true);
     }
 
     @Override
