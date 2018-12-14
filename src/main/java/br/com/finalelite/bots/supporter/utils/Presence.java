@@ -14,6 +14,6 @@ public class Presence {
     private String url;
 
     public Game toGame() {
-        Game.of(type, label, url);
+        return Game.of(type, label, url);
     }
 }
