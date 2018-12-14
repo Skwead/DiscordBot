@@ -7,6 +7,7 @@ import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigComma
 import br.com.finalelite.bots.supporter.utils.Config;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import br.com.finalelite.bots.supporter.utils.Database;
+import br.com.finalelite.bots.supporter.utils.Presence;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
@@ -51,6 +52,7 @@ public class Main extends ListenerAdapter {
             val defaultConfig = Config.builder()
                     .token("your token")
                     .ownerId("999123")
+                    .presence(new Presence(Game.GameType.DEFAULT, "Here to help", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
                     .welcomeMessage("Welcome to the party.")
                     .supportChannelId("32123")
                     .messages(messages)

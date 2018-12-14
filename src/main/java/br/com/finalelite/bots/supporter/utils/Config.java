@@ -18,6 +18,7 @@ public class Config {
     private final String vipTitanId;
     private final String vipDuqueId;
     private final String vipLordId;
+    private final Presence presence;
     private final String vipCondeId;
     private final Map<String, String> messages;
     private final String closedCategoryId;
