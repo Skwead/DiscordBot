@@ -110,6 +110,7 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new HelpCommand());
         commandHandler.registerCommand(new AddCommand());
         commandHandler.registerCommand(new CloseCommand());
+        commandHandler.registerCommand(new PrecenseCommand());
         commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new VIPCommand());
         commandHandler.registerCommand(new GetUserIdCommand());
