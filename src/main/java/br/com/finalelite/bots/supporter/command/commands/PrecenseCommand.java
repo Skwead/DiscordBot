@@ -25,7 +25,7 @@ public class PrecenseCommand extends Command {
         try {
             val type = Game.GameType.valueOf(args[0].toUpperCase());
             val url = args[1];
-            val label = String.join(" ", Arrays.stream(args).skip(2).collect(Collectors.toList()));
+            val label = Arrays.stream(args).skip(2).collect(Collectors.joining(" ")).replace("`", "");
 
             val config = Main.getConfig();
             config.getPresence().setLabel(label);
