@@ -55,6 +55,7 @@ public class Main extends ListenerAdapter {
                     .presence(new Presence(Game.GameType.DEFAULT, "Here to help", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
                     .welcomeMessage("Welcome to the party.")
                     .supportChannelId("32123")
+                    .adminRoleId("1337")
                     .messages(messages)
                     .staffChannelId("31231123")
                     .categoryId("12345")
@@ -110,7 +111,7 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new HelpCommand());
         commandHandler.registerCommand(new AddCommand());
         commandHandler.registerCommand(new CloseCommand());
-        commandHandler.registerCommand(new PrecenseCommand());
+        commandHandler.registerCommand(new PresenceCommand());
         commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new VIPCommand());
         commandHandler.registerCommand(new GetUserIdCommand());

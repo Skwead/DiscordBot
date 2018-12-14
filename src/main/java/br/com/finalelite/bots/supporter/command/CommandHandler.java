@@ -51,8 +51,14 @@ public class CommandHandler {
         // prepare to execute the command
         val executedCommand = commands.get(command);
         // check if its staff only
-        if (executedCommand.isStaffOnly() && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(Main.getConfig().getStaffRoleId())))) {
-            executedCommand.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+        if (executedCommand.getPermission() == CommandPermission.STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(Main.getConfig().getStaffRoleId())))) {
+            Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+            return false;
+        }
+
+        // check if its major staff
+        if (executedCommand.getPermission() == CommandPermission.MAJOR_STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(Main.getConfig().getAdminRoleId())))) {
+            Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
             return false;
         }
 

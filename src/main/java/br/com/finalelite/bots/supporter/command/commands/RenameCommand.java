@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -12,7 +13,7 @@ public class RenameCommand extends Command {
 
 
     public RenameCommand() {
-        super("renomear", "renomeia o ticket", true, false, true, true, false);
+        super("renomear", "renomeia o ticket", CommandPermission.STAFF, false, true, true, false);
     }
 
     @Override

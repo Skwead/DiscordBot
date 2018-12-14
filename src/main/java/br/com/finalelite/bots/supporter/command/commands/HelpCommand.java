@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -10,7 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class HelpCommand extends Command {
     public HelpCommand() {
-        super("ajuda", "lista os comandos", true, false, true, true, true);
+        super("ajuda", "lista os comandos", CommandPermission.STAFF, false, true, true, true);
     }
 
     @Override

@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.messages;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.entities.Guild;
@@ -17,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class MsgCommand extends Command {
     public MsgCommand() {
-        super("msg", "envia uma mensagem pre-definida", true, false, true, false, true);
+        super("msg", "envia uma mensagem pre-definida", CommandPermission.STAFF, false, true, false, true);
     }
 
     private final static Map<String, String> messages = Main.getConfig().getMessages();

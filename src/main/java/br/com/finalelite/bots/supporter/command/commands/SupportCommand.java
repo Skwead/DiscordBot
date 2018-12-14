@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 
 public class SupportCommand extends Command {
     public SupportCommand() {
-        super("suporte", "cria um novo ticket", false, true, false, false, false);
+        super("suporte", "cria um novo ticket", CommandPermission.EVERYONE, true, false, false, false);
     }
 
     @Override

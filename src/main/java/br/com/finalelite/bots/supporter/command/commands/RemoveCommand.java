@@ -1,13 +1,14 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
 
 public class RemoveCommand extends Command {
 
     public RemoveCommand() {
-        super("remover", "remove um usuário do ticket",true, false, true, false, false);
+        super("remover", "remove um usuário do ticket", CommandPermission.STAFF, false, true, false, false);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 public class AddCommand extends Command {
 
     public AddCommand() {
-        super("add", "adiciona um usuário ao ticket",true, false, true, false, false);
+        super("add", "adiciona um usuário ao ticket", CommandPermission.STAFF, false, true, false, false);
     }
 
     @Override

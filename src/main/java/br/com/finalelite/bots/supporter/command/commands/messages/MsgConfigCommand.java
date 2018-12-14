@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.messages;
 
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class MsgConfigCommand extends Command {
 
     public MsgConfigCommand() {
-        super("msgconfig", "configura as mensagens pre-definidas", true, false, false, false, true);
+        super("msgconfig", "configura as mensagens pre-definidas", CommandPermission.MAJOR_STAFF, false, false, false, true);
     }
 
     @Override

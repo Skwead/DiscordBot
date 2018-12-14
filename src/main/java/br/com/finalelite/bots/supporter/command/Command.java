@@ -9,7 +9,7 @@ public abstract class Command {
 
     private final String name;
     private final String description;
-    private final boolean isStaffOnly;
+    private final CommandPermission permission;
     private final boolean usableInSupportChannel;
     private final boolean usableInOpenedCategory;
     private final boolean usableInClosedCategory;
