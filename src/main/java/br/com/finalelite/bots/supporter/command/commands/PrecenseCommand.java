@@ -17,15 +17,15 @@ public class PrecenseCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val types = Arrays.stream(Game.GameType.values()).map(Game.GameType::name).collect(Collectors.toList());
-        if (args.length != 3) {
-            sendError(textChannel, author, "use `!jogando <" + String.join("/", types) + "> <título> <URL>`.");
+        if (args.length < 3) {
+            sendError(textChannel, author, "use `!jogando <" + String.join("/", types) + "> <URL> <título>`.");
             return;
         }
 
         try {
             val type = Game.GameType.valueOf(args[0].toUpperCase());
-            val label = args[1];
-            val url = args[2];
+            val url = args[1];
+            val label = String.join(" ", Arrays.stream(args).skip(2).collect(Collectors.toList()));
 
             val config = Main.getConfig();
             config.getPresence().setLabel(label);
@@ -39,7 +39,7 @@ public class PrecenseCommand extends Command {
 
             sendSuccess(textChannel, author, "presença alterada.");
         } catch (IllegalArgumentException e) {
-            sendError(textChannel, author, "tipo inválido. Use `!jogando <" + String.join("/", types) + "> <título> <URL>`.");
+            sendError(textChannel, author, "tipo inválido. Use `!jogando <" + String.join("/", types) + "> <URL> <título>`.");
         }
     }
 }
