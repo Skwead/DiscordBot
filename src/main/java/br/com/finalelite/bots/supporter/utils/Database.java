@@ -55,71 +55,99 @@ public class Database {
                         .withColumn(new EzColumnBuilder("invoiceId", EzDataType.BIGINT, EzAttribute.UNIQUE))
                         .withColumn(new EzColumnBuilder("discordId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE)));
 
-
-        // to avoid timeout, lets run a simple query every hour
-        new Thread(() -> {
-            try {
-                tickets.select(new EzSelect("id").where().equals("id", 1)).close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                Thread.sleep(1000 * 60 * 60);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
-    // checks if the user has commited spam
-    public boolean canCreateTicket(String userId) throws SQLException {
-        val rs = tickets.select(new EzSelect("userId")
-                .where().equals("userId", userId)
-                .and().equals("status", TicketStatus.SPAM.ordinal())).getResultSet();
-        return !rs.next();
+    // checks if the user has committed spam
+    public boolean canCreateTicket(String userId) {
+        try {
+            val rs = tickets.select(new EzSelect("userId")
+                    .where().equals("userId", userId)
+                    .and().equals("status", TicketStatus.SPAM.ordinal())).getResultSet();
+            return !rs.next();
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                canCreateTicket(userId);
+        }
+        return false;
     }
 
     // creates a ticket and return a instance
-    public Ticket createReturningTicket(String userId, String messageId, String subject, String channelId) throws SQLException {
-        tickets.insert(new EzInsert("userId, subject, channelId, status, messageId", userId, subject, channelId, TicketStatus.OPENED.ordinal(), messageId)).close();
-        val rs = tickets.select(new EzSelect("id")
-                .where().equals("channelId", channelId)
-                .limit(1)).getResultSet();
-        if (!rs.next())
-            return null;
-        int id = rs.getInt("id");
-        rs.close();
-        return new Ticket(id, userId, messageId, channelId, subject, TicketStatus.OPENED);
+    public Ticket createReturningTicket(String userId, String messageId, String subject, String channelId) {
+        try {
+
+            tickets.insert(new EzInsert("userId, subject, channelId, status, messageId", userId, subject, channelId, TicketStatus.OPENED.ordinal(), messageId)).close();
+            val rs = tickets.select(new EzSelect("id")
+                    .where().equals("channelId", channelId)
+                    .limit(1)).getResultSet();
+            if (!rs.next())
+                return null;
+            int id = rs.getInt("id");
+            rs.close();
+            return new Ticket(id, userId, messageId, channelId, subject, TicketStatus.OPENED);
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                createReturningTicket(userId, messageId, subject, channelId);
+        }
+        return null;
     }
 
     // gets the ticket by the channel id
-    public Ticket getTicketByChannelId(String channelId) throws SQLException {
-        val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
-                .where().equals("channelId", channelId)).getResultSet();
-        if (!rs.next())
-            return null;
-        val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), rs.getString("messageId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
-        rs.close();
+    public Ticket getTicketByChannelId(String channelId) {
+        try {
+            val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
+                    .where().equals("channelId", channelId)).getResultSet();
+            if (!rs.next())
+                return null;
+            val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), rs.getString("messageId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
+            rs.close();
 
-        return ticket;
+            return ticket;
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                getTicketByChannelId(channelId);
+        }
+        return null;
     }
 
+
     // closes a ticket
-    public void closeTicket(Ticket ticket) throws SQLException {
-        tickets.update(new EzUpdate().set("status", TicketStatus.CLOSED.ordinal()).where().equals("id", ticket.getId())).close();
+    public void closeTicket(Ticket ticket) {
+        try {
+            tickets.update(new EzUpdate().set("status", TicketStatus.CLOSED.ordinal()).where().equals("id", ticket.getId())).close();
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                closeTicket(ticket);
+        }
     }
 
     // marks ticket as spam
-    public void markTicketAsSpam(Ticket ticket) throws SQLException {
-        tickets.update(new EzUpdate().set("status", TicketStatus.SPAM.ordinal()).where().equals("id", ticket.getId())).close();
+    public void markTicketAsSpam(Ticket ticket) {
+        try {
+            tickets.update(new EzUpdate().set("status", TicketStatus.SPAM.ordinal()).where().equals("id", ticket.getId())).close();
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                markTicketAsSpam(ticket);
+        }
     }
 
     // checks if the user has an opened ticket
-    public boolean hasOpenedTicket(String userId) throws SQLException {
-        val rs = tickets.select(new EzSelect("userId")
-                .where().equals("userId", userId)
-                .and().equals("status", TicketStatus.OPENED.ordinal())).getResultSet();
-        return !rs.next();
+    public boolean hasOpenedTicket(String userId) {
+        try {
+            val rs = tickets.select(new EzSelect("userId")
+                    .where().equals("userId", userId)
+                    .and().equals("status", TicketStatus.OPENED.ordinal())).getResultSet();
+            return !rs.next();
+        } catch (SQLException e) {
+            reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return hasOpenedTicket(userId);
+        }
+        return false;
     }
 
     // gets the invoices by an email
@@ -136,6 +164,8 @@ public class Database {
             return invoices;
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return getInvoicesByEmail(email);
         }
         return null;
     }
@@ -151,6 +181,8 @@ public class Database {
                 return new Invoice(rs.getLong("id"), rs.getLong("user_id"), rs.getInt("price_id"), rs.getBoolean("paid"));
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return getInvoiceById(id);
         }
         return null;
     }
@@ -164,6 +196,8 @@ public class Database {
             st.executeUpdate();
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                setInvoicePaid(id);
         }
     }
 
@@ -180,6 +214,8 @@ public class Database {
             if (e.getMessage().startsWith("Duplicate entry"))
                 return 1;
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return setUsername(id, name);
         }
         return 2;
     }
@@ -195,6 +231,8 @@ public class Database {
                 return rs.getString("username");
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return getUsername(id);
         }
         return null;
     }
@@ -210,6 +248,8 @@ public class Database {
                 return rs.getString("discordId");
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return getDiscordIdByInvoiceId(invoiceId);
         }
         return null;
     }
@@ -225,11 +265,13 @@ public class Database {
             if (e.getMessage().startsWith("Duplicate entry"))
                 return 1;
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return registerVIP(discordId, invoiceId);
         }
         return 2;
     }
 
-    // gets the user if by the email used in the site
+    // gets the user id by the email used in the site
     public long getUserIdByEmail(String email) {
         try {
             val st = sql.getConnection().prepareStatement("SELECT id from finalelite.users WHERE email = ?");
@@ -239,6 +281,8 @@ public class Database {
                 return rs.getLong("id");
         } catch (SQLException e) {
             reconnectSQL(e);
+            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
+                return getUserIdByEmail(email);
         }
         return -1;
     }
