@@ -55,7 +55,7 @@ public class MsgCommand extends Command {
     private static String format(String text, Message message, Guild guild, TextChannel channel, User author) {
         try {
             val ticket = channel.getId().equals(Main.getConfig().getStaffChannelId()) ? null : Main.getDb().getTicketByChannelId(channel.getId());
-            val pattern = Pattern.compile("\\$\\{.*}");
+            val pattern = Pattern.compile("\\$\\{\\w*}");
             val matcher = pattern.matcher(text);
             var newText = text;
 
