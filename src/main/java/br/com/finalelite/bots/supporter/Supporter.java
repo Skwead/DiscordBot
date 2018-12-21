@@ -134,7 +134,7 @@ public class Supporter extends ListenerAdapter {
             else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
             jda.getPresence().setGame(config.getPresence().toGame());
-            jda.addEventListener(new Supporter());
+            jda.addEventListener(this);
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
             e.printStackTrace();
