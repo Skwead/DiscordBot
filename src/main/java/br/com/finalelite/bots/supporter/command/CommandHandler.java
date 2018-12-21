@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.var;
@@ -30,6 +30,7 @@ public class CommandHandler {
         val textChannel = event.getTextChannel();
         val parent = textChannel.getParent();
         val rawContent = message.getContentRaw();
+        val supporter = Supporter.getInstance();
 
         // its with the prefix?
         if (!rawContent.startsWith(prefix)) return false;
@@ -51,34 +52,34 @@ public class CommandHandler {
         // prepare to execute the command
         val executedCommand = commands.get(command);
         // check if its staff only
-        if (executedCommand.getPermission() == CommandPermission.STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(Main.getConfig().getStaffRoleId())))) {
+        if (executedCommand.getPermission() == CommandPermission.STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getStaffRoleId())))) {
             Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
             return false;
         }
 
         // check if its major staff
-        if (executedCommand.getPermission() == CommandPermission.MAJOR_STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(Main.getConfig().getAdminRoleId())))) {
+        if (executedCommand.getPermission() == CommandPermission.MAJOR_STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getAdminRoleId())))) {
             Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
             return false;
         }
 
         // check if its usable in staff channel
-        if (textChannel.getId().equals(Main.getConfig().getStaffChannelId()) && !executedCommand.isUsableInStaffChannel()) {
+        if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.isUsableInStaffChannel()) {
             return false;
         }
 
         // check if its usable in support channel
-        if (textChannel.getId().equals(Main.getConfig().getSupportChannelId()) && !executedCommand.isUsableInSupportChannel()) {
+        if (textChannel.getId().equals(supporter.getConfig().getSupportChannelId()) && !executedCommand.isUsableInSupportChannel()) {
             return false;
         }
 
         // check if its usable in the main category
-        if (parent.getId().equals(Main.getConfig().getCategoryId()) && !executedCommand.isUsableInOpenedCategory()) {
+        if (parent.getId().equals(supporter.getConfig().getCategoryId()) && !executedCommand.isUsableInOpenedCategory()) {
             return false;
         }
 
         // check if its usable in closed category
-        if (parent.getId().equals(Main.getConfig().getClosedCategoryId()) && !executedCommand.isUsableInClosedCategory()) {
+        if (parent.getId().equals(supporter.getConfig().getClosedCategoryId()) && !executedCommand.isUsableInClosedCategory()) {
             return false;
         }
 

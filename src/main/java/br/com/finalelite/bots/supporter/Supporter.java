@@ -31,18 +31,21 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class Main extends ListenerAdapter {
+public class Supporter extends ListenerAdapter {
 
     @Getter
-    private static JDA jda;
+    private static Supporter instance;
     @Getter
-    private static Config config;
+    private JDA jda;
     @Getter
-    private static Database database;
+    private Config config;
     @Getter
-    private static CommandHandler commandHandler;
+    private Database database;
+    @Getter
+    private CommandHandler commandHandler;
 
-    public static void main(String[] args) {
+    public Supporter() {
+        instance = this;
         // create the config if not exists
         val file = new File("config.json");
         if (!file.exists()) {
@@ -78,7 +81,7 @@ public class Main extends ListenerAdapter {
 
         // l o a d t h e c o n f i g
         loadConfig();
-        // belive you or not
+        // believe you or not
 
         // connect to the database
         database = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
@@ -131,7 +134,7 @@ public class Main extends ListenerAdapter {
             else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
             jda.getPresence().setGame(config.getPresence().toGame());
-            jda.addEventListener(new Main());
+            jda.addEventListener(new Supporter());
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
             e.printStackTrace();
@@ -142,13 +145,13 @@ public class Main extends ListenerAdapter {
     }
 
 
-    public static void loadConfig() {
+    public void loadConfig() {
         config = ConfigManager.loadConfigFromFile();
     }
 
-    public static void shutdown(String reason) {
+    public void shutdown(String reason) {
         System.out.printf("Shutting down. %s%n", reason);
-        val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
+        val pv = getJda().getUserById(getConfig().getOwnerId()).openPrivateChannel().complete();
         pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete(); // warn the bot owner
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
     }
@@ -178,7 +181,7 @@ public class Main extends ListenerAdapter {
             val connection = (HttpURLConnection) new URL(user.getAvatarUrl()).openConnection();
             connection.addRequestProperty("User-Agent", "Mozilla/4.76"); // avoid 403 errors
             val userImage = ImageIO.read(connection.getInputStream()); // get the user avatar
-            val baseImage = ImageIO.read(Main.class.getResourceAsStream("/image.png")); // get the base image
+            val baseImage = ImageIO.read(Supporter.class.getResourceAsStream("/image.png")); // get the base image
             val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB); // create some place to build the image
             val graphic = image.getGraphics();
             graphic.drawImage(userImage, 367, 26, 178, 178, null); // draw the user avatar

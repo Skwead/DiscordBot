@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
@@ -18,6 +18,7 @@ public class PresenceCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val types = Arrays.stream(Game.GameType.values()).map(Game.GameType::name).collect(Collectors.toList());
+        val support = Supporter.getInstance();
         if (args.length < 3) {
             sendError(textChannel, author, "use `!jogando <" + String.join("/", types) + "> <URL> <título>`.");
             return;
@@ -28,15 +29,15 @@ public class PresenceCommand extends Command {
             val url = args[1];
             val label = Arrays.stream(args).skip(2).collect(Collectors.joining(" ")).replace("`", "");
 
-            val config = Main.getConfig();
+            val config = support.getConfig();
             config.getPresence().setLabel(label);
             config.getPresence().setType(type);
             config.getPresence().setUrl(url);
 
-            Main.getJda().getPresence().setGame(config.getPresence().toGame());
+            support.getJda().getPresence().setGame(config.getPresence().toGame());
 
             ConfigManager.saveConfigToFile(config);
-            Main.loadConfig();
+            support.loadConfig();
 
             sendSuccess(textChannel, author, "presença alterada.");
         } catch (IllegalArgumentException e) {

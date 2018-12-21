@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands.messages;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
@@ -10,7 +10,6 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -21,7 +20,7 @@ public class MsgCommand extends Command {
         super("msg", "envia uma mensagem pre-definida", CommandPermission.STAFF, false, true, false, true);
     }
 
-    private final static Map<String, String> messages = Main.getConfig().getMessages();
+    private final static Map<String, String> messages = Supporter.getInstance().getConfig().getMessages();
     private static Map<String, PlaceHolder> placeHolders = new HashMap<>();
 
     private static void addPlaceHolder(String key, PlaceHolder placeHolder) {
@@ -33,7 +32,7 @@ public class MsgCommand extends Command {
             if (ticket == null)
                 return "";
             else
-                return Main.getJda().getUserById(ticket.getUserId()).getAsMention();
+                return Supporter.getInstance().getJda().getUserById(ticket.getUserId()).getAsMention();
         });
         addPlaceHolder("list", (ticket, author, message, channel, guild) -> "`" + String.join(", ", messages.keySet()) + "`");
     }
@@ -53,26 +52,21 @@ public class MsgCommand extends Command {
     }
 
     private static String format(String text, Message message, Guild guild, TextChannel channel, User author) {
-        try {
-            val ticket = channel.getId().equals(Main.getConfig().getStaffChannelId()) ? null : Main.getDatabase().getTicketByChannelId(channel.getId());
-            val pattern = Pattern.compile("\\$\\{\\w*}");
-            val matcher = pattern.matcher(text);
-            var newText = text;
+        val ticket = channel.getId().equals(Supporter.getInstance().getConfig().getStaffChannelId()) ? null : Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
+        val pattern = Pattern.compile("\\$\\{\\w*}");
+        val matcher = pattern.matcher(text);
+        var newText = text;
 
-            while (matcher.find()) {
-                val group = matcher.group();
-                val key = group.substring(2, group.length() - 1);
+        while (matcher.find()) {
+            val group = matcher.group();
+            val key = group.substring(2, group.length() - 1);
 
-                if (placeHolders.containsKey(key.toLowerCase())) {
-                    val newString = placeHolders.get(key.toLowerCase()).get(ticket, message, guild, channel, author);
-                    newText = newText.replace(group, newString);
-                }
+            if (placeHolders.containsKey(key.toLowerCase())) {
+                val newString = placeHolders.get(key.toLowerCase()).get(ticket, message, guild, channel, author);
+                newText = newText.replace(group, newString);
             }
-            return newText;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
+        return newText;
     }
 
 }

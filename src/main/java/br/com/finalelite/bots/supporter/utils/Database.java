@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.utils;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
@@ -289,7 +289,7 @@ public class Database {
 
     // handle a exception (send to the bot owner) (i don't know its in this class)
     public static void handleException(Throwable e) {
-        val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
+        val pv = Supporter.getInstance().getJda().getUserById(Supporter.getInstance().getConfig().getOwnerId()).openPrivateChannel().complete();
         val sb = new StringBuilder();
         sb.append("**Look, a poem:**\n");
         sb.append(e.getMessage()).append("\n");
@@ -315,7 +315,7 @@ public class Database {
             e1.printStackTrace();
             handleException(e1);
             // oh boy, we're fired, lets just stop the bot
-            Main.shutdown("Cannot reconnect to SQL");
+            Supporter.getInstance().shutdown("Cannot reconnect to SQL");
             System.exit(-3);
         }
     }

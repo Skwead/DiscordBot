@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
@@ -25,7 +25,7 @@ public class GetNickCommand extends Command {
 
         try {
             val id = Long.parseLong(args[0]);
-            sendSuccess(textChannel, author, String.format("o nick de `%d` é `%s`.", id, Main.getDatabase().getUsername(id)));
+            sendSuccess(textChannel, author, String.format("o nick de `%d` é `%s`.", id, Supporter.getInstance().getDatabase().getUsername(id)));
         } catch (NumberFormatException e) {
             sendError(textChannel, author, "id inválido. Use `!getnick <id>`.", 10);
             message.delete().complete();

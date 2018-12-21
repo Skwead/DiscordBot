@@ -1,13 +1,10 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.ticket.Ticket;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
-
-import java.sql.SQLException;
 
 public class CloseCommand extends Command {
     public CloseCommand() {
@@ -16,27 +13,22 @@ public class CloseCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        Ticket ticket;
-        try {
-            ticket = Main.getDatabase().getTicketByChannelId(channel.getId());
-            guild.getTextChannelById(Main.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
-            Main.getDatabase().closeTicket(ticket);
-            clearPermissions(channel, guild);
-            sendSuccess(channel, author, "ticket fechado.");
-            val pv = Main.getJda().getUserById(ticket.getUserId()).openPrivateChannel().complete();
-            message.delete().complete();
-            if (pv == null)
-                return;
-        } catch (SQLException e) {
-            sendError(channel, author, "um erro ocorreu ao tentar fechar o ticket.", 10);
-            message.delete().complete();
-            e.printStackTrace();
-        }
+        val supporter = Supporter.getInstance();
+        val ticket = supporter.getDatabase().getTicketByChannelId(channel.getId());
+        guild.getTextChannelById(supporter.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
+        supporter.getDatabase().closeTicket(ticket);
+        clearPermissions(channel, guild);
+        sendSuccess(channel, author, "ticket fechado.");
+        val pv = supporter.getJda().getUserById(ticket.getUserId()).openPrivateChannel().complete();
+        message.delete().complete();
+        if (pv == null)
+            return;
     }
+
     private void clearPermissions(MessageChannel channel, Guild guild) {
         val targetChannel = guild.getTextChannelById(channel.getId());
         targetChannel.getManager()
-                .setParent(guild.getCategoryById(Main.getConfig().getClosedCategoryId()))
+                .setParent(guild.getCategoryById(Supporter.getInstance().getConfig().getClosedCategoryId()))
                 .setName("\uD83D\uDC97-" + targetChannel.getName().substring(targetChannel.getName().indexOf("-")))
                 .sync()
                 .complete();

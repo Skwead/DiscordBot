@@ -1,15 +1,13 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.ticket.Ticket;
+import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-
-import java.sql.SQLException;
 
 public class SpamCommand extends Command {
     public SpamCommand() {
@@ -18,17 +16,10 @@ public class SpamCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        Ticket ticket;
-        try {
-            ticket = Main.getDatabase().getTicketByChannelId(channel.getId());
-            guild.getTextChannelById(Main.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
-            Main.getDatabase().markTicketAsSpam(ticket);
-            DeleteCommand.deleteTicket(message, guild, channel, author);
-        } catch (SQLException e) {
-            sendError(channel, author, "um erro ocorreu ao tentar marcar o ticket como spam.");
-            message.delete().complete();
-            e.printStackTrace();
-        }
+        val ticket = Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
+        guild.getTextChannelById(Supporter.getInstance().getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
+        Supporter.getInstance().getDatabase().markTicketAsSpam(ticket);
+        DeleteCommand.deleteTicket(message, guild, channel, author);
     }
 
 }

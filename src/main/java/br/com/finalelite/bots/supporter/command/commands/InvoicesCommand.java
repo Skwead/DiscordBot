@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import lombok.val;
@@ -22,7 +22,7 @@ public class InvoicesCommand extends Command {
             return;
         }
         val email = args[0];
-        val result = Main.getDatabase().getInvoicesByEmail(email);
+        val result = Supporter.getInstance().getDatabase().getInvoicesByEmail(email);
         if (result == null || result.size() == 0) {
             sendError(textChannel, author, "nenhuma compra cadastrada no email `" + email + "`.");
             deleteAfter(10, message);
