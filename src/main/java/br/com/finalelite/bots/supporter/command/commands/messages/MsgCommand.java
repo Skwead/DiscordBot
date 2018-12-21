@@ -28,7 +28,7 @@ public class MsgCommand extends Command {
     }
 
     static {
-        addPlaceHolder("user-mention", (ticket, author, message, channel, guild) -> {
+        addPlaceHolder("user_mention", (ticket, author, message, channel, guild) -> {
             if (ticket == null)
                 return "";
             else
