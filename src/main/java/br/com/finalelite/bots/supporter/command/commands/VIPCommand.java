@@ -22,7 +22,7 @@ public class VIPCommand extends Command {
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         Ticket ticket;
         try {
-            ticket = Main.getDb().getTicketByChannelId(textChannel.getId());
+            ticket = Main.getDatabase().getTicketByChannelId(textChannel.getId());
         } catch (SQLException e) {
             e.printStackTrace();
             return;
@@ -46,19 +46,19 @@ public class VIPCommand extends Command {
         }
         try {
             val id = Long.parseLong(args[0]);
-            val invoice = Main.getDb().getInvoiceById(id);
+            val invoice = Main.getDatabase().getInvoiceById(id);
             if (invoice == null) {
                 sendError(textChannel, author, "compra não encontrada. Para dar paid em um VIP, use `!vip <id da compra>`.", 10);
                 message.delete().complete();
                 return;
             }
-            val result = Main.getDb().registerVIP(user.getId(), invoice.getId());
+            val result = Main.getDatabase().registerVIP(user.getId(), invoice.getId());
             if (result == 1) {
                 sendError(textChannel, author, "informações já usadas para ativar um VIP.", 15);
                 message.delete().complete();
                 return;
             }
-//            Main.getDb().setInvoicePaid(id);
+//            Main.getDatabase().setInvoicePaid(id);
             guild.getController().addRolesToMember(guild.getMemberById(user.getId()), guild.getRoleById(invoice.getVip().getRoleId())).complete();
             sendSuccess(textChannel, author, String.format("VIP ativado para a compra ID `%d`.", id));
             message.delete().complete();

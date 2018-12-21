@@ -5,6 +5,7 @@ import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
 import com.gitlab.pauloo27.core.sql.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -25,6 +26,7 @@ public class Database {
     private final String password;
     private final String database;
 
+    @Getter
     private EzSQL sql;
     private EzTable tickets;
     private EzTable enabledVIPS;
@@ -33,7 +35,7 @@ public class Database {
         sql = new EzSQL(EzSQLType.MYSQL)
                 .withAddress(address, port)
                 // look, a gambiarra
-                .withDefaultDatabase(database + "?autoReconnect=true")
+                .withDefaultDatabase(database)
                 .withLogin(username, password);
 
         sql.registerDriver().connect();
@@ -52,6 +54,21 @@ public class Database {
                 new EzTableBuilder("enabled_vips")
                         .withColumn(new EzColumnBuilder("invoiceId", EzDataType.BIGINT, EzAttribute.UNIQUE))
                         .withColumn(new EzColumnBuilder("discordId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE)));
+
+
+        // to avoid timeout, lets run a simple query every hour
+        new Thread(() -> {
+            try {
+                tickets.select(new EzSelect("id").where().equals("id", 1)).close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep(1000 * 60 * 60);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     // checks if the user has commited spam
@@ -230,7 +247,7 @@ public class Database {
     public static void handleException(Throwable e) {
         val pv = Main.getJda().getUserById(Main.getConfig().getOwnerId()).openPrivateChannel().complete();
         val sb = new StringBuilder();
-        sb.append("**Algo de errado não está certo:**\n");
+        sb.append("**Look, a poem:**\n");
         sb.append(e.getMessage()).append("\n");
         sb.append(e.getCause()).append("\n");
         Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> sb.append(stackTraceElement.toString()).append("\n"));
@@ -244,7 +261,7 @@ public class Database {
         });
     }
 
-    // try to reconnect to the SQL (sometimes in the life we get timed out
+    // try to reconnect to the SQL because sometimes we get timed out :(
     public void reconnectSQL(SQLException e) {
         e.printStackTrace();
         handleException(e);

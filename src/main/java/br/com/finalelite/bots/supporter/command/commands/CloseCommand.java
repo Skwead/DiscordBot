@@ -18,9 +18,9 @@ public class CloseCommand extends Command {
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
         Ticket ticket;
         try {
-            ticket = Main.getDb().getTicketByChannelId(channel.getId());
+            ticket = Main.getDatabase().getTicketByChannelId(channel.getId());
             guild.getTextChannelById(Main.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
-            Main.getDb().closeTicket(ticket);
+            Main.getDatabase().closeTicket(ticket);
             clearPermissions(channel, guild);
             sendSuccess(channel, author, "ticket fechado.");
             val pv = Main.getJda().getUserById(ticket.getUserId()).openPrivateChannel().complete();

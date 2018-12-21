@@ -25,7 +25,7 @@ public class GetDiscordCommand extends Command {
 
         try {
             val id = Long.parseLong(args[0]);
-            sendSuccess(textChannel, author, String.format("o Discord de `%d` é <@%s> (`%s`).", id, Main.getDb().getDiscordIdByInvoiceId(id), Main.getDb().getDiscordIdByInvoiceId(id)));
+            sendSuccess(textChannel, author, String.format("o Discord de `%d` é <@%s> (`%s`).", id, Main.getDatabase().getDiscordIdByInvoiceId(id), Main.getDatabase().getDiscordIdByInvoiceId(id)));
         } catch (NumberFormatException e) {
             sendError(textChannel, author, "id inválido. Use `!getdiscord <id>`.", 10);
             message.delete().complete();

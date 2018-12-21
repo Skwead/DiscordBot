@@ -22,7 +22,7 @@ public class InvoicesCommand extends Command {
             return;
         }
         val email = args[0];
-        val result = Main.getDb().getInvoicesByEmail(email);
+        val result = Main.getDatabase().getInvoicesByEmail(email);
         if (result == null || result.size() == 0) {
             sendError(textChannel, author, "nenhuma compra cadastrada no email `" + email + "`.");
             deleteAfter(10, message);

@@ -25,7 +25,7 @@ public class GetNickCommand extends Command {
 
         try {
             val id = Long.parseLong(args[0]);
-            sendSuccess(textChannel, author, String.format("o nick de `%d` é `%s`.", id, Main.getDb().getUsername(id)));
+            sendSuccess(textChannel, author, String.format("o nick de `%d` é `%s`.", id, Main.getDatabase().getUsername(id)));
         } catch (NumberFormatException e) {
             sendError(textChannel, author, "id inválido. Use `!getnick <id>`.", 10);
             message.delete().complete();

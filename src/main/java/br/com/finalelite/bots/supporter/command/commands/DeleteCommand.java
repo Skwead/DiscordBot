@@ -33,7 +33,7 @@ public class DeleteCommand extends Command {
         val log = guild.getTextChannelById(logChannel.getId());
         Ticket ticket;
         try {
-            ticket = Main.getDb().getTicketByChannelId(channel.getId());
+            ticket = Main.getDatabase().getTicketByChannelId(channel.getId());
         } catch (SQLException e) {
             sendError(channel, author, "um erro ocorreu ao tentar deletar o ticket.");
             message.delete().complete();

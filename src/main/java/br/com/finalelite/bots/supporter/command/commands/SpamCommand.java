@@ -20,9 +20,9 @@ public class SpamCommand extends Command {
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
         Ticket ticket;
         try {
-            ticket = Main.getDb().getTicketByChannelId(channel.getId());
+            ticket = Main.getDatabase().getTicketByChannelId(channel.getId());
             guild.getTextChannelById(Main.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
-            Main.getDb().markTicketAsSpam(ticket);
+            Main.getDatabase().markTicketAsSpam(ticket);
             DeleteCommand.deleteTicket(message, guild, channel, author);
         } catch (SQLException e) {
             sendError(channel, author, "um erro ocorreu ao tentar marcar o ticket como spam.");

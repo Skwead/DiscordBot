@@ -38,7 +38,7 @@ public class Main extends ListenerAdapter {
     @Getter
     private static Config config;
     @Getter
-    private static Database db;
+    private static Database database;
     @Getter
     private static CommandHandler commandHandler;
 
@@ -80,10 +80,10 @@ public class Main extends ListenerAdapter {
         loadConfig();
         // belive you or not
 
-        // connect to the db
-        db = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
+        // connect to the database
+        database = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
-            db.connect();
+            database.connect();
             System.out.println("Connected to MySQL.");
         } catch (SQLException | ClassNotFoundException e) {
             // or not
@@ -137,7 +137,6 @@ public class Main extends ListenerAdapter {
             e.printStackTrace();
             System.exit(-2);
         }
-
         // add a handler to the exit event, just to send to the bot owner
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
     }
@@ -205,7 +204,7 @@ public class Main extends ListenerAdapter {
 
         if (channel.getType() == ChannelType.PRIVATE) {
             // lets disable message in the DM
-            channel.sendMessage("Não respondo via DM ainda, por isso, utilize o chat <#" + config.getSupportChannelId() + "> para executar os comandos.").complete();
+            channel.sendMessage("Não respondo via DM ainda, utilize o chat <#" + config.getSupportChannelId() + "> para executar os comandos.").complete();
             return;
         }
 

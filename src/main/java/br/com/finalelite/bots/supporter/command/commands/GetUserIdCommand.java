@@ -24,7 +24,7 @@ public class GetUserIdCommand extends Command {
         }
 
         val email = args[0];
-        val x = Main.getDb().getUserIdByEmail(email);
+        val x = Main.getDatabase().getUserIdByEmail(email);
         if (x == -1) {
             sendError(textChannel, author, String.format("nenhum usuário não registrado com o email `%s`.", email));
             message.delete().complete();

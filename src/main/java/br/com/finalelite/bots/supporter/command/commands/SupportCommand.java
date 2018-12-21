@@ -35,7 +35,7 @@ public class SupportCommand extends Command {
         }
 
         try {
-            if (!Main.getDb().canCreateTicket(author.getId())) {
+            if (!Main.getDatabase().canCreateTicket(author.getId())) {
                 sendError(channel, author, "você não pode criar tickets pois já fez spam.", 10);
                 message.delete().complete();
                 return;
@@ -48,7 +48,7 @@ public class SupportCommand extends Command {
         }
 
         try {
-            if (!Main.getDb().hasOpenedTicket(author.getId())) {
+            if (!Main.getDatabase().hasOpenedTicket(author.getId())) {
                 sendError(channel, author, "você já tem um ticket aberto.", 10);
                 message.delete().complete();
                 return;
@@ -73,7 +73,7 @@ public class SupportCommand extends Command {
 
         try {
             val warnMsg = sendSuccess(channel, author, "aguarde...");
-            var ticket = Main.getDb().createReturningTicket(author.getId(), warnMsg.getId(), subject, newChannel.getId());
+            var ticket = Main.getDatabase().createReturningTicket(author.getId(), warnMsg.getId(), subject, newChannel.getId());
             newChannel.getManager().setName("\uD83D\uDC9A-ticket-" + ticket.getId()).complete();
             val msg = newChannel.sendMessage(new MessageBuilder(
                     ("\nTicket " + ticket.getId() + "\nAssunto: " + subject +
