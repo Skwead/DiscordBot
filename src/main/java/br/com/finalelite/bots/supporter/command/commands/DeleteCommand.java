@@ -42,7 +42,7 @@ public class DeleteCommand extends Command {
                 msg.getAttachments().forEach(attachment -> {
                     try {
                         val id = index.getAndIncrement();
-                        log.sendFile(attachment.getInputStream(), attachment.getFileName(), new MessageBuilder(String.format("Ticket %d: %d", ticket.getId(), id)).build()).complete();
+                        log.sendFile(attachment.getInputStream(), attachment.getFileName(), new MessageBuilder(String.format("**Anexo >** Ticket %d: %d", ticket.getId(), id)).build()).complete();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
