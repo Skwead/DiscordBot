@@ -34,7 +34,6 @@ public class Database {
     public void connect() throws SQLException, ClassNotFoundException {
         sql = new EzSQL(EzSQLType.MYSQL)
                 .withAddress(address, port)
-                // look, a gambiarra
                 .withDefaultDatabase(database)
                 .withLogin(username, password);
 
@@ -67,7 +66,7 @@ public class Database {
         } catch (SQLException e) {
             reconnectSQL(e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                canCreateTicket(userId);
+                return canCreateTicket(userId);
         }
         return false;
     }
@@ -88,7 +87,7 @@ public class Database {
         } catch (SQLException e) {
             reconnectSQL(e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                createReturningTicket(userId, messageId, subject, channelId);
+                return createReturningTicket(userId, messageId, subject, channelId);
         }
         return null;
     }
@@ -107,7 +106,7 @@ public class Database {
         } catch (SQLException e) {
             reconnectSQL(e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                getTicketByChannelId(channelId);
+                return getTicketByChannelId(channelId);
         }
         return null;
     }
