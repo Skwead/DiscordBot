@@ -4,6 +4,8 @@ import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.*;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigCommand;
+import br.com.finalelite.bots.supporter.command.commands.relations.LinkAccountCommand;
+import br.com.finalelite.bots.supporter.command.commands.relations.RelationsRepository;
 import br.com.finalelite.bots.supporter.utils.Config;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import br.com.finalelite.bots.supporter.utils.Database;
@@ -120,6 +122,8 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new InvoicesCommand());
+        commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
+
         // \o/
 
         // try to connect to Discord
