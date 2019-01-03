@@ -122,7 +122,8 @@ public class Main extends ListenerAdapter {
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new InvoicesCommand());
-        commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
+        // command disabled until the myocardium is released
+        // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
 
         // \o/
 
