@@ -140,7 +140,7 @@ public class Supporter extends ListenerAdapter {
             jda.addEventListener(this);
             val guild = jda.getGuilds().get(0);
             System.out.println("Members: " + guild.getMembers().size());
-            System.out.println("With role: " + guild.getMembersWithRoles(guild.getRoleById("519279497997189125")).size());
+            System.out.println("With role: " + guild.getMembersWithRoles(guild.getRoleById("471517313766785035")).size());
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
             e.printStackTrace();
