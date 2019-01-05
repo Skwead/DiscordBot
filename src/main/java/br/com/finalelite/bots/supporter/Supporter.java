@@ -2,14 +2,10 @@ package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.*;
+import br.com.finalelite.bots.supporter.command.commands.captcha.VerifyCommand;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigCommand;
-import br.com.finalelite.bots.supporter.command.commands.relations.LinkAccountCommand;
-import br.com.finalelite.bots.supporter.command.commands.relations.RelationsRepository;
-import br.com.finalelite.bots.supporter.utils.Config;
-import br.com.finalelite.bots.supporter.utils.ConfigManager;
-import br.com.finalelite.bots.supporter.utils.Database;
-import br.com.finalelite.bots.supporter.utils.Presence;
+import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
@@ -31,7 +27,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Supporter extends ListenerAdapter {
 
@@ -45,6 +43,11 @@ public class Supporter extends ListenerAdapter {
     private Database database;
     @Getter
     private CommandHandler commandHandler;
+    @Getter
+    private Captcha captcha = new Captcha();
+    @Getter
+    private Map<String, Integer> channelsToRemove = new HashMap<>();
+
 
     public Supporter() {
         instance = this;
@@ -60,7 +63,10 @@ public class Supporter extends ListenerAdapter {
                     .presence(new Presence(Game.GameType.DEFAULT, "Here to help", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
                     .welcomeMessage("Welcome to the party.")
                     .supportChannelId("32123")
+                    .verifyChannelId("222")
                     .adminRoleId("1337")
+                    .verifiedRoleId("123333")
+                    .captchaCategoryId("1233111")
                     .messages(messages)
                     .staffChannelId("31231123")
                     .categoryId("12345")
@@ -106,6 +112,24 @@ public class Supporter extends ListenerAdapter {
         // create a command handler with '!' as prefix
         commandHandler = new CommandHandler("!");
 
+        // try to connect to Discord
+        try {
+            jda = new JDABuilder(config.getToken()).build().awaitReady();
+            System.out.println("Logged.");
+            if (jda.getGuilds().size() == 0)
+                System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
+            else if (jda.getGuilds().size() > 1)
+                shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
+            jda.getPresence().setGame(config.getPresence().toGame());
+            jda.addEventListener(this);
+        } catch (InterruptedException | LoginException e) {
+            System.out.println("Cannot login.");
+            e.printStackTrace();
+            System.exit(-2);
+        }
+        // add a handler to the exit event, just to send to the bot owner
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
+
         // register many commands
         commandHandler.registerCommand(new SayCommand());
         commandHandler.registerCommand(new SupportCommand());
@@ -125,28 +149,42 @@ public class Supporter extends ListenerAdapter {
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new InvoicesCommand());
+        commandHandler.registerCommand(new VerifyCommand());
         // command disabled until the myocardium is released
         // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
 
         // \o/
 
-        // try to connect to Discord
-        try {
-            jda = new JDABuilder(config.getToken()).build().awaitReady();
-            System.out.println("Logged.");
-            if (jda.getGuilds().size() == 0)
-                System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
-            else if (jda.getGuilds().size() > 1)
-                shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
-            jda.getPresence().setGame(config.getPresence().toGame());
-            jda.addEventListener(this);
-        } catch (InterruptedException | LoginException e) {
-            System.out.println("Cannot login.");
-            e.printStackTrace();
-            System.exit(-2);
-        }
-        // add a handler to the exit event, just to send to the bot owner
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
+        // thread to auto close captchas
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000 * 20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (channelsToRemove.isEmpty())
+                    continue;
+
+                val newList = new HashMap<>(channelsToRemove);
+                channelsToRemove.forEach((channelId, createIn) -> {
+                    val c = getJda().getTextChannelById(channelId);
+                    if (c == null)
+                        return;
+
+                    val now = new Date();
+                    if (now.getTime() / 1000 >= createIn + 5 * 60) {
+                        c.delete().complete();
+                        val channel = jda.getTextChannelById(getConfig().getVerifyChannelId());
+                        channel.getGuild().getController().kick(channel.getGuild().getMemberById(getDatabase().getCaptchaUserIdByChannelId(channelId)), "Tempo limite.").complete();
+                        getDatabase().setCaptchaStatus(channelId, (byte) -3);
+                        newList.remove(channelId);
+                    }
+                });
+                channelsToRemove = newList;
+            }
+        }).start();
     }
 
 
@@ -219,19 +257,10 @@ public class Supporter extends ListenerAdapter {
         // okay, if it's not a private channel, so its a text channel, right?
         val parent = textChannel.getParent();
 
-        // check if there's a parent category
-        if (parent == null)
-            return;
-
-        // check if the bot have to handle something in this channel
-        // the bot have to handle things in the support channel, in the staff channel (used by staff to test the bot), in the main category and in the closed category
-        if ((!channel.getId().equals(config.getSupportChannelId()) && !channel.getId().equals(config.getStaffChannelId())) &&
-                (!parent.getId().equals(config.getCategoryId()) && !parent.getId().equals(config.getClosedCategoryId())))
-            return;
-
         // okay, lets handle the command. If this is a invalid command and it's executed in the support channel, delete this spam message
-        if (!commandHandler.handle(event) && channel.getId().equals(config.getSupportChannelId()))
+        if (!commandHandler.handle(event) && channel.getId().equals(config.getSupportChannelId())) {
             message.delete().complete();
+        }
     }
 
 }
