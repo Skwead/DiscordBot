@@ -32,8 +32,7 @@ public class Database {
     public void connect() throws SQLException, ClassNotFoundException {
         sql = new EzSQL(EzSQLType.MYSQL)
                 .withAddress(address, port)
-                // look, a gambiarra
-                .withDefaultDatabase(database + "?autoReconnect=true")
+                .withDefaultDatabase(database)
                 .withLogin(username, password);
 
         sql.registerDriver().connect();
