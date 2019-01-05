@@ -70,28 +70,30 @@ public class CommandHandler {
             return false;
         }
 
-        // check if its usable in staff channel
-        if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.isUsableInStaffChannel()) {
-            System.out.println("CODE 3");
-            return false;
-        }
+        if (!executedCommand.getType().isDisableChannelCheck()) {
+            // check if its usable in staff channel
+            if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.getType().isUsableInStaffChannel()) {
+                System.out.println("CODE 3");
+                return false;
+            }
 
-        // check if its usable in support channel
-        if (textChannel.getId().equals(supporter.getConfig().getSupportChannelId()) && !executedCommand.isUsableInSupportChannel()) {
-            System.out.println("CODE 4");
-            return false;
-        }
+            // check if its usable in support channel
+            if (textChannel.getId().equals(supporter.getConfig().getSupportChannelId()) && !executedCommand.getType().isUsableInSupportChannel()) {
+                System.out.println("CODE 4");
+                return false;
+            }
 
-        // check if its usable in the main category
-        if (parent.getId().equals(supporter.getConfig().getCategoryId()) && !executedCommand.isUsableInOpenedCategory()) {
-            System.out.println("CODE 5");
-            return false;
-        }
+            // check if its usable in the main category
+            if (parent.getId().equals(supporter.getConfig().getCategoryId()) && !executedCommand.getType().isUsableInOpenedCategory()) {
+                System.out.println("CODE 5");
+                return false;
+            }
 
-        // check if its usable in closed category
-        if (parent.getId().equals(supporter.getConfig().getClosedCategoryId()) && !executedCommand.isUsableInClosedCategory()) {
-            System.out.println("CODE 6");
-            return false;
+            // check if its usable in closed category
+            if (parent.getId().equals(supporter.getConfig().getClosedCategoryId()) && !executedCommand.getType().isUsableInClosedCategory()) {
+                System.out.println("CODE 6");
+                return false;
+            }
         }
 
         System.out.println("CODE 0");
