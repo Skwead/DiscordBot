@@ -4,8 +4,6 @@ import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.*;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigCommand;
-import br.com.finalelite.bots.supporter.command.commands.relations.LinkAccountCommand;
-import br.com.finalelite.bots.supporter.command.commands.relations.RelationsRepository;
 import br.com.finalelite.bots.supporter.utils.Config;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import br.com.finalelite.bots.supporter.utils.Database;
@@ -140,6 +138,9 @@ public class Supporter extends ListenerAdapter {
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
             jda.getPresence().setGame(config.getPresence().toGame());
             jda.addEventListener(this);
+            val guild = jda.getGuilds().get(0);
+            System.out.println("Members: " + guild.getMembers().size());
+            System.out.println("With role: " + guild.getMembersWithRoles(guild.getRoleById("519279497997189125")).size());
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
             e.printStackTrace();
