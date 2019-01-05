@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -11,7 +12,12 @@ import java.sql.SQLException;
 
 public class CloseCommand extends Command {
     public CloseCommand() {
-        super("fechar", "fecha o ticket", CommandPermission.EVERYONE, false, true, false, false);
+        super(
+                "fechar",
+                "fecha o ticket",
+                CommandPermission.EVERYONE,
+                CommandType.OPENED_TICKET_MANAGEMENT
+        );
     }
 
     @Override
@@ -33,6 +39,7 @@ public class CloseCommand extends Command {
             e.printStackTrace();
         }
     }
+
     private void clearPermissions(MessageChannel channel, Guild guild) {
         val targetChannel = guild.getTextChannelById(channel.getId());
         targetChannel.getManager()

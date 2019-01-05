@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import lombok.val;
 import lombok.var;
@@ -15,7 +16,12 @@ import java.util.Collections;
 
 public class DeleteCommand extends Command {
     public DeleteCommand() {
-        super("deletar", "deleta o ticket, enviando para o canal de logs", CommandPermission.STAFF, false, false, true, false);
+        super(
+                "deletar",
+                "deleta o ticket, enviando para o canal de logs",
+                CommandPermission.STAFF,
+                CommandType.CLOSED_TICKET_MANAGEMENT
+        );
     }
 
     @Override

@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
@@ -15,7 +16,12 @@ import java.sql.SQLException;
 public class VIPCommand extends Command {
 
     public VIPCommand() {
-        super("vip", "ativa o VIP para o usuário a partir do ID da compra", CommandPermission.MAJOR_STAFF, false, true, true, true);
+        super(
+                "vip",
+                "ativa o VIP para o usuário a partir do ID da compra",
+                CommandPermission.MAJOR_STAFF,
+                CommandType.TICKET_MANAGEMENT_AND_STAFF
+        );
     }
 
     @Override

@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.relations;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -14,12 +15,9 @@ public class LinkAccountCommand extends Command {
     public LinkAccountCommand(RelationsRepository repository) {
         super(
                 "vincular",
-                "Gera um código de vinculação da conta do Discord com o Minecraft.",
+                "gera um código de vinculação da conta do Discord com o Minecraft",
                 CommandPermission.EVERYONE,
-                true,
-                true,
-                true,
-                true
+                CommandType.SUPPORT_MANAGEMENT
         );
 
         this.repository = repository;

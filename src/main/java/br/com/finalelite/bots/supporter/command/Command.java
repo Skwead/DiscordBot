@@ -10,10 +10,7 @@ public abstract class Command {
     private final String name;
     private final String description;
     private final CommandPermission permission;
-    private final boolean usableInSupportChannel;
-    private final boolean usableInOpenedCategory;
-    private final boolean usableInClosedCategory;
-    private final boolean usableInStaffChannel;
+    private final CommandType type;
 
     public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
 

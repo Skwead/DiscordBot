@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -12,7 +13,12 @@ import net.dv8tion.jda.core.entities.User;
 public class SetNickCommand extends Command {
 
     public SetNickCommand() {
-        super("setnick", "muda o nick do usuário no cadastro do site", CommandPermission.MAJOR_STAFF, false, true, true, true);
+        super(
+                "setnick",
+                "muda o nick do usuário no cadastro do site",
+                CommandPermission.MAJOR_STAFF,
+                CommandType.TICKET_MANAGEMENT_AND_STAFF
+        );
     }
 
     @Override

@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import br.com.finalelite.bots.supporter.utils.ConfigManager;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -12,7 +13,12 @@ import java.util.stream.Collectors;
 
 public class PresenceCommand extends Command {
     public PresenceCommand() {
-        super("jogando", "muda a presença do bot", CommandPermission.MAJOR_STAFF, false, false, false, true);
+        super(
+                "jogando",
+                "muda a presença do bot",
+                CommandPermission.MAJOR_STAFF,
+                CommandType.STAFF
+        );
     }
 
     @Override

@@ -3,6 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 import br.com.finalelite.bots.supporter.Main;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -11,7 +12,12 @@ import net.dv8tion.jda.core.entities.User;
 
 public class InvoicesCommand extends Command {
     public InvoicesCommand() {
-        super("compras", "lista as compras feitas pelo usuário a partir do email", CommandPermission.STAFF, false, true, true, true);
+        super(
+                "compras",
+                "lista as compras feitas pelo usuário a partir do email",
+                CommandPermission.STAFF,
+                CommandType.TICKET_MANAGEMENT_AND_STAFF
+        );
     }
 
     @Override

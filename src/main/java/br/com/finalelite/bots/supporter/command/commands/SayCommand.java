@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.CommandType;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -12,7 +13,12 @@ public class SayCommand extends Command {
 
 
     public SayCommand() {
-        super("say", "faz o bot enviar uma mensagem", CommandPermission.MAJOR_STAFF, true, true, true, true);
+        super(
+                "say",
+                "faz o bot enviar uma mensagem",
+                CommandPermission.MAJOR_STAFF,
+                CommandType.DEFAULT
+        );
     }
 
     @Override
