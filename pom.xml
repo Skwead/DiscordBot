@@ -103,7 +103,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>br.com.finalelite.bots.supporter.Main</mainClass>
+                                    <mainClass>br.com.finalelite.bots.supporter.Bootstrap</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

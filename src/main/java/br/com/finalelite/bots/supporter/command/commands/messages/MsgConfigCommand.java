@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands.messages;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -43,7 +43,7 @@ public class MsgConfigCommand extends Command {
         }
 
         if (action.equalsIgnoreCase("remover")) {
-            val config = Main.getConfig();
+            val config = Supporter.getInstance().getConfig();
             config.getMessages().remove(shortcut);
             ConfigManager.saveConfigToFile(config);
             sendSuccess(textChannel, author, String.format("mensagem `%s` removida com sucesso.", shortcut));
@@ -59,7 +59,7 @@ public class MsgConfigCommand extends Command {
         val text = Arrays.stream(args).skip(2).collect(Collectors.joining(" ")).replace("\\n", "\n");
 
         if (action.equalsIgnoreCase("add")) {
-            val config = Main.getConfig();
+            val config = Supporter.getInstance().getConfig();
             if (config.getMessages().containsKey(shortcut)) {
                 message.delete().complete();
                 sendError(textChannel, author, String.format("uma mensagem já existe com o atalho `%s`, Use `!msgconfig editar` para editar ou `!msgconfig remover` para apagar.", shortcut));
@@ -73,7 +73,7 @@ public class MsgConfigCommand extends Command {
         }
 
         if (action.equalsIgnoreCase("editar")) {
-            val config = Main.getConfig();
+            val config = Supporter.getInstance().getConfig();
             if (!config.getMessages().containsKey(shortcut)) {
                 message.delete().complete();
                 sendError(textChannel, author, String.format("não foi encontrada uma mensagem com o atalho `%s`. Use `!msgconfig add` para criar uma.", shortcut));

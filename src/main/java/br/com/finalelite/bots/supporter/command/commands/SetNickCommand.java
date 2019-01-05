@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -32,7 +32,7 @@ public class SetNickCommand extends Command {
         val newName = args[1];
         try {
             val id = Long.parseLong(args[0]);
-            val result = Main.getDb().setUsername(id, newName);
+            val result = Supporter.getInstance().getDatabase().setUsername(id, newName);
             if (result == 1) {
                 sendError(textChannel, author, String.format("o nick `%s` já está em uso.", newName));
                 return;

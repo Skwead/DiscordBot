@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -23,7 +23,7 @@ public class HelpCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val sb = new StringBuilder();
-        Main.getCommandHandler().getCommandMap().values().forEach(command ->
+        Supporter.getInstance().getCommandHandler().getCommandMap().values().forEach(command ->
                 sb.append("\n   - **!").append(command.getName()).append("**: ").append(command.getDescription()));
         sendSuccess(textChannel, author, "Comandos: " + sb.toString());
     }

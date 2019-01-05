@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -28,7 +28,7 @@ public class RenameCommand extends Command {
         if (text.isEmpty()) {
             sendError(textChannel, author, "use `!renomear <nome>`.", 10);
         }
-        if (textChannel.getParent().getId().equals(Main.getConfig().getCategoryId()))
+        if (textChannel.getParent().getId().equals(Supporter.getInstance().getConfig().getCategoryId()))
             textChannel.getManager().setName("\uD83D\uDC9A-ticket-" + text.replace(" ", "-")).complete();
         else if (textChannel.getName().startsWith("\uD83D\uDDA4")) {
             textChannel.getManager().setName("\uD83D\uDDA4-ticket-" + text.replace(" ", "-")).complete();

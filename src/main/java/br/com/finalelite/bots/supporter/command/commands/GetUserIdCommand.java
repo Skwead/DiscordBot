@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -30,7 +30,7 @@ public class GetUserIdCommand extends Command {
         }
 
         val email = args[0];
-        val x = Main.getDb().getUserIdByEmail(email);
+        val x = Supporter.getInstance().getDatabase().getUserIdByEmail(email);
         if (x == -1) {
             sendError(textChannel, author, String.format("nenhum usuário não registrado com o email `%s`.", email));
             message.delete().complete();

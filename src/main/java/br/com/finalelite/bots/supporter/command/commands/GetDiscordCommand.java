@@ -1,6 +1,6 @@
 package br.com.finalelite.bots.supporter.command.commands;
 
-import br.com.finalelite.bots.supporter.Main;
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
@@ -31,7 +31,7 @@ public class GetDiscordCommand extends Command {
 
         try {
             val id = Long.parseLong(args[0]);
-            sendSuccess(textChannel, author, String.format("o Discord de `%d` é <@%s> (`%s`).", id, Main.getDb().getDiscordIdByInvoiceId(id), Main.getDb().getDiscordIdByInvoiceId(id)));
+            sendSuccess(textChannel, author, String.format("o Discord de `%d` é <@%s> (`%s`).", id, Supporter.getInstance().getDatabase().getDiscordIdByInvoiceId(id), Supporter.getInstance().getDatabase().getDiscordIdByInvoiceId(id)));
         } catch (NumberFormatException e) {
             sendError(textChannel, author, "id inválido. Use `!getdiscord <id>`.", 10);
             message.delete().complete();
