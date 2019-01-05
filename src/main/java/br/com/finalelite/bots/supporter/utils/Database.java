@@ -29,6 +29,7 @@ public class Database {
     @Getter
     private EzSQL sql;
     private EzTable tickets;
+    private EzTable captchas;
     private EzTable enabledVIPS;
 
     public void connect() throws SQLException, ClassNotFoundException {
@@ -54,14 +55,67 @@ public class Database {
                         .withColumn(new EzColumnBuilder("invoiceId", EzDataType.BIGINT, EzAttribute.UNIQUE))
                         .withColumn(new EzColumnBuilder("discordId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE)));
 
+        captchas = sql.createIfNotExists(
+                new EzTableBuilder("captchas")
+                        .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
+                        .withColumn(new EzColumnBuilder("channelId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE))
+                        .withColumn(new EzColumnBuilder("status", EzDataType.TINYINT).withDefaultValue(0))
+                        .withColumn(new EzColumnBuilder("userId", EzDataType.VARCHAR, 64)));
+    }
+
+    public byte createCaptcha(String userId, String channelId) {
+        try {
+            captchas.insertAndClose(new EzInsert("userId, channelId", userId, channelId));
+            return 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public String getCaptchaUserIdByChannelId(String channelId) {
+        try (val rs = captchas.select(new EzSelect("userId").where().equals("channelId", channelId)).getResultSet()) {
+            if (rs.next())
+                return rs.getString("userId");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getCaptchaChannelIdByUserId(String userId) {
+        try (val rs = captchas.select(new EzSelect("channelId")
+                .where().equals("userId", userId)
+                .and().equals("status", 0)).getResultSet()) {
+            if (rs.next())
+                return rs.getString("channelId");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void setCaptchaStatus(String channelId, byte status) {
+        try {
+            captchas.update(new EzUpdate().set("status", status).where().equals("channelId", channelId)).close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeCaptchaByChannelId(String channelId) {
+        try {
+            captchas.delete(new EzDelete().where().equals("channelId", channelId)).close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // checks if the user has committed spam
     public boolean canCreateTicket(String userId) {
-        try {
-            val rs = tickets.select(new EzSelect("userId")
-                    .where().equals("userId", userId)
-                    .and().equals("status", TicketStatus.SPAM.ordinal())).getResultSet();
+        try (val rs = tickets.select(new EzSelect("userId")
+                .where().equals("userId", userId)
+                .and().equals("status", TicketStatus.SPAM.ordinal())).getResultSet()) {
             return !rs.next();
         } catch (SQLException e) {
             reconnectSQL(e);
@@ -74,7 +128,6 @@ public class Database {
     // creates a ticket and return a instance
     public Ticket createReturningTicket(String userId, String messageId, String subject, String channelId) {
         try {
-
             tickets.insert(new EzInsert("userId, subject, channelId, status, messageId", userId, subject, channelId, TicketStatus.OPENED.ordinal(), messageId)).close();
             val rs = tickets.select(new EzSelect("id")
                     .where().equals("channelId", channelId)
@@ -94,9 +147,8 @@ public class Database {
 
     // gets the ticket by the channel id
     public Ticket getTicketByChannelId(String channelId) {
-        try {
-            val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
-                    .where().equals("channelId", channelId)).getResultSet();
+        try (val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
+                .where().equals("channelId", channelId)).getResultSet()) {
             if (!rs.next())
                 return null;
             val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), rs.getString("messageId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
@@ -136,10 +188,9 @@ public class Database {
 
     // checks if the user has an opened ticket
     public boolean hasOpenedTicket(String userId) {
-        try {
-            val rs = tickets.select(new EzSelect("userId")
-                    .where().equals("userId", userId)
-                    .and().equals("status", TicketStatus.OPENED.ordinal())).getResultSet();
+        try (val rs = tickets.select(new EzSelect("userId")
+                .where().equals("userId", userId)
+                .and().equals("status", TicketStatus.OPENED.ordinal())).getResultSet()) {
             return !rs.next();
         } catch (SQLException e) {
             reconnectSQL(e);
@@ -152,8 +203,7 @@ public class Database {
     // gets the invoices by an email
     public List<Invoice> getInvoicesByEmail(String email) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE user_id  = (SELECT id from finalelite.users WHERE email = ?)");
+        try (val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE user_id  = (SELECT id from finalelite.users WHERE email = ?)")) {
             st.setString(1, email);
             val rs = st.executeQuery();
             val invoices = new ArrayList<Invoice>();
@@ -172,8 +222,7 @@ public class Database {
     // gets a invoice by its id
     public Invoice getInvoiceById(long id) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE id  = ?");
+        try (val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE id  = ?")) {
             st.setLong(1, id);
             val rs = st.executeQuery();
             if (rs.next())
@@ -189,8 +238,7 @@ public class Database {
     // set the invoice paid status to true (or 1)
     public void setInvoicePaid(long id) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("UPDATE finalelite.invoices SET paid = 1 WHERE id  = ?");
+        try (val st = connection.prepareStatement("UPDATE finalelite.invoices SET paid = 1 WHERE id  = ?")) {
             st.setLong(1, id);
             st.executeUpdate();
         } catch (SQLException e) {
@@ -203,8 +251,7 @@ public class Database {
     // changes the username used in the site
     public byte setUsername(long id, String name) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("UPDATE finalelite.users SET username = ? WHERE id  = ?");
+        try (val st = connection.prepareStatement("UPDATE finalelite.users SET username = ? WHERE id  = ?")) {
             st.setString(1, name);
             st.setLong(2, id);
             st.executeUpdate();
@@ -222,8 +269,7 @@ public class Database {
     // gets the username
     public String getUsername(long id) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("SELECT username FROM finalelite.users WHERE id  = ?");
+        try (val st = connection.prepareStatement("SELECT username FROM finalelite.users WHERE id  = ?")) {
             st.setLong(1, id);
             val rs = st.executeQuery();
             if (rs.next())
@@ -239,8 +285,7 @@ public class Database {
     // gets the discord used to active an invoice
     public String getDiscordIdByInvoiceId(long invoiceId) {
         val connection = sql.getConnection();
-        try {
-            val st = connection.prepareStatement("SELECT discordId FROM enabled_vips WHERE invoiceId  = ?");
+        try (val st = connection.prepareStatement("SELECT discordId FROM enabled_vips WHERE invoiceId  = ?")) {
             st.setLong(1, invoiceId);
             val rs = st.executeQuery();
             if (rs.next())
@@ -257,7 +302,7 @@ public class Database {
     // registers a vip to a invoice (to avoid 2 people to use the same invoice)
     public byte registerVIP(String discordId, long invoiceId) {
         try {
-            enabledVIPS.insert(new EzInsert("discordId, invoiceId", discordId, invoiceId));
+            enabledVIPS.insertAndClose(new EzInsert("discordId, invoiceId", discordId, invoiceId));
             return 0;
         } catch (SQLException e) {
             // haha, someone trying to use the same invoice to get the VIP?
@@ -272,8 +317,7 @@ public class Database {
 
     // gets the user id by the email used in the site
     public long getUserIdByEmail(String email) {
-        try {
-            val st = sql.getConnection().prepareStatement("SELECT id from finalelite.users WHERE email = ?");
+        try (val st = sql.getConnection().prepareStatement("SELECT id from finalelite.users WHERE email = ?")) {
             st.setString(1, email);
             val rs = st.executeQuery();
             if (rs.next())
