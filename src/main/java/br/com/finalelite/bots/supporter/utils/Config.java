@@ -14,6 +14,8 @@ public class Config {
     private final String adminRoleId;
     private final String welcomeMessage;
     private final String supportChannelId;
+    private final String captchaCategoryId;
+    private final String verifiedRoleId;
     private final String staffChannelId;
     private final String categoryId;
     private final String vipTitanId;
