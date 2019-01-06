@@ -139,8 +139,37 @@ public class Supporter extends ListenerAdapter {
             jda.getPresence().setGame(config.getPresence().toGame());
             jda.addEventListener(this);
             val guild = jda.getGuilds().get(0);
+            val role = guild.getRoleById("471517313766785035");
+            val members = guild.getMembersWithRoles();
             System.out.println("Members: " + guild.getMembers().size());
-            System.out.println("With role: " + guild.getMembersWithRoles(guild.getRoleById("471517313766785035")).size());
+            System.out.println("With role: " + members.size());
+            val controller = guild.getController();
+            new Thread(() -> {
+                int count = 0;
+                while (count < members.size()) {
+                    val member = members.get(count);
+                    System.out.print("Now: " + member.getAsMention() + ": ");
+                    if (member.getRoles().size() == 1) {
+                        System.out.println("Removed.");
+                        controller.removeRolesFromMember(member, role).complete();
+                    } else {
+                        System.out.println("Not Removed. Roles: " + member.getRoles().size());
+                    }
+
+                    count++;
+
+                    System.out.println("Status: " + count + "/" + members.size());
+
+                    if (count % 20 == 0) {
+                        try {
+                            Thread.sleep(1000 * 5);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }).start();
         } catch (InterruptedException | LoginException e) {
             System.out.println("Cannot login.");
             e.printStackTrace();
