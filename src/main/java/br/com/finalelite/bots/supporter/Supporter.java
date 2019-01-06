@@ -149,6 +149,7 @@ public class Supporter extends ListenerAdapter {
         commandHandler.registerCommand(new GetNickCommand());
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
+        commandHandler.registerCommand(new PingCommand());
         commandHandler.registerCommand(new InvoicesCommand());
         commandHandler.registerCommand(new VerifyCommand());
         // command disabled until the myocardium is released
