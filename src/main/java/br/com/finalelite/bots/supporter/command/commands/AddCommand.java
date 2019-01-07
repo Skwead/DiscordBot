@@ -36,6 +36,7 @@ public class AddCommand extends Command {
         }
 
         addUser(textChannel, target);
+        sendSuccess(textChannel, author, target.getAsMention() + " foi adicionado.");
     }
 
     public static void addUser(TextChannel channel, Member user) {

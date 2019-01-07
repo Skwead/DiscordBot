@@ -33,6 +33,7 @@ public class RemoveCommand extends Command {
         }
 
         removeUser(textChannel, target);
+        sendSuccess(textChannel, author, target.getAsMention() + " foi removido.");
     }
 
     public static void removeUser(TextChannel channel, Member user) {
