@@ -80,7 +80,7 @@ public class CommandHandler {
             }
 
             // check if its usable in the main category
-            if (parent.getId().equals(supporter.getConfig().getCategoryId()) && !executedCommand.getType().isUsableInOpenedCategory()) {
+            if (parent.getId().equals(supporter.getConfig().getSupportCategoryId()) && !executedCommand.getType().isUsableInOpenedCategory()) {
                 SimpleLogger.logMessage(textChannel, author, message, "CODE 5");
                 return false;
             }
