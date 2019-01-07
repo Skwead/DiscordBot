@@ -1,13 +1,12 @@
 package br.com.finalelite.bots.supporter.command;
 
 import br.com.finalelite.bots.supporter.Supporter;
+import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,9 +44,6 @@ public class CommandHandler {
         if (!commands.containsKey(command))
             return false;
 
-        val formatter = new SimpleDateFormat("hh:mm:ss yyyy/MM/dd");
-        System.out.printf("[%s] <%s> %s#%s (%s): %s > ", formatter.format(new Date()), textChannel.getName(), author.getName(), author.getDiscriminator(), author.getId(), message.getContentRaw());
-
         // prepare the arguments
         var rawArgs = rawContent.substring(prefix.length() + command.length()).replaceAll("\\s+", " ");
         var args = new String[0];
@@ -59,44 +55,44 @@ public class CommandHandler {
         // check if its staff only
         if (executedCommand.getPermission() == CommandPermission.STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getStaffRoleId())))) {
             Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
-            System.out.println("CODE 1");
+            SimpleLogger.logMessage(textChannel, author, message, "CODE 1");
             return false;
         }
 
         // check if its major staff
         if (executedCommand.getPermission() == CommandPermission.MAJOR_STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getAdminRoleId())))) {
             Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
-            System.out.println("CODE 2");
+            SimpleLogger.logMessage(textChannel, author, message, "CODE 2");
             return false;
         }
 
         if (!executedCommand.getType().isDisableChannelCheck()) {
             // check if its usable in staff channel
             if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.getType().isUsableInStaffChannel()) {
-                System.out.println("CODE 3");
+                SimpleLogger.logMessage(textChannel, author, message, "CODE 3");
                 return false;
             }
 
             // check if its usable in support channel
             if (textChannel.getId().equals(supporter.getConfig().getSupportChannelId()) && !executedCommand.getType().isUsableInSupportChannel()) {
-                System.out.println("CODE 4");
+                SimpleLogger.logMessage(textChannel, author, message, "CODE 4");
                 return false;
             }
 
             // check if its usable in the main category
             if (parent.getId().equals(supporter.getConfig().getCategoryId()) && !executedCommand.getType().isUsableInOpenedCategory()) {
-                System.out.println("CODE 5");
+                SimpleLogger.logMessage(textChannel, author, message, "CODE 5");
                 return false;
             }
 
             // check if its usable in closed category
             if (parent.getId().equals(supporter.getConfig().getClosedCategoryId()) && !executedCommand.getType().isUsableInClosedCategory()) {
-                System.out.println("CODE 6");
+                SimpleLogger.logMessage(textChannel, author, message, "CODE 6");
                 return false;
             }
         }
 
-        System.out.println("CODE 0");
+        SimpleLogger.logMessage(textChannel, author, message, "CODE 0");
         // if passed it all, finally run the command
         executedCommand.run(message, guild, textChannel, author, args);
 

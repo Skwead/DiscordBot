@@ -83,7 +83,7 @@ public class Supporter extends ListenerAdapter {
                     .sqlDatabase("database")
                     .build();
             ConfigManager.saveConfigToFile(defaultConfig);
-            System.out.println("Default config file created, please, configure and run the bot again.");
+            SimpleLogger.log("Default config file created, please, configure and run the bot again.");
             System.exit(0);
         }
 
@@ -95,10 +95,10 @@ public class Supporter extends ListenerAdapter {
         database = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
             database.connect();
-            System.out.println("Connected to MySQL.");
+            SimpleLogger.log("Connected to MySQL.");
         } catch (SQLException | ClassNotFoundException e) {
             // or not
-            System.out.println("Cannot connect to database.");
+            SimpleLogger.log("Cannot connect to database.");
             e.printStackTrace();
             System.exit(-3);
         }
@@ -115,16 +115,16 @@ public class Supporter extends ListenerAdapter {
         // try to connect to Discord
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();
-            System.out.println("Logged.");
+            SimpleLogger.log("Logged.");
             if (jda.getGuilds().size() == 0)
                 System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
             else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
             jda.getPresence().setGame(config.getPresence().toGame());
             jda.addEventListener(this);
-            System.out.println("Members: " + jda.getGuilds().get(0).getMembers().size());
+            SimpleLogger.log("Members: " + jda.getGuilds().get(0).getMembers().size());
         } catch (InterruptedException | LoginException e) {
-            System.out.println("Cannot login.");
+            SimpleLogger.log("Cannot login.");
             e.printStackTrace();
             System.exit(-2);
         }
@@ -157,7 +157,7 @@ public class Supporter extends ListenerAdapter {
 
         // \o/
 
-        // thread to auto close captchas
+        // thread to auto close idle captchas
         new Thread(() -> {
             while (true) {
                 try {
@@ -195,7 +195,7 @@ public class Supporter extends ListenerAdapter {
     }
 
     public void shutdown(String reason) {
-        System.out.printf("Shutting down. %s%n", reason);
+        SimpleLogger.log(String.format("Shutting down. %s", reason));
         val pv = getJda().getUserById(getConfig().getOwnerId()).openPrivateChannel().complete();
         pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete(); // warn the bot owner
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
@@ -252,12 +252,9 @@ public class Supporter extends ListenerAdapter {
 
         if (channel.getType() == ChannelType.PRIVATE) {
             // lets disable message in the DM
-            channel.sendMessage("Não respondo via DM ainda, utilize o chat <#" + config.getSupportChannelId() + "> para executar os comandos.").complete();
+            channel.sendMessage(String.format("Não respondo via DM ainda, utilize o chat <#%s> para executar os comandos.", config.getSupportChannelId())).complete();
             return;
         }
-
-        // okay, if it's not a private channel, so its a text channel, right?
-        val parent = textChannel.getParent();
 
         // okay, lets handle the command. If this is a invalid command and it's executed in the support channel, delete this spam message
         if (!commandHandler.handle(event) && channel.getId().equals(config.getSupportChannelId())) {
