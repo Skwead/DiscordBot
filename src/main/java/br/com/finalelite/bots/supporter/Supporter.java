@@ -54,34 +54,7 @@ public class Supporter extends ListenerAdapter {
         // create the config if not exists
         val file = new File("config.json");
         if (!file.exists()) {
-            val messages = new HashMap<String, String>();
-            messages.put("welcome", "Hello ${user-mention}, how can we help you today?");
-            messages.put("bye", "Thank you ${user-mention}, we're here to help.");
-            val defaultConfig = Config.builder()
-                    .token("your token")
-                    .ownerId("999123")
-                    .presence(new Presence(Game.GameType.DEFAULT, "Here to help", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
-                    .welcomeMessage("Welcome to the party.")
-                    .supportChannelId("32123")
-                    .verifyChannelId("222")
-                    .adminRoleId("1337")
-                    .verifiedRoleId("123333")
-                    .captchaCategoryId("1233111")
-                    .messages(messages)
-                    .staffChannelId("31231123")
-                    .categoryId("12345")
-                    .closedCategoryId("12345")
-                    .staffRoleId("123")
-                    .vipTitanId("1234")
-                    .vipDuqueId("123123")
-                    .vipLordId("123455")
-                    .vipCondeId("123123")
-                    .sqlAddress("localhost")
-                    .sqlPort(3306)
-                    .sqlUsername("root")
-                    .sqlPassword("1234")
-                    .sqlDatabase("database")
-                    .build();
+            val defaultConfig = Config.builder().build();
             ConfigManager.saveConfigToFile(defaultConfig);
             SimpleLogger.log("Default config file created, please, configure and run the bot again.");
             System.exit(0);
