@@ -26,12 +26,14 @@ public class SayCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        val text = String.join(" ", args);
-        if (text.isEmpty()) {
+        if (args.length == 0) {
             sendError(channel, author, "use `!say <mensagem>`.");
             message.delete().complete();
             return;
         }
+
+        val rawText = message.getContentRaw();
+        val text =  rawText.substring(rawText.indexOf(" "));
 
         System.out.println("`" + text + "`");
         if (message.getAttachments().size() > 0) {
