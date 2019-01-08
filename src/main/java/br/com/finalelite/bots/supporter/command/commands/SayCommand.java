@@ -35,7 +35,6 @@ public class SayCommand extends Command {
         val rawText = message.getContentRaw();
         val text =  rawText.substring(rawText.indexOf(" "));
 
-        System.out.println("`" + text + "`");
         if (message.getAttachments().size() > 0) {
             try {
                 val attachment = message.getAttachments().get(0);
