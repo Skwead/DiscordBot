@@ -37,7 +37,7 @@ public class CommandHandler {
         if (!rawContent.startsWith(prefix)) return false;
 
         // check if the command exists
-        var command = rawContent.substring(prefix.length()).toLowerCase();
+        var command = rawContent.substring(prefix.length()).toLowerCase().replace("\n", " \n");
         if (command.contains(" "))
             command = command.substring(0, command.indexOf(" "));
 
