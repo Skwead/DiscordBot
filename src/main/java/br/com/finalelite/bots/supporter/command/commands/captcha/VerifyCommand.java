@@ -54,9 +54,14 @@ public class VerifyCommand extends Command {
                     .createTextChannel("verificar-" + author.getId())
                     .setParent(guild.getCategoryById(supporter.getConfig().getCaptchaCategoryId()))
                     .setSlowmode(5)
-                    .addPermissionOverride(guild.getMember(author),
-                            Arrays.asList(Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE), null)
                     .complete();
+
+            channel.getManager().sync().complete();
+
+            channel.getManager()
+                    .putPermissionOverride(guild.getMember(author),
+                            Arrays.asList(Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE), null).complete();
+
             supporter.getDatabase().createCaptcha(author.getId(), channel.getId());
 
             val newTextChannel = guild.getTextChannelById(channel.getId());
