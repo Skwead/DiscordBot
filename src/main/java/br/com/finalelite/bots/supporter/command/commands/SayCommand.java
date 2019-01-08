@@ -33,6 +33,8 @@ public class SayCommand extends Command {
             message.delete().complete();
             return;
         }
+
+        System.out.println(message.getAttachments().size());
         if (message.getAttachments().size() > 0) {
             try {
                 val attachment = message.getAttachments().get(0);
