@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.command;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.var;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class CommandHandler {
+    @Getter
     private final String prefix;
 
     private Map<String, Command> commands = new HashMap<>();
