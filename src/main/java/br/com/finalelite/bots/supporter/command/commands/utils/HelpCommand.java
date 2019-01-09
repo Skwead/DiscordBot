@@ -10,7 +10,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,9 +33,11 @@ public class HelpCommand extends Command {
 
         commandMap.values().forEach(command -> {
             val category = command.getCategory();
-            if (commands.containsKey(category))
-                commands.get(category).add(command);
-            else
+            if (commands.containsKey(category)) {
+                val list = commands.get(category);
+                list.add(command);
+                commands.put(category, list);
+            } else
                 commands.put(category, Arrays.asList(command));
         });
 
