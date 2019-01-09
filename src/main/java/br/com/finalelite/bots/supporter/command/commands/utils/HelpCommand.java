@@ -66,7 +66,7 @@ public class HelpCommand extends Command {
             commandList.forEach(command ->
                     sb.append(permissionEmoji.get(command.getPermission())).append(" `").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
-            embed.addBlankField(false);
+            embed.addBlankField(true);
             embed.addField(String.format("\n%s **%s**\n", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
 
