@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,8 +37,11 @@ public class HelpCommand extends Command {
                 val list = commands.get(category);
                 list.add(command);
                 commands.put(category, list);
-            } else
-                commands.put(category, Arrays.asList(command));
+            } else {
+                val list = new ArrayList<Command>();
+                list.add(command);
+                commands.put(category, list);
+            }
         });
 
         val embed = new EmbedBuilder()
