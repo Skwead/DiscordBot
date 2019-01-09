@@ -16,7 +16,6 @@ public class SimpleLogger {
         System.out.printf("[%s] %s%n", formatter.format(new Date()), line);
     }
 
-
     public static void logMessage(TextChannel textChannel, User author, Message message, String status) {
         log(String.format("<%s> %s#%s (%s): %s %s", textChannel.getName(), author.getName(), author.getDiscriminator(), author.getId(), message.getContentRaw(), status));
     }

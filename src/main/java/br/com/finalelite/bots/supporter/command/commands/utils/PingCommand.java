@@ -1,30 +1,29 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
-import lombok.val;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-public class HelpCommand extends Command {
-    public HelpCommand() {
+public class PingCommand extends Command {
+    public PingCommand() {
         super(
-                "ajuda",
-                "lista os comandos",
+                "ping",
+                "retorna a latência do bot.",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT_AND_STAFF
+                CommandType.DEFAULT,
+                DefaultCommandCategory.UTILS.getCategory()
         );
     }
 
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
-        val sb = new StringBuilder();
-        Supporter.getInstance().getCommandHandler().getCommandMap().values().forEach(command ->
-                sb.append("\n   - **!").append(command.getName()).append("**: ").append(command.getDescription()));
-        sendSuccess(textChannel, author, "Comandos: " + sb.toString());
+        sendSuccess(textChannel, author, String.format("o meu ping é %d.", Supporter.getInstance().getJda().getPing()));
+        message.delete().complete();
     }
 }

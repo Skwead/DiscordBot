@@ -1,9 +1,10 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -20,7 +21,8 @@ public class DeleteCommand extends Command {
                 "deletar",
                 "deleta o ticket, enviando para o canal de logs",
                 CommandPermission.STAFF,
-                CommandType.CLOSED_TICKET_MANAGEMENT
+                CommandType.CLOSED_TICKET_MANAGEMENT,
+                DefaultCommandCategory.SUPPORT.getCategory()
         );
     }
 

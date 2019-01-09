@@ -1,10 +1,16 @@
 package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
-import br.com.finalelite.bots.supporter.command.commands.*;
-import br.com.finalelite.bots.supporter.command.commands.captcha.VerifyCommand;
-import br.com.finalelite.bots.supporter.command.commands.messages.MsgCommand;
-import br.com.finalelite.bots.supporter.command.commands.messages.MsgConfigCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.captcha.VerifyCommand;
+import br.com.finalelite.bots.supporter.command.commands.server.*;
+import br.com.finalelite.bots.supporter.command.commands.server.GetDiscordCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgConfigCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.*;
+import br.com.finalelite.bots.supporter.command.commands.utils.HelpCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.PingCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.PresenceCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.SayCommand;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
@@ -12,7 +18,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

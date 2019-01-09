@@ -1,8 +1,9 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -16,7 +17,8 @@ public class AddCommand extends Command {
                 "add",
                 "adiciona um usuário ao ticket",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT
+                CommandType.TICKET_MANAGEMENT,
+                DefaultCommandCategory.SUPPORT.getCategory()
         );
     }
 

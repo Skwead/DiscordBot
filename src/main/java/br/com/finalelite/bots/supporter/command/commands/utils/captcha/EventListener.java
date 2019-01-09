@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.captcha;
+package br.com.finalelite.bots.supporter.command.commands.utils.captcha;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import lombok.val;

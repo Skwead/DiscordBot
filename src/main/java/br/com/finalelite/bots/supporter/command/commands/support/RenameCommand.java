@@ -1,9 +1,10 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -18,7 +19,8 @@ public class RenameCommand extends Command {
                 "renomear",
                 "renomeia o ticket",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT
+                CommandType.TICKET_MANAGEMENT,
+                DefaultCommandCategory.SUPPORT.getCategory()
         );
     }
 

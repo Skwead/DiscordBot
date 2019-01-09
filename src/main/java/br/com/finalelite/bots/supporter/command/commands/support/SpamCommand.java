@@ -1,9 +1,10 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -17,7 +18,8 @@ public class SpamCommand extends Command {
                 "spam",
                 "marca um ticket como spam e o deleta",
                 CommandPermission.STAFF,
-                CommandType.CLOSED_TICKET_MANAGEMENT
+                CommandType.CLOSED_TICKET_MANAGEMENT,
+                DefaultCommandCategory.SUPPORT.getCategory()
         );
     }
 

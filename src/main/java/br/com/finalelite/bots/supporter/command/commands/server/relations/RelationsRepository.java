@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.relations;
+package br.com.finalelite.bots.supporter.command.commands.server.relations;
 
 import br.com.finalelite.bots.supporter.repository.RedisRepository;
 import lombok.var;

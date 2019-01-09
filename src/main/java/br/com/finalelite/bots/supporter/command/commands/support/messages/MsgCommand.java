@@ -1,9 +1,10 @@
-package br.com.finalelite.bots.supporter.command.commands.messages;
+package br.com.finalelite.bots.supporter.command.commands.support.messages;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.entities.Guild;
@@ -22,7 +23,8 @@ public class MsgCommand extends Command {
                 "msg",
                 "envia uma mensagem pre-definida",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT_AND_STAFF
+                CommandType.TICKET_MANAGEMENT_AND_STAFF,
+                DefaultCommandCategory.SUPPORT.getCategory()
         );
     }
 

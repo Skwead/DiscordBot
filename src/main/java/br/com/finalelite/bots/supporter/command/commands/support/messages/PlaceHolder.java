@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.messages;
+package br.com.finalelite.bots.supporter.command.commands.support.messages;
 
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import net.dv8tion.jda.core.entities.Guild;

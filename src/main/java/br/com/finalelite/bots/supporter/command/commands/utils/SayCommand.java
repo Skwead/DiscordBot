@@ -1,8 +1,9 @@
-package br.com.finalelite.bots.supporter.command.commands;
+package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -20,7 +21,8 @@ public class SayCommand extends Command {
                 "say",
                 "faz o bot enviar uma mensagem",
                 CommandPermission.MAJOR_STAFF,
-                CommandType.DEFAULT
+                CommandType.DEFAULT,
+                DefaultCommandCategory.UTILS.getCategory()
         );
     }
 
@@ -33,7 +35,7 @@ public class SayCommand extends Command {
         }
 
         val rawText = message.getContentRaw();
-        val text =  rawText.substring(rawText.indexOf(" "));
+        val text = rawText.substring(rawText.indexOf(" "));
 
         if (message.getAttachments().size() > 0) {
             try {
