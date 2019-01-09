@@ -35,7 +35,7 @@ public class HelpCommand extends Command {
         commandMap.values().forEach(command -> {
             val category = command.getCategory();
             if (commands.containsKey(category))
-                commands.get(category);
+                commands.get(category).add(command);
             else
                 commands.put(category, Arrays.asList(command));
         });
@@ -50,6 +50,7 @@ public class HelpCommand extends Command {
             val sb = new StringBuilder();
             commandList.forEach(command ->
                     sb.append("`").append(command.getName()).append("` :").append(command.getDescription()).append("\n"));
+
             embed.addField(String.format("%s %s", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
 
