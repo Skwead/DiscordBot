@@ -12,9 +12,17 @@ import net.dv8tion.jda.core.entities.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 public class HelpCommand extends Command {
+
+    private final static Map<CommandPermission, String> permissionEmoji = new HashMap<>();
+
+    static {
+        permissionEmoji.put(CommandPermission.EVERYONE, "<:sim:525133506234548234>");
+        permissionEmoji.put(CommandPermission.STAFF, ":hammer:");
+        permissionEmoji.put(CommandPermission.MAJOR_STAFF, ":hammer_pick:");
+    }
 
     public HelpCommand() {
         super(
@@ -53,7 +61,7 @@ public class HelpCommand extends Command {
         commands.forEach((category, commandList) -> {
             val sb = new StringBuilder();
             commandList.forEach(command ->
-                    sb.append("`").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
+                    sb.append(permissionEmoji.get(command.getPermission())).append(" `").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
             embed.addField(String.format("%s **%s**", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
