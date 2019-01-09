@@ -22,6 +22,8 @@ public class Config {
     @Builder.Default
     private final String adminRoleId = "major staff role id";
     @Builder.Default
+    private final String modLogId = "moderation log channel id";
+    @Builder.Default
     private final String welcomeMessage = "Welcome to the party!";
     @Builder.Default
     private final String supportChannelId = "support channel id";

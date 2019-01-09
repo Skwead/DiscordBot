@@ -13,8 +13,12 @@ public class SimpleLogger {
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat(Supporter.getInstance().getConfig().getDateFormat());
 
+    public static String format(Date date) {
+        return formatter.format(date);
+    }
+
     public static void log(String line) {
-        System.out.printf("[%s] %s%n", formatter.format(new Date()), line);
+        System.out.printf("[%s] %s%n", format(new Date()), line);
     }
 
     public static void logMessage(TextChannel textChannel, User author, Message message, String status) {

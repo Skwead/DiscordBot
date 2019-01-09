@@ -1,6 +1,7 @@
 package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
+import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgCommand;
@@ -127,6 +128,7 @@ public class Supporter extends ListenerAdapter {
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
         commandHandler.registerCommand(new PingCommand());
+        commandHandler.registerCommand(new KickCommand());
         commandHandler.registerCommand(new InvoicesCommand());
         commandHandler.registerCommand(new VerifyCommand());
         // command disabled until the myocardium is released
