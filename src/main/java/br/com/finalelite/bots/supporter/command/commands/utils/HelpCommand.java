@@ -53,9 +53,9 @@ public class HelpCommand extends Command {
         commands.forEach((category, commandList) -> {
             val sb = new StringBuilder();
             commandList.forEach(command ->
-                    sb.append("`").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: *").append(command.getDescription()).append(".*\n"));
+                    sb.append("`").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
-            embed.addField(String.format("%s %s", category.getEmojiName(), category.getName()), sb.toString(), false);
+            embed.addField(String.format("%s **%s**", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
 
         textChannel.sendMessage(embed.build()).complete();
