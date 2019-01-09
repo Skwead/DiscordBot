@@ -60,7 +60,7 @@ public class HelpCommand extends Command {
                 .setDescription("**Lista de comandos do bot**\n" +
                         permissionEmoji.get(CommandPermission.EVERYONE) + ": Comando para todos.\n" +
                         permissionEmoji.get(CommandPermission.STAFF) + ": Comando para a equipe.\n" +
-                        permissionEmoji.get(CommandPermission.MAJOR_STAFF) + ": Comando para a supervisores.")
+                        permissionEmoji.get(CommandPermission.MAJOR_STAFF) + ": Comando para os supervisores.")
                 .setFooter(author.getName() + "#" + author.getDiscriminator(), author.getAvatarUrl());
 
         commands.forEach((category, commandList) -> {
