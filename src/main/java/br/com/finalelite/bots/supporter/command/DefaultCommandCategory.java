@@ -9,7 +9,7 @@ public enum DefaultCommandCategory {
     SUPPORT(new CommandCategory("Suporte", ":question:")),
     MODERATION(new CommandCategory("Moderação", "<:blobban:531459039998115840>")),
     SERVER(new CommandCategory("Servidor", "<:finalelite:531459244919226419>")),
-    UTILS(new CommandCategory("Utilidades", ":hammer_pick:"));
+    UTILS(new CommandCategory("Utilidades", ":flashlight:"));
 
     private final CommandCategory category;
 

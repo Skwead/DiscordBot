@@ -55,7 +55,10 @@ public class HelpCommand extends Command {
         val embed = new EmbedBuilder()
                 .setColor(0xf1c65f)
                 .setAuthor("Final Elite", "https://finalelite.com.br", Supporter.getInstance().getJda().getSelfUser().getAvatarUrl())
-                .setDescription("Lista de comandos do bot")
+                .setDescription("Lista de comandos do bot\n" +
+                        permissionEmoji.get(CommandPermission.EVERYONE) + ": Comando para todos.\n" +
+                        permissionEmoji.get(CommandPermission.STAFF) + ": Comando para a equipe.\n" +
+                        permissionEmoji.get(CommandPermission.MAJOR_STAFF) + ": Comando para a supervisores.")
                 .setFooter(author.getName() + "#" + author.getDiscriminator(), author.getAvatarUrl());
 
         commands.forEach((category, commandList) -> {
@@ -63,7 +66,7 @@ public class HelpCommand extends Command {
             commandList.forEach(command ->
                     sb.append(permissionEmoji.get(command.getPermission())).append(" `").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
-            embed.addField(String.format("%s **%s**", category.getEmojiName(), category.getName()), sb.toString(), true);
+            embed.addField(String.format("\n%s **%s**\n", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
 
         textChannel.sendMessage(embed.build()).complete();
