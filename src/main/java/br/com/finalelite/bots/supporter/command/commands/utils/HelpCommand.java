@@ -19,7 +19,7 @@ public class HelpCommand extends Command {
     private final static Map<CommandPermission, String> permissionEmoji = new HashMap<>();
 
     static {
-        permissionEmoji.put(CommandPermission.EVERYONE, "<:sim:525133506234548234>");
+        permissionEmoji.put(CommandPermission.EVERYONE, "<:yeap:531458963770966016>");
         permissionEmoji.put(CommandPermission.STAFF, ":hammer:");
         permissionEmoji.put(CommandPermission.MAJOR_STAFF, ":hammer_pick:");
     }
