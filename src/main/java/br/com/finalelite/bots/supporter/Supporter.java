@@ -1,16 +1,15 @@
 package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
-import br.com.finalelite.bots.supporter.command.commands.utils.captcha.VerifyCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
-import br.com.finalelite.bots.supporter.command.commands.server.GetDiscordCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgConfigCommand;
-import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.utils.HelpCommand;
 import br.com.finalelite.bots.supporter.command.commands.utils.PingCommand;
 import br.com.finalelite.bots.supporter.command.commands.utils.PresenceCommand;
 import br.com.finalelite.bots.supporter.command.commands.utils.SayCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.captcha.VerifyCommand;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
@@ -174,8 +173,7 @@ public class Supporter extends ListenerAdapter {
 
     public void shutdown(String reason) {
         SimpleLogger.log(String.format("Shutting down. %s", reason));
-        val pv = getJda().getUserById(getConfig().getOwnerId()).openPrivateChannel().complete();
-        pv.sendMessage(String.format(":warning: Shutting down your bot: %s", reason)).complete(); // warn the bot owner
+        SimpleLogger.sendLogToOwner(String.format(":warning: Shutting down your bot: %s", reason));
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
     }
 

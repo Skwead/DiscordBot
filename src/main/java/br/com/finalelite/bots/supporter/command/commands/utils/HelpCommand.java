@@ -2,7 +2,9 @@ package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.*;
+import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -66,11 +68,13 @@ public class HelpCommand extends Command {
             commandList.forEach(command ->
                     sb.append(permissionEmoji.get(command.getPermission())).append(" `").append(Supporter.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
-            embed.addBlankField(true);
+            embed.addBlankField(false);
             embed.addField(String.format("\n%s **%s**\n", category.getEmojiName(), category.getName()), sb.toString(), false);
         });
 
-        textChannel.sendMessage(embed.build()).complete();
-
+        if (embed.isValidLength(AccountType.BOT))
+            textChannel.sendMessage(embed.build()).complete();
+        else
+            SimpleLogger.sendLogToOwner("The help message is too long! It's time to create a better help command.");
     }
 }

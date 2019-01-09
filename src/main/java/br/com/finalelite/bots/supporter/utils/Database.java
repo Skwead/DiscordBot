@@ -8,7 +8,6 @@ import com.gitlab.pauloo27.core.sql.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import net.dv8tion.jda.core.MessageBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -332,7 +331,6 @@ public class Database {
 
     // handle a exception (send to the bot owner) (i don't know its in this class)
     public static void handleException(Throwable e) {
-        val pv = Supporter.getInstance().getJda().getUserById(Supporter.getInstance().getConfig().getOwnerId()).openPrivateChannel().complete();
         val sb = new StringBuilder();
         sb.append("**Look, a poem:**\n");
         sb.append(e.getMessage()).append("\n");
@@ -344,7 +342,7 @@ public class Database {
             val tempLines = lines.stream().skip(time * 10).limit(10).collect(Collectors.toCollection(ArrayList::new));
             tempLines.add(time == 0 ? 1 : 0, "```java");
             tempLines.add("```");
-            pv.sendMessage(new MessageBuilder(String.join("\n", tempLines)).build()).complete();
+            SimpleLogger.sendLogToOwner(String.join("\n", tempLines));
         });
     }
 

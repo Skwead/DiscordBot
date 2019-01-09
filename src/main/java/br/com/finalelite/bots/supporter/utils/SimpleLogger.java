@@ -1,6 +1,7 @@
 package br.com.finalelite.bots.supporter.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
+import lombok.val;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -20,4 +21,8 @@ public class SimpleLogger {
         log(String.format("<%s> %s#%s (%s): %s %s", textChannel.getName(), author.getName(), author.getDiscriminator(), author.getId(), message.getContentRaw(), status));
     }
 
+    public static void sendLogToOwner(String message) {
+        val pv = Supporter.getInstance().getJda().getUserById(Supporter.getInstance().getConfig().getOwnerId()).openPrivateChannel().complete();
+        pv.sendMessage(message).complete();
+    }
 }
