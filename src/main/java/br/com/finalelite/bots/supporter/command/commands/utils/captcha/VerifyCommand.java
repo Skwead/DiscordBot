@@ -49,8 +49,10 @@ public class VerifyCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val role = guild.getRoleById(supporter.getConfig().getVerifiedRoleId());
-        if (guild.getMember(author).getRoles().contains(role))
+        if (guild.getMember(author).getRoles().contains(role)) {
+            message.delete().complete();
             return;
+        }
 
         if (!textChannel.getId().equals(supporter.getConfig().getVerifyChannelId()))
             return;
