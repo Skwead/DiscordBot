@@ -11,10 +11,7 @@ import lombok.val;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class Database {
@@ -30,6 +27,7 @@ public class Database {
     private EzTable tickets;
     private EzTable captchas;
     private EzTable enabledVIPS;
+    private EzTable punishments;
 
     public void connect() throws SQLException, ClassNotFoundException {
         sql = new EzSQL(EzSQLType.MYSQL)
@@ -329,21 +327,8 @@ public class Database {
         return -1;
     }
 
-    // handle a exception (send to the bot owner) (i don't know its in this class)
-    public static void handleException(Throwable e) {
-        val sb = new StringBuilder();
-        sb.append("**Look, a poem:**\n");
-        sb.append(e.getMessage()).append("\n");
-        sb.append(e.getCause()).append("\n");
-        Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> sb.append(stackTraceElement.toString()).append("\n"));
-        val lines = Arrays.asList(sb.toString().split("\n"));
-        val times = lines.size() / 10;
-        IntStream.range(0, times == 0 ? 1 : times).forEach(time -> {
-            val tempLines = lines.stream().skip(time * 10).limit(10).collect(Collectors.toCollection(ArrayList::new));
-            tempLines.add(time == 0 ? 1 : 0, "```java");
-            tempLines.add("```");
-            SimpleLogger.sendLogToOwner(String.join("\n", tempLines));
-        });
+    private static void handleException(Exception e) {
+        SimpleLogger.sendStackTraceToOwner(e);
     }
 
     // try to reconnect to the SQL because sometimes we get timed out :(

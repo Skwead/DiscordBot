@@ -1,15 +1,13 @@
 package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
+import br.com.finalelite.bots.supporter.command.commands.moderation.BanCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgCommand;
 import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgConfigCommand;
-import br.com.finalelite.bots.supporter.command.commands.utils.HelpCommand;
-import br.com.finalelite.bots.supporter.command.commands.utils.PingCommand;
-import br.com.finalelite.bots.supporter.command.commands.utils.PresenceCommand;
-import br.com.finalelite.bots.supporter.command.commands.utils.SayCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.*;
 import br.com.finalelite.bots.supporter.command.commands.utils.captcha.VerifyCommand;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
@@ -18,6 +16,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -53,7 +53,6 @@ public class Supporter extends ListenerAdapter {
     @Getter
     private Map<String, Integer> channelsToRemove = new HashMap<>();
 
-
     public Supporter() {
         instance = this;
         // create the config if not exists
@@ -84,7 +83,7 @@ public class Supporter extends ListenerAdapter {
         // add a handler, this will send the stacktrace to the owner in the DM
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             throwable.printStackTrace();
-            Database.handleException(throwable);
+            SimpleLogger.sendStackTraceToOwner((Exception) throwable);
         });
 
         // create a command handler with '!' as prefix
@@ -110,31 +109,41 @@ public class Supporter extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
 
         // register many commands
-        commandHandler.registerCommand(new SayCommand());
-        commandHandler.registerCommand(new SupportCommand());
+
+        // support
+        commandHandler.registerCommand(new AddCommand());
+        commandHandler.registerCommand(new MsgCommand());
         commandHandler.registerCommand(new DeleteCommand());
         commandHandler.registerCommand(new RenameCommand());
-        commandHandler.registerCommand(new SpamCommand());
-        commandHandler.registerCommand(new RemoveCommand());
-        commandHandler.registerCommand(new HelpCommand());
-        commandHandler.registerCommand(new AddCommand());
+        commandHandler.registerCommand(new MsgConfigCommand());
+        commandHandler.registerCommand(new SupportCommand());
         commandHandler.registerCommand(new CloseCommand());
+        commandHandler.registerCommand(new RemoveCommand());
+        commandHandler.registerCommand(new SpamCommand());
+
+        // utils
+        commandHandler.registerCommand(new HelpCommand());
+        commandHandler.registerCommand(new PingCommand());
+        commandHandler.registerCommand(new VerifyCommand());
+        commandHandler.registerCommand(new SayCommand());
+        commandHandler.registerCommand(new RolesCommand());
         commandHandler.registerCommand(new PresenceCommand());
-        commandHandler.registerCommand(new MsgCommand());
+
+        // finalelite
         commandHandler.registerCommand(new VIPCommand());
         commandHandler.registerCommand(new GetUserIdCommand());
-        commandHandler.registerCommand(new MsgConfigCommand());
         commandHandler.registerCommand(new GetNickCommand());
         commandHandler.registerCommand(new SetNickCommand());
         commandHandler.registerCommand(new GetDiscordCommand());
-        commandHandler.registerCommand(new PingCommand());
-        commandHandler.registerCommand(new KickCommand());
         commandHandler.registerCommand(new InvoicesCommand());
-        commandHandler.registerCommand(new VerifyCommand());
+
+        // moderation
+        commandHandler.registerCommand(new BanCommand());
+        commandHandler.registerCommand(new KickCommand());
+
         // command disabled until the myocardium is released
         // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
 
-        // \o/
 
         // thread to auto close idle captchas
         new Thread(() -> {
@@ -168,7 +177,6 @@ public class Supporter extends ListenerAdapter {
         }).start();
     }
 
-
     public void loadConfig() {
         config = ConfigManager.loadConfigFromFile();
     }
@@ -177,6 +185,14 @@ public class Supporter extends ListenerAdapter {
         SimpleLogger.log(String.format("Shutting down. %s", reason));
         SimpleLogger.sendLogToOwner(String.format(":warning: Shutting down your bot: %s", reason));
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
+    }
+
+    public static Role getRoleById(String id) {
+        return getInstance().getJda().getRoleById(id);
+    }
+
+    public static User getUserById(String id) {
+        return getInstance().getJda().getUserById(id);
     }
 
     @Override

@@ -36,7 +36,11 @@ public class Config {
     @Builder.Default
     private final String staffChannelId = "staff role id";
     @Builder.Default
+    private final String mutedRoleId = "muted role id";
+    @Builder.Default
     private final String supportCategoryId = "support category id";
+    @Builder.Default
+    private final String closedCategoryId = "closed tickets category id";
     @Builder.Default
     private final String vipTitanId = "vip role id";
     @Builder.Default
@@ -49,8 +53,6 @@ public class Config {
     private final Presence presence = new Presence(Game.GameType.DEFAULT, "Here to help", "https://finalelite.com.br");
     @Builder.Default
     private final Map<String, String> messages = getDefaultMessages();
-    @Builder.Default
-    private final String closedCategoryId = "closed tickets category id";
     @Builder.Default
     private final String sqlAddress = "localhost";
     @Builder.Default

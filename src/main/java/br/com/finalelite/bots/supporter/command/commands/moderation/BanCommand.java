@@ -9,13 +9,13 @@ import net.dv8tion.jda.core.entities.Member;
 
 import java.util.Date;
 
-public class KickCommand extends PunishmentCommand {
+public class BanCommand extends PunishmentCommand {
 
-    public KickCommand() {
+    public BanCommand() {
         super(
-                "kick",
-                "expulsa um usuário do Discord",
-                CommandPermission.STAFF,
+                "ban",
+                "bane um usuário do Discord",
+                CommandPermission.MAJOR_STAFF,
                 CommandType.DEFAULT
         );
     }
@@ -26,7 +26,7 @@ public class KickCommand extends PunishmentCommand {
             val punishment = Punishment.builder()
                     .author(author)
                     .relatedGuild(guild)
-                    .type(PunishmentType.KICK)
+                    .type(PunishmentType.BAN)
                     .date(new Date())
                     .end(null)
                     .reason(reason)
@@ -42,5 +42,4 @@ public class KickCommand extends PunishmentCommand {
         }
         return false;
     }
-
 }

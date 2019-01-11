@@ -60,7 +60,7 @@ public class DeleteCommand extends Command {
                 sb.append(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw()));
             }
         });
-        val user = Supporter.getInstance().getJda().getUserById(ticket.getUserId());
+        val user = Supporter.getUserById(ticket.getUserId());
         var username = "Usuário inválido (" + ticket.getUserId() + ")";
         if (user != null)
             username = user.getAsMention();

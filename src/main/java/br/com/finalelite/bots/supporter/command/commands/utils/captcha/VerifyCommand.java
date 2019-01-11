@@ -37,8 +37,13 @@ public class VerifyCommand extends Command {
         });
         val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getVerifyChannelId());
         val messages = channel.getIterableHistory().complete();
-        if (!messages.isEmpty())
-            channel.deleteMessages(messages).complete();
+        if (!messages.isEmpty()) {
+            if (messages.size() == 1)
+                messages.get(0).delete().complete();
+            else
+                channel.deleteMessages(messages).complete();
+        }
+
     }
 
     @Override
