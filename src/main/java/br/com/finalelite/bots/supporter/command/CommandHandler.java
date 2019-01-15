@@ -68,32 +68,10 @@ public class CommandHandler {
             return false;
         }
 
-        System.out.println("Type " + executedCommand.getType().name());
-        System.out.println("Disabled? " + executedCommand.getType().isDisableChannelCheck());
-        if (!executedCommand.getType().isDisableChannelCheck()) {
-            // check if its usable in staff channel
-            if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.getType().isUsableInStaffChannel()) {
-                SimpleLogger.logMessage(textChannel, author, message, "CODE 3");
-                return false;
-            }
 
-            // check if its usable in support channel
-            if (textChannel.getId().equals(supporter.getConfig().getSupportChannelId()) && !executedCommand.getType().isUsableInSupportChannel()) {
-                SimpleLogger.logMessage(textChannel, author, message, "CODE 4");
-                return false;
-            }
-
-            // check if its usable in the main category
-            if (parent.getId().equals(supporter.getConfig().getSupportCategoryId()) && !executedCommand.getType().isUsableInOpenedCategory()) {
-                SimpleLogger.logMessage(textChannel, author, message, "CODE 5");
-                return false;
-            }
-
-            // check if its usable in closed category
-            if (parent.getId().equals(supporter.getConfig().getClosedCategoryId()) && !executedCommand.getType().isUsableInClosedCategory()) {
-                SimpleLogger.logMessage(textChannel, author, message, "CODE 6");
-                return false;
-            }
+        if (!executedCommand.getChecker().canRun(textChannel)) {
+            SimpleLogger.logMessage(textChannel, author, message, "CODE 3");
+            return false;
         }
 
         SimpleLogger.logMessage(textChannel, author, message, "CODE 0");

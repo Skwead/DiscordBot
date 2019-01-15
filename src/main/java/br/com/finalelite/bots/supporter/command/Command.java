@@ -10,7 +10,7 @@ public abstract class Command {
     private final String name;
     private final String description;
     private final CommandPermission permission;
-    private final CommandChannelChecker type;
+    private final CommandChannelChecker checker;
     private final CommandCategory category;
 
     public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);

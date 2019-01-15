@@ -38,7 +38,7 @@ public class Config {
     @Builder.Default
     private final String mutedRoleId = "muted role id";
     @Builder.Default
-    private final String supportCategoryId = "support category id";
+    private final String openedCategoryId = "support category id";
     @Builder.Default
     private final String closedCategoryId = "closed tickets category id";
     @Builder.Default
