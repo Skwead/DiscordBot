@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.moderation;
+package br.com.finalelite.bots.supporter.command.commands.moderation.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
@@ -35,6 +35,7 @@ public class ModerationUtils {
     public static void apply(Punishment punishment) {
         punishment.apply();
         logModeration(punishment);
+        Supporter.getInstance().getDatabase().addPunishment(punishment);
     }
 
 }

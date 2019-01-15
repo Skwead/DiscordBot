@@ -3,7 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands.support;
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import lombok.var;
@@ -20,7 +20,7 @@ public class SupportCommand extends Command {
                 "suporte",
                 "cria um novo ticket",
                 CommandPermission.EVERYONE,
-                CommandType.SUPPORT_MANAGEMENT,
+                CommandChannelChecker.SUPPORT_CHANNEL_ONLY,
                 DefaultCommandCategory.SUPPORT.getCategory()
         );
     }

@@ -68,6 +68,8 @@ public class CommandHandler {
             return false;
         }
 
+        System.out.println("Type " + executedCommand.getType().name());
+        System.out.println("Disabled? " + executedCommand.getType().isDisableChannelCheck());
         if (!executedCommand.getType().isDisableChannelCheck()) {
             // check if its usable in staff channel
             if (textChannel.getId().equals(supporter.getConfig().getStaffChannelId()) && !executedCommand.getType().isUsableInStaffChannel()) {

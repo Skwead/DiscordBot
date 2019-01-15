@@ -1,6 +1,8 @@
 package br.com.finalelite.bots.supporter.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punishment;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
@@ -9,8 +11,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,6 +62,26 @@ public class Database {
                         .withColumn(new EzColumnBuilder("channelId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE))
                         .withColumn(new EzColumnBuilder("status", EzDataType.TINYINT).withDefaultValue(0))
                         .withColumn(new EzColumnBuilder("userId", EzDataType.VARCHAR, 64)));
+
+        punishments = sql.createIfNotExists(
+                new EzTableBuilder("punishments")
+                        .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
+                        .withColumn(new EzColumnBuilder("date", EzDataType.BIGINT, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("author", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("target", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("relatedGuild", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("relatedChannel", EzDataType.VARCHAR, 64)
+                                .withDefaultValue(null))
+                        .withColumn(new EzColumnBuilder("relatedMessage", EzDataType.VARCHAR, 64)
+                                .withDefaultValue(null))
+                        .withColumn(new EzColumnBuilder("type", EzDataType.TINYINT, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL)
+                                .withDefaultValue("Nenhum motivo informado"))
+                        .withColumn(new EzColumnBuilder("end", EzDataType.BIGINT))
+                        .withColumn(new EzColumnBuilder("reverted", EzDataType.BOOLEAN, EzAttribute.NOT_NULL)
+                                .withDefaultValue(false))
+        );
+
     }
 
     public byte createCaptcha(String userId, String channelId) {
@@ -86,6 +110,70 @@ public class Database {
                 .and().equals("status", 0)).getResultSet()) {
             if (rs.next())
                 return rs.getString("channelId");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void addPunishment(Punishment punishment) {
+        try {
+            punishments.insertAndClose(
+                    new EzInsert("date, author, target, relatedGuild, relatedChannel, relatedMessage, type, reason, end",
+                            punishment.getDate().getTime() / 1000,
+                            punishment.getAuthor().getUser().getId(),
+                            punishment.getTarget().getUser().getId(),
+                            punishment.getRelatedGuild().getId(),
+                            punishment.getRelatedChannel() == null ? null : punishment.getRelatedChannel().getId(),
+                            punishment.getRelatedMessage() == null ? null : punishment.getRelatedMessage().getId(),
+                            punishment.getType().ordinal(),
+                            punishment.getReason(),
+                            punishment.getEnd() == null ? null : punishment.getEnd().getTime() / 1000
+
+                    ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Punishment getPunishmentById(int id) {
+        try (val rs = punishments.select(new EzSelect("*").where().equals("id", id)).getResultSet()) {
+            if (rs.next())
+                return buildPunishment(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Punishment> getActivePunishmentsByTargetId(String targetId) {
+        val list = new ArrayList<Punishment>();
+        try (val rs = punishments.select(new EzSelect("*")
+                .where().equals("target", targetId)
+                .and().equals("reverted", false)
+                .and().atMost("end", new Date().getTime() / 1000)).getResultSet()) {
+            while (rs.next())
+                list.add(buildPunishment(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public Punishment buildPunishment(ResultSet rs) {
+        try {
+            return Punishment.builder()
+                    .id(rs.getInt("id"))
+                    .date(new Date(rs.getLong("date") * 1000))
+                    .author(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("author")))
+                    .target(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("target")))
+                    .relatedGuild(Supporter.getGuildById(rs.getString("relatedGuild")))
+                    .relatedChannel(Supporter.getTextChannelById(rs.getString("relatedChannel")))
+                    .relatedMessage(Supporter.getMessageById(rs.getString("relatedChannel"), rs.getString("relatedMessage")))
+                    .type(PunishmentType.fromOrdinal(rs.getInt("type")))
+                    .reason(rs.getString("reason"))
+                    .end(new Date(rs.getLong("end") * 1000))
+                    .reverted(rs.getBoolean("reverted")).build();
         } catch (SQLException e) {
             e.printStackTrace();
         }

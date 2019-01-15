@@ -2,7 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -15,7 +15,7 @@ public class RolesCommand extends Command {
                 "cargos",
                 "lista os cargos e seus IDs",
                 CommandPermission.STAFF,
-                CommandType.DEFAULT,
+                CommandChannelChecker.DISABLE,
                 DefaultCommandCategory.UTILS.getCategory()
         );
     }

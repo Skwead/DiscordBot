@@ -1,7 +1,11 @@
 package br.com.finalelite.bots.supporter.command.commands.moderation;
 
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.ModerationUtils;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punishment;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentCommand;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
@@ -16,7 +20,7 @@ public class BanCommand extends PunishmentCommand {
                 "ban",
                 "bane um usuário do Discord",
                 CommandPermission.MAJOR_STAFF,
-                CommandType.DEFAULT
+                CommandChannelChecker.DISABLE
         );
     }
 

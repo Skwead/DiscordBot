@@ -13,13 +13,13 @@ import net.dv8tion.jda.core.entities.Member;
 
 import java.util.Date;
 
-public class KickCommand extends PunishmentCommand {
+public class TempBanCommand extends PunishmentCommand {
 
-    public KickCommand() {
+    public TempBanCommand() {
         super(
-                "kick",
-                "expulsa um usuário do Discord",
-                CommandPermission.STAFF,
+                "tempban",
+                "bane um usuário temporáriamente do Discord",
+                CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.DISABLE
         );
     }
@@ -30,7 +30,7 @@ public class KickCommand extends PunishmentCommand {
             val punishment = Punishment.builder()
                     .author(author)
                     .relatedGuild(guild)
-                    .type(PunishmentType.KICK)
+                    .type(PunishmentType.TEMP_BAN)
                     .date(new Date())
                     .end(null)
                     .reason(reason)
@@ -46,5 +46,4 @@ public class KickCommand extends PunishmentCommand {
         }
         return false;
     }
-
 }

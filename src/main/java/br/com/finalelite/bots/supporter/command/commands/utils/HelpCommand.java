@@ -31,7 +31,7 @@ public class HelpCommand extends Command {
                 "ajuda",
                 "lista os comandos",
                 CommandPermission.EVERYONE,
-                CommandType.DEFAULT,
+                CommandChannelChecker.DISABLE,
                 DefaultCommandCategory.UTILS.getCategory()
         );
     }

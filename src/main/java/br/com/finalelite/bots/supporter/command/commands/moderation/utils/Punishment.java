@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.moderation;
+package br.com.finalelite.bots.supporter.command.commands.moderation.utils;
 
 import lombok.Builder;
 import lombok.Data;

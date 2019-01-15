@@ -1,9 +1,10 @@
-package br.com.finalelite.bots.supporter.command.commands.server.relations;
+package br.com.finalelite.bots.supporter.command.commands.server;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.command.commands.server.utils.RelationsRepository;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -18,7 +19,7 @@ public class LinkAccountCommand extends Command {
                 "vincular",
                 "gera um código de vinculação da conta do Discord com o Minecraft",
                 CommandPermission.EVERYONE,
-                CommandType.SUPPORT_MANAGEMENT,
+                CommandChannelChecker.SUPPORT_CHANNEL_ONLY,
                 DefaultCommandCategory.SERVER.getCategory()
 
         );

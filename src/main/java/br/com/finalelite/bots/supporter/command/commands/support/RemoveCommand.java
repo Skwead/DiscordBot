@@ -2,7 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -14,7 +14,7 @@ public class RemoveCommand extends Command {
                 "remover",
                 "remove um usuário do ticket",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT,
+                CommandChannelChecker.TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT.getCategory()
         );
     }

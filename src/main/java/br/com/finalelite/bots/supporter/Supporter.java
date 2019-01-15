@@ -5,19 +5,17 @@ import br.com.finalelite.bots.supporter.command.commands.moderation.BanCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
-import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgCommand;
-import br.com.finalelite.bots.supporter.command.commands.support.messages.MsgConfigCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.MsgCommand;
+import br.com.finalelite.bots.supporter.command.commands.support.MsgConfigCommand;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
-import br.com.finalelite.bots.supporter.command.commands.utils.captcha.VerifyCommand;
+import br.com.finalelite.bots.supporter.command.commands.utils.VerifyCommand;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -193,6 +191,22 @@ public class Supporter extends ListenerAdapter {
 
     public static User getUserById(String id) {
         return getInstance().getJda().getUserById(id);
+    }
+
+    public static Member getMemberById(String guildId, String memberId) {
+        return getGuildById(guildId).getMemberById(memberId);
+    }
+
+    public static Guild getGuildById(String id) {
+        return getInstance().getJda().getGuildById(id);
+    }
+
+    public static TextChannel getTextChannelById(String id) {
+        return getInstance().getJda().getTextChannelById(id);
+    }
+
+    public static Message getMessageById(String channelId, String messageId) {
+        return getInstance().getJda().getTextChannelById(channelId).getMessageById(messageId).complete();
     }
 
     @Override

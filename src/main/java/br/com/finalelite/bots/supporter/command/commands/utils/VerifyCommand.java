@@ -1,10 +1,11 @@
-package br.com.finalelite.bots.supporter.command.commands.utils.captcha;
+package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.command.commands.utils.utils.EventListener;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -25,7 +26,7 @@ public class VerifyCommand extends Command {
                 "verificar",
                 "verifica a conta do usuário",
                 CommandPermission.EVERYONE,
-                CommandType.DEFAULT,
+                CommandChannelChecker.DISABLE,
                 DefaultCommandCategory.UTILS.getCategory()
         );
 

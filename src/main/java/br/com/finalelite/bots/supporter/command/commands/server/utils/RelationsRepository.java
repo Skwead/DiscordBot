@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.command.commands.server.relations;
+package br.com.finalelite.bots.supporter.command.commands.server.utils;
 
 import br.com.finalelite.bots.supporter.repository.RedisRepository;
 import lombok.var;
@@ -13,7 +13,7 @@ public class RelationsRepository extends RedisRepository {
         super(jda);
     }
 
-    String storeGeneratedCode(String id) {
+    public String storeGeneratedCode(String id) {
         try (Jedis client = getResource()) {
             var code = ThreadLocalRandom.current().nextInt(1000000, 9999999);
 

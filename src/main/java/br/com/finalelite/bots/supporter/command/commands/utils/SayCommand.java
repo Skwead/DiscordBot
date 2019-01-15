@@ -2,7 +2,7 @@ package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -21,7 +21,7 @@ public class SayCommand extends Command {
                 "say",
                 "faz o bot enviar uma mensagem",
                 CommandPermission.MAJOR_STAFF,
-                CommandType.DEFAULT,
+                CommandChannelChecker.DISABLE,
                 DefaultCommandCategory.UTILS.getCategory()
         );
     }

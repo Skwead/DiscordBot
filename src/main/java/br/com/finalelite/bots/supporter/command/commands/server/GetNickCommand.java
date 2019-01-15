@@ -3,7 +3,7 @@ package br.com.finalelite.bots.supporter.command.commands.server;
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandType;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
@@ -18,7 +18,7 @@ public class GetNickCommand extends Command {
                 "getnick",
                 "pega o nome do usuário usado no cadastro do site",
                 CommandPermission.STAFF,
-                CommandType.TICKET_MANAGEMENT_AND_STAFF,
+                CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
                 DefaultCommandCategory.SERVER.getCategory()
         );
     }
