@@ -19,14 +19,13 @@ public class SpamCommand extends Command {
                 "marca um ticket como spam e o deleta",
                 CommandPermission.STAFF,
                 CommandChannelChecker.CLOSED_TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
         val ticket = Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
-        guild.getTextChannelById(Supporter.getInstance().getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
         Supporter.getInstance().getDatabase().markTicketAsSpam(ticket);
         DeleteCommand.deleteTicket(message, guild, channel, author);
     }
