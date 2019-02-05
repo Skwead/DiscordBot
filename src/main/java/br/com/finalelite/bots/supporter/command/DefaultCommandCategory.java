@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum DefaultCommandCategory {
-    SUPPORT(new CommandCategory("Suporte", ":question:")),
-    MODERATION(new CommandCategory("Moderação", "<:blobban:531459039998115840>")),
-    SERVER(new CommandCategory("Servidor", "<:finalelite:531459244919226419>")),
-    UTILS(new CommandCategory("Utilidades", ":flashlight:"));
+    SUPPORT("Suporte", ":question:"),
+    MODERATION("Moderação", "<:blobban:531459039998115840>"),
+    SERVER("Servidor", "<:finalelite:531459244919226419>"),
+    UTILS("Utilidades", ":flashlight:");
 
-    private final CommandCategory category;
-
+    private final String name;
+    private final String emojiName;
 }
