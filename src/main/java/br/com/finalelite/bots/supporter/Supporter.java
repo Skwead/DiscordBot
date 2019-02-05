@@ -3,6 +3,8 @@ package br.com.finalelite.bots.supporter;
 import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.moderation.BanCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
+import br.com.finalelite.bots.supporter.command.commands.moderation.MuteCommand;
+import br.com.finalelite.bots.supporter.command.commands.moderation.TempBanCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.support.MsgCommand;
@@ -27,12 +29,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Supporter extends ListenerAdapter {
 
@@ -66,6 +68,15 @@ public class Supporter extends ListenerAdapter {
         loadConfig();
         // believe you or not
 
+        // check if the config is missing something
+        val nullValues = checkConfig();
+        if (!nullValues.isEmpty()) {
+            SimpleLogger.log("Cannot find `%s` in the config.",
+                    nullValues.stream().map(Field::getName).collect(Collectors.joining(", ")));
+            SimpleLogger.log("Please, fix the config before run the bot.");
+            System.exit(0);
+        }
+
         // connect to the database
         database = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
@@ -97,7 +108,14 @@ public class Supporter extends ListenerAdapter {
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
             jda.getPresence().setGame(config.getPresence().toGame());
             jda.addEventListener(this);
-            SimpleLogger.log("Members: " + jda.getGuilds().get(0).getMembers().size());
+            SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
+            SimpleLogger.log("Unverified Members: %d", jda.getGuilds().get(0).getMembers().stream()
+                    .filter(member -> member.getRoles().size() == 0).count());
+            SimpleLogger.log("Total channels: %d", jda.getGuilds().get(0).getChannels().size());
+            SimpleLogger.log("Text channels: %d", jda.getGuilds().get(0).getTextChannels().size());
+            SimpleLogger.log("Voice channels: %d", jda.getGuilds().get(0).getVoiceChannels().size());
+            SimpleLogger.log("Roles count: %d", jda.getGuilds().get(0).getRoles().size());
+            SimpleLogger.log("Categories count: %d", jda.getGuilds().get(0).getCategories().size());
         } catch (InterruptedException | LoginException e) {
             SimpleLogger.log("Cannot login.");
             e.printStackTrace();
@@ -138,6 +156,8 @@ public class Supporter extends ListenerAdapter {
         // moderation
         commandHandler.registerCommand(new BanCommand());
         commandHandler.registerCommand(new KickCommand());
+        commandHandler.registerCommand(new TempBanCommand());
+        commandHandler.registerCommand(new MuteCommand());
 
         // command disabled until the myocardium is released
         // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
@@ -177,6 +197,19 @@ public class Supporter extends ListenerAdapter {
 
     public void loadConfig() {
         config = ConfigManager.loadConfigFromFile();
+    }
+
+    public List<Field> checkConfig() {
+        val fields = config.getClass().getDeclaredFields();
+        return Arrays.stream(fields).filter(field -> {
+            try {
+                field.setAccessible(true);
+                return field.get(config) == null;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }).collect(Collectors.toList());
     }
 
     public void shutdown(String reason) {
