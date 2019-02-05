@@ -104,6 +104,22 @@ public class Database {
         return null;
     }
 
+    public String getTempBanReasonOrNull(String userId) {
+        try (val result = punishments.select(
+                new EzSelect("reason")
+                        .where().equals("target", userId)
+                        .and().equals("type", PunishmentType.TEMP_BAN.ordinal())
+                        .and().moreThan("end", new Date().getTime() / 1000)
+                        .limit(1))
+                .getResultSet()) {
+            if (result.next())
+                return result.getString("reason");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public String getCaptchaChannelIdByUserId(String userId) {
         try (val rs = captchas.select(new EzSelect("channelId")
                 .where().equals("userId", userId)
@@ -146,14 +162,22 @@ public class Database {
         return null;
     }
 
-    public List<Punishment> getActivePunishmentsByTargetId(String targetId) {
+    public List<Punishment> getActivateBans() {
         val list = new ArrayList<Punishment>();
-        try (val rs = punishments.select(new EzSelect("*")
-                .where().equals("target", targetId)
-                .and().equals("reverted", false)
-                .and().atMost("end", new Date().getTime() / 1000)).getResultSet()) {
-            while (rs.next())
-                list.add(buildPunishment(rs));
+        try (val result = punishments.select(
+                new EzSelect("*")
+                        .where()
+                        .openParentheses()
+                        .equals("type", PunishmentType.TEMP_BAN.ordinal())
+                        .or()
+                        .equals("type", PunishmentType.BAN.ordinal())
+                        .closeParentheses()
+                        .and().moreThan("end", new Date().getTime() / 1000)
+                        .and().different("reverted", true)
+                        .limit(1))
+                .getResultSet()) {
+            while (result.next())
+                list.add(buildPunishment(result));
         } catch (SQLException e) {
             e.printStackTrace();
         }
