@@ -73,24 +73,22 @@ public enum CommandChannelChecker {
     private final boolean usableInStaffChannel;
 
     public boolean canRun(TextChannel textChannel) {
-        if(disableChannelCheck)
+        if (disableChannelCheck)
             return true;
 
         val config = Supporter.getInstance().getConfig();
-        if(usableInSupportChannel && textChannel.getId().equals(config.getSupportChannelId()))
+        if (usableInSupportChannel && textChannel.getId().equals(config.getSupportChannelId()))
             return true;
 
-        if(usableInStaffChannel && textChannel.getId().equals(config.getStaffChannelId()))
+        if (usableInStaffChannel && textChannel.getId().equals(config.getStaffChannelId()))
             return true;
 
         val parent = textChannel.getParent();
 
-        if(parent!= null && usableInOpenedCategory && parent.getId().equals(config.getOpenedCategoryId()))
+        if (parent != null && usableInOpenedCategory && parent.getId().equals(config.getOpenedCategoryId()))
             return true;
 
-        if(parent!= null && usableInClosedCategory && parent.getId().equals(config.getClosedCategoryId()))
-            return true;
+        return parent != null && usableInClosedCategory && parent.getId().equals(config.getClosedCategoryId());
 
-        return false;
     }
 }

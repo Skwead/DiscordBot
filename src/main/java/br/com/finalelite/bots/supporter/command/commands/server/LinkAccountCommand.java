@@ -1,8 +1,8 @@
 package br.com.finalelite.bots.supporter.command.commands.server;
 
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import br.com.finalelite.bots.supporter.command.commands.server.utils.RelationsRepository;
 import lombok.Getter;

@@ -19,22 +19,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class MsgCommand extends Command {
-    public MsgCommand() {
-        super(
-                "msg",
-                "envia uma mensagem pre-definida",
-                CommandPermission.STAFF,
-                CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SUPPORT
-        );
-    }
-
     private final static Map<String, String> messages = Supporter.getInstance().getConfig().getMessages();
     private static Map<String, PlaceHolder> placeHolders = new HashMap<>();
-
-    private static void addPlaceHolder(String key, PlaceHolder placeHolder) {
-        placeHolders.put(key.toLowerCase(), placeHolder);
-    }
 
     static {
         addPlaceHolder("user_mention", (ticket, author, message, channel, guild) -> {
@@ -46,18 +32,18 @@ public class MsgCommand extends Command {
         addPlaceHolder("list", (ticket, author, message, channel, guild) -> "`" + String.join(", ", messages.keySet()) + "`");
     }
 
-    @Override
-    public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        if (args.length == 0) {
-            message.delete().complete();
-            return;
-        }
-        val arg = args[0];
-        val msg = messages.get(arg.toLowerCase());
-        if (msg != null)
-            channel.sendMessage(Objects.requireNonNull(format(msg, message, guild, channel, author))).complete();
+    public MsgCommand() {
+        super(
+                "msg",
+                "envia uma mensagem pre-definida",
+                CommandPermission.STAFF,
+                CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
+                DefaultCommandCategory.SUPPORT
+        );
+    }
 
-        message.delete().complete();
+    private static void addPlaceHolder(String key, PlaceHolder placeHolder) {
+        placeHolders.put(key.toLowerCase(), placeHolder);
     }
 
     private static String format(String text, Message message, Guild guild, TextChannel channel, User author) {
@@ -76,6 +62,20 @@ public class MsgCommand extends Command {
             }
         }
         return newText;
+    }
+
+    @Override
+    public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
+        if (args.length == 0) {
+            message.delete().complete();
+            return;
+        }
+        val arg = args[0];
+        val msg = messages.get(arg.toLowerCase());
+        if (msg != null)
+            channel.sendMessage(Objects.requireNonNull(format(msg, message, guild, channel, author))).complete();
+
+        message.delete().complete();
     }
 
     @FunctionalInterface

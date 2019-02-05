@@ -33,6 +33,10 @@ public class Database {
     private EzTable enabledVIPS;
     private EzTable punishments;
 
+    private static void handleException(Exception e) {
+        SimpleLogger.sendStackTraceToOwner(e);
+    }
+
     public void connect() throws SQLException, ClassNotFoundException {
         sql = new EzSQL(EzSQLType.MYSQL)
                 .withAddress(address, port)
@@ -272,7 +276,6 @@ public class Database {
         return null;
     }
 
-
     // closes a ticket
     public void closeTicket(Ticket ticket) {
         try {
@@ -407,7 +410,6 @@ public class Database {
         return null;
     }
 
-
     // registers a vip to a invoice (to avoid 2 people to use the same invoice)
     public byte registerVIP(String discordId, long invoiceId) {
         try {
@@ -437,10 +439,6 @@ public class Database {
                 return getUserIdByEmail(email);
         }
         return -1;
-    }
-
-    private static void handleException(Exception e) {
-        SimpleLogger.sendStackTraceToOwner(e);
     }
 
     // try to reconnect to the SQL because sometimes we get timed out :(

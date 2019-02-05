@@ -7,10 +7,7 @@ import br.com.finalelite.bots.supporter.command.commands.moderation.MuteCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.TempBanCommand;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
-import br.com.finalelite.bots.supporter.command.commands.support.MsgCommand;
-import br.com.finalelite.bots.supporter.command.commands.support.MsgConfigCommand;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
-import br.com.finalelite.bots.supporter.command.commands.utils.VerifyCommand;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
@@ -195,29 +192,6 @@ public class Supporter extends ListenerAdapter {
         }).start();
     }
 
-    public void loadConfig() {
-        config = ConfigManager.loadConfigFromFile();
-    }
-
-    public List<Field> checkConfig() {
-        val fields = config.getClass().getDeclaredFields();
-        return Arrays.stream(fields).filter(field -> {
-            try {
-                field.setAccessible(true);
-                return field.get(config) == null;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }).collect(Collectors.toList());
-    }
-
-    public void shutdown(String reason) {
-        SimpleLogger.log(String.format("Shutting down. %s", reason));
-        SimpleLogger.sendLogToOwner(String.format(":warning: Shutting down your bot: %s", reason));
-        jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
-    }
-
     public static Role getRoleById(String id) {
         return getInstance().getJda().getRoleById(id);
     }
@@ -240,6 +214,29 @@ public class Supporter extends ListenerAdapter {
 
     public static Message getMessageById(String channelId, String messageId) {
         return getInstance().getJda().getTextChannelById(channelId).getMessageById(messageId).complete();
+    }
+
+    public void loadConfig() {
+        config = ConfigManager.loadConfigFromFile();
+    }
+
+    public List<Field> checkConfig() {
+        val fields = config.getClass().getDeclaredFields();
+        return Arrays.stream(fields).filter(field -> {
+            try {
+                field.setAccessible(true);
+                return field.get(config) == null;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }).collect(Collectors.toList());
+    }
+
+    public void shutdown(String reason) {
+        SimpleLogger.log(String.format("Shutting down. %s", reason));
+        SimpleLogger.sendLogToOwner(String.format(":warning: Shutting down your bot: %s", reason));
+        jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
     }
 
     @Override

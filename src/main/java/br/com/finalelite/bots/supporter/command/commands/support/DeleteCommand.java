@@ -2,8 +2,8 @@ package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import lombok.var;
@@ -24,11 +24,6 @@ public class DeleteCommand extends Command {
                 CommandChannelChecker.CLOSED_TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );
-    }
-
-    @Override
-    public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        deleteTicket(message, guild, channel, author);
     }
 
     public static void deleteTicket(Message message, Guild guild, TextChannel channel, User author) {
@@ -66,5 +61,10 @@ public class DeleteCommand extends Command {
             username = user.getAsMention();
         log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()), new MessageBuilder(String.format("%s: %s (%d) criado por %s", name, ticket.getSubject(), ticket.getId(), username)).build()).complete();
         guild.getTextChannelById(channel.getId()).delete().complete();
+    }
+
+    @Override
+    public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
+        deleteTicket(message, guild, channel, author);
     }
 }

@@ -13,8 +13,6 @@ public abstract class Command {
     private final CommandChannelChecker checker;
     private final DefaultCommandCategory category;
 
-    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
-
     public static Message sendError(MessageChannel channel, User user, String message) {
         return sendError(channel, user, message, -1);
     }
@@ -47,4 +45,6 @@ public abstract class Command {
         }).start();
         return msg;
     }
+
+    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
 }

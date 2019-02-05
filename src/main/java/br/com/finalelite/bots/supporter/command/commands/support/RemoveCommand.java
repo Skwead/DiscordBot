@@ -1,8 +1,8 @@
 package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
@@ -17,6 +17,10 @@ public class RemoveCommand extends Command {
                 CommandChannelChecker.TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );
+    }
+
+    public static void removeUser(TextChannel channel, Member user) {
+        channel.getManager().removePermissionOverride(user).complete();
     }
 
     @Override
@@ -36,9 +40,5 @@ public class RemoveCommand extends Command {
 
         removeUser(textChannel, target);
         sendSuccess(textChannel, author, target.getAsMention() + " foi removido.");
-    }
-
-    public static void removeUser(TextChannel channel, Member user) {
-        channel.getManager().removePermissionOverride(user).complete();
     }
 }
