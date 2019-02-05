@@ -2,10 +2,10 @@ package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
-import br.com.finalelite.bots.supporter.command.commands.support.utils.PlaceHolder;
+import br.com.finalelite.bots.supporter.ticket.Ticket;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.entities.Guild;
@@ -25,7 +25,7 @@ public class MsgCommand extends Command {
                 "envia uma mensagem pre-definida",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 
@@ -76,6 +76,11 @@ public class MsgCommand extends Command {
             }
         }
         return newText;
+    }
+
+    @FunctionalInterface
+    public interface PlaceHolder {
+        String get(Ticket ticket, Message message, Guild guild, TextChannel channel, User author);
     }
 
 }
