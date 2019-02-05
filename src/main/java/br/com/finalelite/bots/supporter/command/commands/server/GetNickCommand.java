@@ -19,7 +19,7 @@ public class GetNickCommand extends Command {
                 "pega o nome do usuário usado no cadastro do site",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 

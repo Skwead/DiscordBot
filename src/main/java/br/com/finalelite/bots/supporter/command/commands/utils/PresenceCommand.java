@@ -19,7 +19,7 @@ public class PresenceCommand extends Command {
                 "muda a presença do bot",
                 CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.STAFF,
-                DefaultCommandCategory.UTILS.getCategory()
+                DefaultCommandCategory.UTILS
         );
     }
 

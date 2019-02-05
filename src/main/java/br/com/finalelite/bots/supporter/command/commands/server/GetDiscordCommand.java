@@ -19,7 +19,7 @@ public class GetDiscordCommand extends Command {
                 "pega o Discord usado na ativação de um VIP a partir do ID da compra",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 

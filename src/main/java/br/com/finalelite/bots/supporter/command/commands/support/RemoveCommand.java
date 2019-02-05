@@ -15,7 +15,7 @@ public class RemoveCommand extends Command {
                 "remove um usuário do ticket",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

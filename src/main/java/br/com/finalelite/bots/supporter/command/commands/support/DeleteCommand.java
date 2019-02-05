@@ -22,7 +22,7 @@ public class DeleteCommand extends Command {
                 "deleta o ticket, enviando para o canal de logs",
                 CommandPermission.STAFF,
                 CommandChannelChecker.CLOSED_TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

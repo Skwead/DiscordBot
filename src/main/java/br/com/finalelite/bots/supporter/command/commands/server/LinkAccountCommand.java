@@ -20,7 +20,7 @@ public class LinkAccountCommand extends Command {
                 "gera um código de vinculação da conta do Discord com o Minecraft",
                 CommandPermission.EVERYONE,
                 CommandChannelChecker.SUPPORT_CHANNEL_ONLY,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
 
         );
 

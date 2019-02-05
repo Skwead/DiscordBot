@@ -20,7 +20,7 @@ public class RenameCommand extends Command {
                 "renomeia o ticket",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

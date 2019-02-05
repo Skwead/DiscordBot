@@ -16,7 +16,7 @@ public class RolesCommand extends Command {
                 "lista os cargos e seus IDs",
                 CommandPermission.STAFF,
                 CommandChannelChecker.DISABLE,
-                DefaultCommandCategory.UTILS.getCategory()
+                DefaultCommandCategory.UTILS
         );
     }
 

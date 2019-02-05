@@ -19,7 +19,7 @@ public class VIPCommand extends Command {
                 "ativa o VIP para o usuário a partir do ID da compra",
                 CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 

@@ -15,7 +15,7 @@ public class CloseCommand extends Command {
                 "fecha o ticket",
                 CommandPermission.EVERYONE,
                 CommandChannelChecker.OPENED_TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

@@ -18,7 +18,7 @@ public class InvoicesCommand extends Command {
                 "lista as compras feitas pelo usuário a partir do email",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 

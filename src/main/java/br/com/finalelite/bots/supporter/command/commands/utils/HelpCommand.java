@@ -1,7 +1,10 @@
 package br.com.finalelite.bots.supporter.command.commands.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
-import br.com.finalelite.bots.supporter.command.*;
+import br.com.finalelite.bots.supporter.command.Command;
+import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
+import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
 import net.dv8tion.jda.core.AccountType;
@@ -32,14 +35,14 @@ public class HelpCommand extends Command {
                 "lista os comandos",
                 CommandPermission.EVERYONE,
                 CommandChannelChecker.DISABLE,
-                DefaultCommandCategory.UTILS.getCategory()
+                DefaultCommandCategory.UTILS
         );
     }
 
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val commandMap = Supporter.getInstance().getCommandHandler().getCommandMap();
-        val commands = new HashMap<CommandCategory, List<Command>>();
+        val commands = new HashMap<DefaultCommandCategory, List<Command>>();
 
         commandMap.values().forEach(command -> {
             val category = command.getCategory();

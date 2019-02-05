@@ -17,7 +17,7 @@ public class PingCommand extends Command {
                 "retorna a latência do bot",
                 CommandPermission.STAFF,
                 CommandChannelChecker.DISABLE,
-                DefaultCommandCategory.UTILS.getCategory()
+                DefaultCommandCategory.UTILS
         );
     }
 

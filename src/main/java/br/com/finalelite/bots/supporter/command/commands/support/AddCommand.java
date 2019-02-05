@@ -18,7 +18,7 @@ public class AddCommand extends Command {
                 "adiciona um usuário ao ticket",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

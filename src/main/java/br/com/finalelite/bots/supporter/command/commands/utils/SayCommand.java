@@ -22,7 +22,7 @@ public class SayCommand extends Command {
                 "faz o bot enviar uma mensagem",
                 CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.DISABLE,
-                DefaultCommandCategory.UTILS.getCategory()
+                DefaultCommandCategory.UTILS
         );
     }
 

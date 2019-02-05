@@ -23,7 +23,7 @@ public class MsgConfigCommand extends Command {
                 "configura as mensagens pre-definidas",
                 CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.STAFF,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 

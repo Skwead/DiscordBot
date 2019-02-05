@@ -19,7 +19,7 @@ public class SetNickCommand extends Command {
                 "muda o nick do usuário no cadastro do site",
                 CommandPermission.MAJOR_STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 

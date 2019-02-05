@@ -2,8 +2,8 @@ package br.com.finalelite.bots.supporter.command.commands.support;
 
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import lombok.val;
 import lombok.var;
@@ -21,7 +21,7 @@ public class SupportCommand extends Command {
                 "cria um novo ticket",
                 CommandPermission.EVERYONE,
                 CommandChannelChecker.SUPPORT_CHANNEL_ONLY,
-                DefaultCommandCategory.SUPPORT.getCategory()
+                DefaultCommandCategory.SUPPORT
         );
     }
 
@@ -42,7 +42,7 @@ public class SupportCommand extends Command {
             return;
         }
 
-        if (!supporter.getInstance().getDatabase().canCreateTicket(author.getId())) {
+        if (!supporter.getDatabase().canCreateTicket(author.getId())) {
             sendError(channel, author, "você não pode criar tickets pois já fez spam.", 10);
             message.delete().complete();
             return;

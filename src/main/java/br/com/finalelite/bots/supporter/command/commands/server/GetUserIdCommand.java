@@ -19,7 +19,7 @@ public class GetUserIdCommand extends Command {
                 "pega o identificador único (ID) do usuário a partir do email",
                 CommandPermission.STAFF,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
-                DefaultCommandCategory.SERVER.getCategory()
+                DefaultCommandCategory.SERVER
         );
     }
 
