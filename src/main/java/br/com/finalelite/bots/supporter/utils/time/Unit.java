@@ -1,4 +1,4 @@
-package br.com.finalelite.bots.supporter.utils.time.unit;
+package br.com.finalelite.bots.supporter.utils.time;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +13,11 @@ import java.util.List;
  * @author Paulo
  * @version 1.0
  */
-public abstract class Unit {
+public class Unit {
 
     private String name;
     private String plural;
-    private int unitInSeconds;
+    private double unitInSeconds;
     private List<String> aliases = new ArrayList<>();
 
     /**
@@ -28,7 +28,7 @@ public abstract class Unit {
      * @param unitInSeconds 1 of this unit in seconds
      * @param aliases       The unit aliases
      */
-    public Unit(String name, String plural, int unitInSeconds, String... aliases) {
+    public Unit(String name, String plural, double unitInSeconds, String... aliases) {
         this.name = name;
         this.plural = plural;
         this.unitInSeconds = unitInSeconds;
@@ -67,7 +67,7 @@ public abstract class Unit {
      *
      * @return The unit in seconds
      */
-    public int getUnitInSeconds() {
+    public double getUnitInSeconds() {
         return unitInSeconds;
     }
 
@@ -89,7 +89,7 @@ public abstract class Unit {
      * @return If the String is the name or is in the aliases
      */
     public boolean isValid(String string) {
-        return name.equals(string) || aliases.contains(string);
+        return name.equalsIgnoreCase(string) || aliases.stream().anyMatch(alias -> alias.equalsIgnoreCase(string)) || plural.equalsIgnoreCase(string);
     }
 
 }
