@@ -38,7 +38,7 @@ public class TempBanCommand extends TempPunishmentCommand {
             val user = event.getUser();
             val reason = Supporter.getInstance().getDatabase().getTempBanReasonOrNull(event.getUser().getId());
             if (reason != null) {
-                System.out.printf("%s#%s (%s)  did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), reason);
+                SimpleLogger.log("%s#%s (%s) did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), reason);
                 event.getGuild().getController().kick(event.getGuild().getMember(user), reason).complete();
             }
         }
