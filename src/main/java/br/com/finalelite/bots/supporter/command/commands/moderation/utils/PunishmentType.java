@@ -8,13 +8,14 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 @Getter
 public enum PunishmentType {
-    KICK(PunishmentActions.KICK, null),
-    BAN(PunishmentActions.BAN, PunishmentActions.UNBAN),
-    TEMP_BAN(PunishmentActions.KICK, null),
-    MUTE(PunishmentActions.MUTE, PunishmentActions.UNMUTE),
-    TEMP_MUTE(PunishmentActions.MUTE, PunishmentActions.UNMUTE),
-    WARN(null, null);
+    KICK("Expulção", PunishmentActions.KICK, null),
+    BAN("Banimento", PunishmentActions.BAN, PunishmentActions.UNBAN),
+    TEMP_BAN("Banimento temporário", PunishmentActions.KICK, null),
+    MUTE("Silenciação", PunishmentActions.MUTE, PunishmentActions.UNMUTE),
+    TEMP_MUTE("Silenciação temporária", PunishmentActions.MUTE, PunishmentActions.UNMUTE),
+    WARN("Aviso", null, null);
 
+    private final String displayName;
     private final Consumer<Punishment> apply;
     private final Consumer<Punishment> remove;
 

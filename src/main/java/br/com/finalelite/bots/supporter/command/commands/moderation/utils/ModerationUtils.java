@@ -19,13 +19,13 @@ public class ModerationUtils {
                 .setDescription(String.format("%s **O usuário %s#%s (%s) foi punido!**", banEmoji, target.getEffectiveName(), target.getUser().getDiscriminator(), target.getUser().getId()))
 
                 .addField(":hammer_pick: Autor", String.format("%s#%s", author.getEffectiveName(), author.getUser().getDiscriminator()), true)
-                .addField(":gun: Puniçao", punishment.getType().name(), true)
+                .addField(":gun: Puniçao", punishment.getType().getDisplayName(), true)
                 .addField(":pen_ballpoint: Motivo", punishment.getReason(), true)
 
                 .setFooter(String.format("%s#%s", author.getEffectiveName(), author.getUser().getDiscriminator()),
                         author.getUser().getAvatarUrl());
         if (!punishment.getType().isPermanent())
-            embed.addField(":clock: Fim", SimpleLogger.format(punishment.getDate()), true);
+            embed.addField(":clock: Fim", SimpleLogger.format(punishment.getEnd()), true);
 
         val supporter = Supporter.getInstance();
         val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getModLogId());

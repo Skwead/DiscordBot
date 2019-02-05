@@ -1,19 +1,28 @@
 package br.com.finalelite.bots.supporter.command.commands.moderation.utils;
 
 import br.com.finalelite.bots.supporter.command.Command;
-import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
+import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
 import lombok.var;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public abstract class PunishmentCommand extends Command {
-    public PunishmentCommand(String name, String description, CommandPermission permission, CommandChannelChecker type) {
-        super(name, description, permission, type, DefaultCommandCategory.MODERATION.getCategory());
+
+    private PunishmentType type;
+
+    public PunishmentCommand(PunishmentType type, String name, String description, CommandPermission permission) {
+        super(name, description, permission, CommandChannelChecker.DISABLE, DefaultCommandCategory.MODERATION);
+        this.type = type;
     }
 
     @Override
@@ -28,12 +37,27 @@ public abstract class PunishmentCommand extends Command {
         if (args.length >= 2)
             reason = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
-        if (runCommand(guild, guild.getMember(author), guild.getMember(user), reason))
-            sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " kickado com sucesso.");
-        else
-            sendError(textChannel, author, "não foi possível kickar esse usuário, talvez eu não tenha permissão para kicka-lo.", 30);
+        try {
+            val punishment = Punishment.builder()
+                    .author(guild.getMember(author))
+                    .relatedGuild(guild)
+                    .type(type)
+                    .date(new Date())
+                    .end(null)
+                    .reason(reason)
+                    .target(guild.getMember(user)
+                    );
 
+            ModerationUtils.apply(punishment.build());
+            sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " punido com sucesso.");
+            return;
+        } catch (Exception e) {
+            if (e.getMessage() == null || !e.getMessage().equals("Can't modify a member with higher or equal highest role than yourself!")) {
+                e.printStackTrace();
+                SimpleLogger.sendStackTraceToOwner(e);
+            }
+        }
+        sendError(textChannel, author, "não foi possível punir esse usuário, talvez eu não tenha permissão.", 30);
     }
 
-    public abstract boolean runCommand(Guild guild, Member author, Member target, String reason);
 }

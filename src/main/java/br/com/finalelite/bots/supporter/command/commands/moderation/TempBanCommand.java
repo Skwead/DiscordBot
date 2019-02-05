@@ -1,49 +1,47 @@
 package br.com.finalelite.bots.supporter.command.commands.moderation;
 
+import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
-import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
-import br.com.finalelite.bots.supporter.command.commands.moderation.utils.ModerationUtils;
-import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punishment;
-import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.TempPunishmentCommand;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.util.Date;
-
-public class TempBanCommand extends PunishmentCommand {
+public class TempBanCommand extends TempPunishmentCommand {
 
     public TempBanCommand() {
         super(
+                PunishmentType.TEMP_BAN,
                 "tempban",
                 "bane um usuário temporáriamente do Discord",
-                CommandPermission.MAJOR_STAFF,
-                CommandChannelChecker.DISABLE
+                CommandPermission.MAJOR_STAFF
         );
+
+        val jda = Supporter.getInstance().getJda();
+        jda.addEventListener(new TempBanListener());
+
+        SimpleLogger.log("Searching for banned users.");
+        Supporter.getInstance().getDatabase().getActivateBans().stream()
+                .filter(punishment -> punishment.getTarget() != null)
+                .forEach(punishment -> {
+                    SimpleLogger.log("Found banned user %s, kicking...", punishment.getTarget().getUser().getId());
+                    jda.getGuilds().get(0).getController().kick(punishment.getTarget(), punishment.getReason()).complete();
+                });
+        SimpleLogger.log("Search ended.");
     }
 
-    @Override
-    public boolean runCommand(Guild guild, Member author, Member target, String reason) {
-        try {
-            val punishment = Punishment.builder()
-                    .author(author)
-                    .relatedGuild(guild)
-                    .type(PunishmentType.TEMP_BAN)
-                    .date(new Date())
-                    .end(null)
-                    .reason(reason)
-                    .target(target);
-
-            ModerationUtils.apply(punishment.build());
-            return true;
-        } catch (Exception e) {
-            if (e.getMessage() == null || !e.getMessage().equals("Can't modify a member with higher or equal highest role than yourself!")) {
-                e.printStackTrace();
-                SimpleLogger.sendStackTraceToOwner(e);
+    public class TempBanListener extends ListenerAdapter {
+        @Override
+        public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+            val user = event.getUser();
+            val reason = Supporter.getInstance().getDatabase().getTempBanReasonOrNull(event.getUser().getId());
+            if (reason != null) {
+                System.out.printf("%s#%s (%s)  did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), reason);
+                event.getGuild().getController().kick(event.getGuild().getMember(user), reason).complete();
             }
         }
-        return false;
     }
+
 }
