@@ -49,8 +49,6 @@ public class TimeUnits {
     public static Unit YEARS = registerUnit(new Unit("ano", "anos", 31557600, "year", "years", "y", "a"));
 
     protected static Unit registerUnit(Unit unit) {
-        System.out.println("Registerning Unit " + unit.getName());
-        System.out.println("Current units: " + units);
         units.add(unit);
         return unit;
     }

@@ -118,7 +118,6 @@ public class Database {
         val select = preparePunishmentSelectQuery(types);
         select.and().equals("target", targetId);
 
-        System.out.println(select.toString());
         try (val result = punishments.select(select)
                 .getResultSet()) {
             if (result.next())
@@ -179,7 +178,6 @@ public class Database {
 
         val select = preparePunishmentSelectQuery(types);
 
-        System.out.println(select.toString());
         try (val result = punishments.select(select)
                 .getResultSet()) {
             while (result.next())
