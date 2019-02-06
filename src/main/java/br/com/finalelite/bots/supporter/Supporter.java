@@ -1,10 +1,7 @@
 package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
-import br.com.finalelite.bots.supporter.command.commands.moderation.BanCommand;
-import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
-import br.com.finalelite.bots.supporter.command.commands.moderation.MuteCommand;
-import br.com.finalelite.bots.supporter.command.commands.moderation.TempBanCommand;
+import br.com.finalelite.bots.supporter.command.commands.moderation.*;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
@@ -156,6 +153,7 @@ public class Supporter extends ListenerAdapter {
         commandHandler.registerCommand(new KickCommand());
         commandHandler.registerCommand(new TempBanCommand());
         commandHandler.registerCommand(new MuteCommand());
+        commandHandler.registerCommand(new TempMuteCommand());
 
         // command disabled until the myocardium is released
         // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
@@ -305,7 +303,6 @@ public class Supporter extends ListenerAdapter {
         val message = event.getMessage();
         val channel = message.getChannel();
         val author = message.getAuthor();
-        val textChannel = event.getTextChannel();
 
         if (author.getId().equals(jda.getSelfUser().getId())) // comment this line if you're a "s a d b o y"
             return; // this one too
