@@ -70,7 +70,7 @@ public class Database {
         punishments = sql.createIfNotExists(
                 new EzTableBuilder("punishments")
                         .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
-                        .withColumn(new EzColumnBuilder("date", EzDataType.BIGINT, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("date", EzDataType.INTEGER, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("author", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("target", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("relatedGuild", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
@@ -81,7 +81,8 @@ public class Database {
                         .withColumn(new EzColumnBuilder("type", EzDataType.TINYINT, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL)
                                 .withDefaultValue("Nenhum motivo informado"))
-                        .withColumn(new EzColumnBuilder("end", EzDataType.BIGINT))
+                        .withColumn(new EzColumnBuilder("end", EzDataType.INTEGER, EzAttribute.NOT_NULL)
+                                .withDefaultValue(-1))
                         .withColumn(new EzColumnBuilder("reverted", EzDataType.BOOLEAN, EzAttribute.NOT_NULL)
                                 .withDefaultValue(false))
         );
@@ -148,7 +149,7 @@ public class Database {
                             punishment.getRelatedMessage() == null ? null : punishment.getRelatedMessage().getId(),
                             punishment.getType().ordinal(),
                             punishment.getReason(),
-                            punishment.getEnd() == null ? null : punishment.getEnd().getTime() / 1000
+                            punishment.getEnd() == null ? -1 : punishment.getEnd().getTime() / 1000
 
                     ));
         } catch (SQLException e) {
@@ -196,11 +197,11 @@ public class Database {
                     .author(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("author")))
                     .target(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("target")))
                     .relatedGuild(Supporter.getGuildById(rs.getString("relatedGuild")))
-                    .relatedChannel(Supporter.getTextChannelById(rs.getString("relatedChannel")))
-                    .relatedMessage(Supporter.getMessageById(rs.getString("relatedChannel"), rs.getString("relatedMessage")))
+                    .relatedChannel(rs.getString("relatedChannel") == null ? null : Supporter.getTextChannelById(rs.getString("relatedChannel")))
+                    .relatedMessage(rs.getString("relatedChannel") == null ? null : Supporter.getMessageById(rs.getString("relatedChannel"), rs.getString("relatedMessage")))
                     .type(PunishmentType.fromOrdinal(rs.getInt("type")))
                     .reason(rs.getString("reason"))
-                    .end(new Date(rs.getLong("end") * 1000))
+                    .end(rs.getLong("end") == -1 ? null : new Date(rs.getLong("end") * 1000))
                     .reverted(rs.getBoolean("reverted")).build();
         } catch (SQLException e) {
             e.printStackTrace();
