@@ -20,7 +20,7 @@ public abstract class PunishmentCommand extends Command {
 
     private PunishmentType type;
 
-    public PunishmentCommand(PunishmentType type, String name, String description, CommandPermission permission) {
+    public PunishmentCommand(String name, String description, CommandPermission permission, PunishmentType type) {
         super(name, description, permission, CommandChannelChecker.DISABLE, DefaultCommandCategory.MODERATION);
         this.type = type;
     }

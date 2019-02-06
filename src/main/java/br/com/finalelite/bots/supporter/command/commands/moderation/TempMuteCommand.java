@@ -10,10 +10,10 @@ import lombok.val;
 public class TempMuteCommand extends TempPunishmentCommand {
     public TempMuteCommand() {
         super(
-                PunishmentType.TEMP_MUTE,
                 "tempmute",
                 "silencia temporáriamente um usuário do Discord",
-                CommandPermission.STAFF
+                CommandPermission.STAFF,
+                PunishmentType.TEMP_MUTE
         );
 
         new Thread(() -> {

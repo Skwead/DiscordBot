@@ -8,10 +8,10 @@ public class MuteCommand extends PunishmentCommand {
 
     public MuteCommand() {
         super(
-                PunishmentType.MUTE,
                 "mute",
                 "silencia um usuário do Discord",
-                CommandPermission.STAFF
+                CommandPermission.STAFF,
+                PunishmentType.MUTE
         );
     }
 

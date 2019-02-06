@@ -11,10 +11,10 @@ public class TempBanCommand extends TempPunishmentCommand {
 
     public TempBanCommand() {
         super(
-                PunishmentType.TEMP_BAN,
                 "tempban",
                 "bane um usuário temporáriamente do Discord",
-                CommandPermission.MAJOR_STAFF
+                CommandPermission.MAJOR_STAFF,
+                PunishmentType.TEMP_BAN
         );
 
         val jda = Supporter.getInstance().getJda();

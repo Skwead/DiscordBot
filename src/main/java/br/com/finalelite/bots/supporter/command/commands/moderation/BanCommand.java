@@ -8,10 +8,10 @@ public class BanCommand extends PunishmentCommand {
 
     public BanCommand() {
         super(
-                PunishmentType.BAN,
                 "ban",
                 "bane um usuário do Discord",
-                CommandPermission.MAJOR_STAFF
+                CommandPermission.MAJOR_STAFF,
+                PunishmentType.BAN
         );
     }
 }

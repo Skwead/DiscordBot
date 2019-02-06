@@ -8,10 +8,10 @@ public class KickCommand extends PunishmentCommand {
 
     public KickCommand() {
         super(
-                PunishmentType.KICK,
                 "kick",
                 "expulsa um usuário do Discord",
-                CommandPermission.STAFF
+                CommandPermission.STAFF,
+                PunishmentType.KICK
         );
     }
 

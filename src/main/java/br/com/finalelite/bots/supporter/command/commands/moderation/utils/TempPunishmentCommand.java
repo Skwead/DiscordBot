@@ -21,7 +21,7 @@ public abstract class TempPunishmentCommand extends Command {
 
     private PunishmentType type;
 
-    public TempPunishmentCommand(PunishmentType type, String name, String description, CommandPermission permission) {
+    public TempPunishmentCommand(String name, String description, CommandPermission permission, PunishmentType type) {
         super(name, description, permission, CommandChannelChecker.DISABLE, DefaultCommandCategory.MODERATION);
         this.type = type;
     }
