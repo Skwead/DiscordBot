@@ -17,7 +17,7 @@ public class ShortUnits {
     /**
      * Seconds unit.
      */
-    public static Unit MILLISECONDS = registerUnit(new Unit("milisegundo", "milisegundo", 0.001, "ms", "millis", "milis"));
+    public static Unit MILLISECONDS = registerUnit(new Unit("milisegundo", "milisegundos", 0.001, "ms", "millis", "milis"));
     /**
      * Seconds unit.
      */

@@ -19,7 +19,7 @@ public class LongUnits extends ShortUnits {
     /**
      * Months unit.
      */
-    public static Unit MONTHS = registerUnit(new Unit("mês", "meses", 2629800, "month", "months", "mesês", "n"));
+    public static Unit MONTHS = registerUnit(new Unit("mês", "meses", 2629800, "month", "months", "mes", "mesês", "n"));
     /**
      * Years unit.
      */
