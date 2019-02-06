@@ -5,12 +5,12 @@ import java.util.List;
 
 /**
  * A RSpigot class.
- * Part of the time unit API. Singleton of short units.
+ * Part of the time unit API. Singleton of long units.
  *
  * @author Paulo
  * @version 1.0
  */
-public class ShortUnits {
+public class TimeUnits {
 
     private static List<Unit> units = new ArrayList<>();
 
@@ -31,7 +31,26 @@ public class ShortUnits {
      */
     public static Unit HOURS = registerUnit(new Unit("hora", "horas", 3600, "hour", "hours", "h"));
 
+    /**
+     * Days unit.
+     */
+    public static Unit DAYS = registerUnit(new Unit("dia", "dias", 86400, "day", "days", "d"));
+    /**
+     * Weeks unit.
+     */
+    public static Unit WEEKS = registerUnit(new Unit("semana", "semanas", 604800, "week", "weeks", "sem", "w"));
+    /**
+     * Months unit.
+     */
+    public static Unit MONTHS = registerUnit(new Unit("mês", "meses", 2629800, "month", "months", "mes", "mesês", "n"));
+    /**
+     * Years unit.
+     */
+    public static Unit YEARS = registerUnit(new Unit("ano", "anos", 31557600, "year", "years", "y", "a"));
+
     protected static Unit registerUnit(Unit unit) {
+        System.out.println("Registerning Unit " + unit.getName());
+        System.out.println("Current units: " + units);
         units.add(unit);
         return unit;
     }
