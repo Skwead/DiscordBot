@@ -5,7 +5,7 @@ import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
-import br.com.finalelite.bots.supporter.utils.time.LongUnits;
+import br.com.finalelite.bots.supporter.utils.time.TimeUnits;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.entities.Guild;
@@ -34,32 +34,47 @@ public abstract class TempPunishmentCommand extends Command {
         }
 
         val user = message.getMentionedUsers().get(0);
-        var time = 0;
-        try {
-            time = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            sendError(textChannel, author, "use `!" + getName() + " <usuário> <tempo> <unidade de tempo> [<motivo>]` (1).", 30);
-            return;
-        }
-
-        val timeUnit = LongUnits.getUnitByName(args[2]);
-        if (timeUnit == null) {
-            sendError(textChannel, author, "use `!" + getName() + " <usuário> <tempo> <unidade de tempo> [<motivo>]` (2).", 30);
-            return;
-        }
-
-        var reason = "Nenhum motivo mencionado";
-        if (args.length >= 4)
-            reason = Arrays.stream(args).skip(3).collect(Collectors.joining(" "));
 
         val now = new Date();
+        val end = (Date) now.clone();
+        var endsWithComma = false;
+        var argumentIndex = 1;
+        do {
+            var time = 0;
+            try {
+                time = Integer.parseInt(args[argumentIndex]);
+            } catch (NumberFormatException e) {
+                sendError(textChannel, author, "use `!" + getName() + " <usuário> <tempo> <unidade de tempo> [<motivo>]` (1).", 30);
+                return;
+            }
+
+            val rawArgument = args[argumentIndex + 1];
+
+            endsWithComma = rawArgument.endsWith(",");
+
+            val rawTimeUnit = endsWithComma ? rawArgument.substring(0, rawArgument.length() - 1) : rawArgument;
+
+            val timeUnit = TimeUnits.getUnitByName(rawTimeUnit);
+            if (timeUnit == null) {
+                sendError(textChannel, author, "use `!" + getName() + " <usuário> <tempo> <unidade de tempo> [<motivo>]` (2).", 30);
+                return;
+            }
+
+            end.setTime((long) (end.getTime() + timeUnit.convert(time, TimeUnits.MILLISECONDS)));
+            argumentIndex += 2;
+        } while (endsWithComma);
+
+        var reason = "Nenhum motivo mencionado";
+        if (args.length >= argumentIndex + 2)
+            reason = Arrays.stream(args).skip(argumentIndex).collect(Collectors.joining(" "));
+
         try {
             val punishment = Punishment.builder()
                     .author(guild.getMember(author))
                     .relatedGuild(guild)
                     .type(type)
                     .date(now)
-                    .end(new Date((long) (now.getTime() + timeUnit.convert(time, LongUnits.MILLISECONDS))))
+                    .end(end)
                     .reason(reason)
                     .target(guild.getMember(user)
                     );
