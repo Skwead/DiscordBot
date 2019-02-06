@@ -16,9 +16,9 @@ public class ModerationUtils {
         val embed = new EmbedBuilder()
                 .setColor(0xf1c65f)
                 .setAuthor("Final Elite", "https://finalelite.com.br", Supporter.getInstance().getJda().getSelfUser().getAvatarUrl())
-                .setDescription(String.format("%s **O usuário %s#%s (%s) foi punido!**", banEmoji, target.getEffectiveName(), target.getUser().getDiscriminator(), target.getUser().getId()))
+                .setDescription(String.format("%s **O usuário %s (%s) foi punido!**", banEmoji, target.getAsMention(), target.getUser().getId()))
 
-                .addField(":hammer_pick: Autor", String.format("%s#%s", author.getEffectiveName(), author.getUser().getDiscriminator()), true)
+                .addField(":hammer_pick: Autor", String.format("%s", author.getAsMention()), true)
                 .addField(":gun: Puniçao", punishment.getType().getDisplayName(), true)
                 .addField(":pen_ballpoint: Motivo", punishment.getReason(), true)
 
