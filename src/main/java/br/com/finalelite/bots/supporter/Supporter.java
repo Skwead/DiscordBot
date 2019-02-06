@@ -5,6 +5,7 @@ import br.com.finalelite.bots.supporter.command.commands.moderation.BanCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.KickCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.MuteCommand;
 import br.com.finalelite.bots.supporter.command.commands.moderation.TempBanCommand;
+import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
@@ -182,7 +183,9 @@ public class Supporter extends ListenerAdapter {
                     if (now.getTime() / 1000 >= createIn + 5 * 60) {
                         c.delete().complete();
                         val channel = jda.getTextChannelById(getConfig().getVerifyChannelId());
-                        channel.getGuild().getController().kick(channel.getGuild().getMemberById(getDatabase().getCaptchaUserIdByChannelId(channelId)), "Tempo limite.").complete();
+                        channel.getGuild().getController()
+                                .kick(channel.getGuild().getMemberById(getDatabase()
+                                        .getCaptchaUserIdByChannelId(channelId)), "Tempo limite.").complete();
                         getDatabase().setCaptchaStatus(channelId, (byte) -3);
                         newList.remove(channelId);
                     }
@@ -256,7 +259,7 @@ public class Supporter extends ListenerAdapter {
         if (pv == null) // i don't know if this is possible, but lets check
             return;
 
-        val ban = Supporter.getInstance().getDatabase().getTempBanOrNull(event.getUser().getId());
+        val ban = Supporter.getInstance().getDatabase().getActivePunishmentByUser(event.getUser().getId(), PunishmentType.TEMP_BAN);
         if (ban != null) {
             SimpleLogger.log("%s#%s (%s) did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), ban.getReason());
             pv.sendMessage(new MessageBuilder()

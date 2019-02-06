@@ -7,6 +7,7 @@ import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
 import com.gitlab.pauloo27.core.sql.*;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class Database {
@@ -109,13 +111,15 @@ public class Database {
         return null;
     }
 
-    public Punishment getTempBanOrNull(String userId) {
-        try (val result = punishments.select(
-                new EzSelect("*")
-                        .where().equals("target", userId)
-                        .and().equals("type", PunishmentType.TEMP_BAN.ordinal())
-                        .and().moreThan("end", new Date().getTime() / 1000)
-                        .limit(1))
+    public Punishment getActivePunishmentByUser(String targetId, PunishmentType... types) {
+        Preconditions.checkNotNull(types);
+        Preconditions.checkState(types.length != 0, "Types cannot be empty");
+
+        val select = preparePunishmentSelectQuery(types);
+        select.and().equals("target", targetId);
+
+        System.out.println(select.toString());
+        try (val result = punishments.select(select)
                 .getResultSet()) {
             if (result.next())
                 return buildPunishment(result);
@@ -167,19 +171,16 @@ public class Database {
         return null;
     }
 
-    public List<Punishment> getActivateBans() {
+    public List<Punishment> getActivePunishmentsByType(PunishmentType... types) {
+        Preconditions.checkNotNull(types);
+        Preconditions.checkState(types.length != 0, "Types cannot be empty");
+
         val list = new ArrayList<Punishment>();
-        try (val result = punishments.select(
-                new EzSelect("*")
-                        .where()
-                        .openParentheses()
-                        .equals("type", PunishmentType.TEMP_BAN.ordinal())
-                        .or()
-                        .equals("type", PunishmentType.BAN.ordinal())
-                        .closeParentheses()
-                        .and().moreThan("end", new Date().getTime() / 1000)
-                        .and().different("reverted", true)
-                        .limit(1))
+
+        val select = preparePunishmentSelectQuery(types);
+
+        System.out.println(select.toString());
+        try (val result = punishments.select(select)
                 .getResultSet()) {
             while (result.next())
                 list.add(buildPunishment(result));
@@ -187,6 +188,30 @@ public class Database {
             e.printStackTrace();
         }
         return list;
+    }
+
+    private EzSelect preparePunishmentSelectQuery(PunishmentType[] types) {
+        val select = new EzSelect("*");
+        select.where()
+                .openParentheses()
+                .equals("end", -1)
+                .or()
+                .moreThan("end", new Date().getTime() / 1000)
+                .closeParentheses()
+                .and().equals("reverted", false)
+                .limit(1);
+
+        val where = select.and().openParentheses();
+        IntStream.range(0, types.length).forEach(index -> {
+            val type = types[index];
+
+            where.equals("type", type.ordinal());
+
+            if (index != types.length - 1)
+                select.or();
+        });
+        select.closeParentheses();
+        return select;
     }
 
     public Punishment buildPunishment(ResultSet rs) {

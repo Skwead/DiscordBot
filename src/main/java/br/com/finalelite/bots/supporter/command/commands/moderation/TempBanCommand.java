@@ -6,8 +6,6 @@ import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punish
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.TempPunishmentCommand;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class TempBanCommand extends TempPunishmentCommand {
 
@@ -22,7 +20,7 @@ public class TempBanCommand extends TempPunishmentCommand {
         val jda = Supporter.getInstance().getJda();
 
         SimpleLogger.log("Searching for banned users.");
-        Supporter.getInstance().getDatabase().getActivateBans().stream()
+        Supporter.getInstance().getDatabase().getActivePunishmentsByType(PunishmentType.TEMP_BAN).stream()
                 .filter(punishment -> punishment.getTarget() != null)
                 .forEach(punishment -> {
                     SimpleLogger.log("Found banned user %s, kicking...", punishment.getTarget().getUser().getId());
