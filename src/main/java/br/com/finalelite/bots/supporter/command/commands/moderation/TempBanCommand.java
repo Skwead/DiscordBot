@@ -20,7 +20,6 @@ public class TempBanCommand extends TempPunishmentCommand {
         );
 
         val jda = Supporter.getInstance().getJda();
-        jda.addEventListener(new TempBanListener());
 
         SimpleLogger.log("Searching for banned users.");
         Supporter.getInstance().getDatabase().getActivateBans().stream()
@@ -30,18 +29,6 @@ public class TempBanCommand extends TempPunishmentCommand {
                     jda.getGuilds().get(0).getController().kick(punishment.getTarget(), punishment.getReason()).complete();
                 });
         SimpleLogger.log("Search ended.");
-    }
-
-    public class TempBanListener extends ListenerAdapter {
-        @Override
-        public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-            val user = event.getUser();
-            val reason = Supporter.getInstance().getDatabase().getTempBanReasonOrNull(event.getUser().getId());
-            if (reason != null) {
-                SimpleLogger.log("%s#%s (%s) did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), reason);
-                event.getGuild().getController().kick(event.getGuild().getMember(user), reason).complete();
-            }
-        }
     }
 
 }

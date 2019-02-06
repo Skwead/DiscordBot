@@ -256,6 +256,25 @@ public class Supporter extends ListenerAdapter {
         if (pv == null) // i don't know if this is possible, but lets check
             return;
 
+        val ban = Supporter.getInstance().getDatabase().getTempBanOrNull(event.getUser().getId());
+        if (ban != null) {
+            SimpleLogger.log("%s#%s (%s) did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), ban.getReason());
+            pv.sendMessage(new MessageBuilder()
+                    .setContent(
+                            String.format("**Vocẽ não pode entrar no nosso Discord por estar banido.**" +
+                                            "\nPunidor por: %s" +
+                                            "\nMotivo: %s" +
+                                            "\nAcaba em: %s" +
+                                            "\n\nSe a punição foi injusta, entre em contato no email `contato@finalelite.com.br`.",
+                                    ban.getAuthor().getNickname() == null ? ban.getAuthor().getEffectiveName() : ban.getAuthor().getNickname(),
+                                    ban.getReason(),
+                                    SimpleLogger.format(ban.getEnd())))
+                    .build()
+            ).complete();
+            event.getGuild().getController().kick(event.getGuild().getMember(user), ban.getReason()).complete();
+            return;
+        }
+
         if (config.getWelcomeMessage() == null) // oh, there's no welcome message :(
             return;
 
