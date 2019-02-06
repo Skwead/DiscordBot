@@ -109,16 +109,16 @@ public class Database {
         return null;
     }
 
-    public String getTempBanReasonOrNull(String userId) {
+    public Punishment getTempBanOrNull(String userId) {
         try (val result = punishments.select(
-                new EzSelect("reason")
+                new EzSelect("*")
                         .where().equals("target", userId)
                         .and().equals("type", PunishmentType.TEMP_BAN.ordinal())
                         .and().moreThan("end", new Date().getTime() / 1000)
                         .limit(1))
                 .getResultSet()) {
             if (result.next())
-                return result.getString("reason");
+                return buildPunishment(result);
         } catch (SQLException e) {
             e.printStackTrace();
         }
