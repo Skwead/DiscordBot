@@ -13,7 +13,9 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public abstract class TempPunishmentCommand extends Command {
 
@@ -47,6 +49,9 @@ public abstract class TempPunishmentCommand extends Command {
         }
 
         var reason = "Nenhum motivo mencionado";
+        if (args.length >= 4)
+            reason = Arrays.stream(args).skip(3).collect(Collectors.joining(" "));
+
         val now = new Date();
         try {
             val punishment = Punishment.builder()
