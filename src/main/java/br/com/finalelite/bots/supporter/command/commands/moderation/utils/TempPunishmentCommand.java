@@ -88,7 +88,7 @@ public abstract class TempPunishmentCommand extends Command {
                 SimpleLogger.sendStackTraceToOwner(e);
             }
         }
-        sendError(textChannel, author, "não foi possível punir esse usuário, talvez eu não tenha permissão.", 30);
+        sendError(textChannel, author, "não foi possível punir esse usuário, **talvez** eu não tenha permissão.", 30);
     }
 
 

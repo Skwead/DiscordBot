@@ -58,7 +58,7 @@ public abstract class PunishmentCommand extends Command {
                 SimpleLogger.sendStackTraceToOwner(e);
             }
         }
-        sendError(textChannel, author, "não foi possível punir esse usuário, talvez eu não tenha permissão.", 30);
+        sendError(textChannel, author, "não foi possível punir esse usuário, **talvez** eu não tenha permissão.", 30);
     }
 
     public Date getDefaultEndDate(Date now) {
