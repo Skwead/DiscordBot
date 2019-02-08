@@ -150,12 +150,14 @@ public class Supporter extends ListenerAdapter {
 
         // moderation
         commandHandler.registerCommand(new BanCommand());
+        commandHandler.registerCommand(new WarnCommand());
         commandHandler.registerCommand(new KickCommand());
         commandHandler.registerCommand(new TempBanCommand());
         commandHandler.registerCommand(new MuteCommand());
         commandHandler.registerCommand(new TempMuteCommand());
-        commandHandler.registerCommand(new UnmuteCommand());
-        commandHandler.registerCommand(new UnbanCommand());
+        commandHandler.registerCommand(new UnMuteCommand());
+        commandHandler.registerCommand(new UnBanCommand());
+        commandHandler.registerCommand(new UnWarnCommand());
 
         // command disabled until the myocardium is released
         // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));

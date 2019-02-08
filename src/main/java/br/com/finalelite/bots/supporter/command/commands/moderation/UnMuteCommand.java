@@ -4,8 +4,8 @@ import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.RevertPunishmentCommand;
 
-public class UnmuteCommand extends RevertPunishmentCommand {
-    public UnmuteCommand() {
+public class UnMuteCommand extends RevertPunishmentCommand {
+    public UnMuteCommand() {
         super(
                 "unmute",
                 "desilencia um usuário do Discord",

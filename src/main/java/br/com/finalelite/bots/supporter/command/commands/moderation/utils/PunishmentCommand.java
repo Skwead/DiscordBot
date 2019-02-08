@@ -37,13 +37,14 @@ public abstract class PunishmentCommand extends Command {
         if (args.length >= 2)
             reason = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
+        val now = new Date();
         try {
             val punishment = Punishment.builder()
                     .author(guild.getMember(author))
                     .relatedGuild(guild)
                     .type(type)
-                    .date(new Date())
-                    .end(null)
+                    .date(now)
+                    .end(getDefaultEndDate(now))
                     .reason(reason)
                     .target(guild.getMember(user)
                     );
@@ -58,6 +59,10 @@ public abstract class PunishmentCommand extends Command {
             }
         }
         sendError(textChannel, author, "não foi possível punir esse usuário, talvez eu não tenha permissão.", 30);
+    }
+
+    public Date getDefaultEndDate(Date now) {
+        return null;
     }
 
 }

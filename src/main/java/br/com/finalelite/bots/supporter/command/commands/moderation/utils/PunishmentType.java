@@ -13,7 +13,7 @@ public enum PunishmentType {
     TEMP_BAN("Banimento temporário", PunishmentActions.KICK, null),
     MUTE("Silenciação", PunishmentActions.MUTE, PunishmentActions.UNMUTE),
     TEMP_MUTE("Silenciação temporária", PunishmentActions.MUTE, PunishmentActions.UNMUTE),
-    WARN("Aviso", null, null);
+    WARN("Aviso", PunishmentActions.WARN, null);
 
     private final String displayName;
     private final Consumer<Punishment> apply;
