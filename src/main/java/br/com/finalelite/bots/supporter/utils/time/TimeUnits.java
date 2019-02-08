@@ -42,11 +42,11 @@ public class TimeUnits {
     /**
      * Months unit.
      */
-    public static Unit MONTHS = registerUnit(new Unit("mês", "meses", 2629800, "month", "months", "mes", "mesês", "n"));
+    public static Unit MONTHS = registerUnit(new Unit("mês", "meses", 2592000, "month", "months", "mes", "mesês", "n"));
     /**
      * Years unit.
      */
-    public static Unit YEARS = registerUnit(new Unit("ano", "anos", 31557600, "year", "years", "y", "a"));
+    public static Unit YEARS = registerUnit(new Unit("ano", "anos", 31536000, "year", "years", "y", "a"));
 
     protected static Unit registerUnit(Unit unit) {
         units.add(unit);

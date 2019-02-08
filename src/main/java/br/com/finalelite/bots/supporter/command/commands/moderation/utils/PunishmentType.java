@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 @Getter
 public enum PunishmentType {
-    KICK("Expulção", PunishmentActions.KICK, null),
+    KICK("Expulsão", PunishmentActions.KICK, null),
     BAN("Banimento", PunishmentActions.BAN, PunishmentActions.UNBAN),
     TEMP_BAN("Banimento temporário", PunishmentActions.KICK, null),
     MUTE("Silenciação", PunishmentActions.MUTE, PunishmentActions.UNMUTE),
@@ -30,7 +30,7 @@ public enum PunishmentType {
             apply.accept(punishment);
     }
 
-    public void remove(Punishment punishment) {
+    public void revert(Punishment punishment) {
         if (remove != null)
             remove.accept(punishment);
     }

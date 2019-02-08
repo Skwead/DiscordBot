@@ -15,7 +15,9 @@ public class Punishment {
 
     private final int id;
     private final Date date;
+    private final String authorId;
     private final Member author;
+    private final String targetId;
     private final Member target;
     private final Guild relatedGuild;
     private final TextChannel relatedChannel;
@@ -27,6 +29,10 @@ public class Punishment {
 
     public void apply() {
         type.apply(this);
+    }
+
+    public void revert() {
+        type.revert(this);
     }
 
 }

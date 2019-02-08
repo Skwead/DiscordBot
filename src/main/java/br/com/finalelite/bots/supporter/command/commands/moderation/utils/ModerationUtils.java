@@ -5,11 +5,14 @@ import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
 import net.dv8tion.jda.core.EmbedBuilder;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class ModerationUtils {
 
     private static final String banEmoji = "<:blobban:531459039998115840>";
+    private static final String revertEmoji = ":leftwards_arrow_with_hook: ";
 
-    public static void logModeration(Punishment punishment) {
+    public static void logApplyModeration(Punishment punishment) {
         val author = punishment.getAuthor();
         val target = punishment.getTarget();
 
@@ -36,20 +39,71 @@ public class ModerationUtils {
         channel.sendMessage(embed.build()).complete();
     }
 
+    public static void logRevertModeration(Punishment punishment) {
+        val author = punishment.getAuthor();
+        val target = punishment.getTarget();
+
+        val authorId = author == null ? punishment.getAuthorId() : null;
+        val targetId = target == null ? punishment.getTargetId() : null;
+
+        val embed = new EmbedBuilder()
+                .setColor(0xf27c5e)
+                .setAuthor("Final Elite", "https://finalelite.com.br", Supporter.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setDescription(String.format("%s **O usuário %s (%s) foi despunido!**", revertEmoji,
+                        targetId == null ? target.getAsMention() : "<@" + targetId + ">", targetId == null ? target.getUser().getId() : targetId))
+
+                .addField(":hammer_pick: Autor", String.format("%s", authorId == null ? author.getAsMention() : "<@" + authorId + ">"), true)
+                .addField(":gun: Puniçao", punishment.getType().getDisplayName(), true)
+                .addField(":pen_ballpoint: Motivo", punishment.getReason(), true)
+
+                .setFooter(authorId == null ?
+                                String.format("%s#%s - %s", author.getEffectiveName(), author.getUser().getDiscriminator(), SimpleLogger.format(punishment.getDate()))
+                                :
+                                String.format("%s - %s", authorId, SimpleLogger.format(punishment.getDate())),
+                        authorId == null ?
+                                author.getUser().getAvatarUrl() : null);
+
+        val supporter = Supporter.getInstance();
+        val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getModLogId());
+        channel.sendMessage(embed.build()).complete();
+    }
+
     public static void apply(Punishment punishment) {
         punishment.apply();
-        logModeration(punishment);
+        logApplyModeration(punishment);
         Supporter.getInstance().getDatabase().addPunishment(punishment);
     }
 
-    public static String formatDuration(int durationInSeconds) {
-        val years = durationInSeconds / 31557600;
-        val months = (durationInSeconds % 31557600) / 2629800;
-        val weeks = (durationInSeconds % 2629800) / 604800;
-        val days = (durationInSeconds % 604800) / 86400;
-        val hours = (durationInSeconds % 86400) / 3600;
-        val minutes = (durationInSeconds % 3600) / 60;
-        val seconds = durationInSeconds % 60;
+    public static void revert(Punishment punishment) {
+        punishment.revert();
+        logRevertModeration(punishment);
+        Supporter.getInstance().getDatabase().revertPunishment(punishment);
+    }
+
+    public static long getUnitAndUpdateDuration(long unitInSeconds, AtomicLong durationInSeconds) {
+        val unitValue = durationInSeconds.get() / unitInSeconds;
+        durationInSeconds.set(durationInSeconds.get() - unitInSeconds * unitValue);
+        return unitValue;
+    }
+
+    public static String formatDuration(long durationInSeconds) {
+        val remaingSeconds = new AtomicLong(durationInSeconds);
+
+        val years = getUnitAndUpdateDuration(31536000, remaingSeconds);
+        val months = getUnitAndUpdateDuration(2592000, remaingSeconds);
+        val weeks = getUnitAndUpdateDuration(604800, remaingSeconds);
+        val days = getUnitAndUpdateDuration(86400, remaingSeconds);
+        val hours = getUnitAndUpdateDuration(3600, remaingSeconds);
+        val minutes = getUnitAndUpdateDuration(60, remaingSeconds);
+        val seconds = getUnitAndUpdateDuration(1, remaingSeconds);
+
+//        val years = durationInSeconds / 31536000;
+//        val months = (durationInSeconds % 31536000) / 2592000;
+//        val weeks = (durationInSeconds % 2592000) / 604800;
+//        val days = (durationInSeconds % 604800) / 86400;
+//        val hours = (durationInSeconds % 86400) / 3600;
+//        val minutes = (durationInSeconds % 3600) / 60;
+//        val seconds = durationInSeconds % 60;
 
         StringBuilder sb = new StringBuilder();
 

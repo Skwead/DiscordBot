@@ -11,8 +11,10 @@ public class PunishmentActions {
     public static final Consumer<Punishment> BAN = punishment -> punishment.getRelatedGuild().getController()
             .ban(punishment.getTarget(), 7, punishment.getReason()).complete();
 
-    public static final Consumer<Punishment> UNBAN = punishment -> punishment.getRelatedGuild().getController()
-            .unban(punishment.getTarget().getUser()).complete();
+    public static final Consumer<Punishment> UNBAN = punishment ->
+        punishment.getRelatedGuild().getController()
+                .unban(punishment.getTargetId()).complete();
+    ;
 
     public static final Consumer<Punishment> MUTE = punishment -> punishment.getRelatedGuild().getController()
             .addRolesToMember(punishment.getTarget(), Supporter.getRoleById(Supporter.getInstance().getConfig().getMutedRoleId())).complete();

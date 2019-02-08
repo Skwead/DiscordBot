@@ -160,6 +160,17 @@ public class Database {
         }
     }
 
+    public boolean revertPunishment(Punishment punishment) {
+        try (val result = punishments.update(new EzUpdate()
+                .set("reverted", true)
+                .where().equals("id", punishment.getId()))) {
+            return result.getUpdatedRows() != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public Punishment getPunishmentById(int id) {
         try (val rs = punishments.select(new EzSelect("*").where().equals("id", id)).getResultSet()) {
             if (rs.next())
@@ -217,7 +228,9 @@ public class Database {
             return Punishment.builder()
                     .id(rs.getInt("id"))
                     .date(new Date(rs.getLong("date") * 1000))
+                    .authorId(rs.getString("author"))
                     .author(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("author")))
+                    .targetId(rs.getString("target"))
                     .target(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("target")))
                     .relatedGuild(Supporter.getGuildById(rs.getString("relatedGuild")))
                     .relatedChannel(rs.getString("relatedChannel") == null ? null : Supporter.getTextChannelById(rs.getString("relatedChannel")))
