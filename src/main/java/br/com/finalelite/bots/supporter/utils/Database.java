@@ -80,7 +80,7 @@ public class Database {
                                 .withDefaultValue(null))
                         .withColumn(new EzColumnBuilder("relatedMessage", EzDataType.VARCHAR, 64)
                                 .withDefaultValue(null))
-                        .withColumn(new EzColumnBuilder("type", EzDataType.TINYINT, EzAttribute.NOT_NULL))
+                        .withColumn(new EzColumnBuilder("type", EzDataType.VARCHAR, 32, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL)
                                 .withDefaultValue("Nenhum motivo informado"))
                         .withColumn(new EzColumnBuilder("end", EzDataType.INTEGER, EzAttribute.NOT_NULL)
@@ -118,7 +118,6 @@ public class Database {
         val select = preparePunishmentSelectQuery(types);
         select.and().equals("target", targetId).limit(1);
 
-        System.out.println(select);
         try (val result = punishments.select(select)
                 .getResultSet()) {
             if (result.next())
@@ -173,7 +172,7 @@ public class Database {
                             punishment.getRelatedGuild().getId(),
                             punishment.getRelatedChannel() == null ? null : punishment.getRelatedChannel().getId(),
                             punishment.getRelatedMessage() == null ? null : punishment.getRelatedMessage().getId(),
-                            punishment.getType().ordinal(),
+                            punishment.getType().name(),
                             punishment.getReason(),
                             punishment.getEnd() == null ? -1 : punishment.getEnd().getTime() / 1000
 
@@ -232,7 +231,7 @@ public class Database {
         IntStream.range(0, types.length).forEach(index -> {
             val type = types[index];
 
-            where.equals("type", type.ordinal());
+            where.equals("type", type.name());
 
             if (index != types.length - 1)
                 select.or();
@@ -253,7 +252,7 @@ public class Database {
                     .relatedGuild(Supporter.getGuildById(rs.getString("relatedGuild")))
                     .relatedChannel(rs.getString("relatedChannel") == null ? null : Supporter.getTextChannelById(rs.getString("relatedChannel")))
                     .relatedMessage(rs.getString("relatedChannel") == null ? null : Supporter.getMessageById(rs.getString("relatedChannel"), rs.getString("relatedMessage")))
-                    .type(PunishmentType.fromOrdinal(rs.getInt("type")))
+                    .type(PunishmentType.valueOf(rs.getString("type")))
                     .reason(rs.getString("reason"))
                     .end(rs.getLong("end") == -1 ? null : new Date(rs.getLong("end") * 1000))
                     .reverted(rs.getBoolean("reverted")).build();

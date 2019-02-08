@@ -19,12 +19,6 @@ public enum PunishmentType {
     private final Consumer<Punishment> apply;
     private final Consumer<Punishment> remove;
 
-    public static PunishmentType fromOrdinal(int ordinal) {
-        if (PunishmentType.values().length < ordinal)
-            return null;
-        return PunishmentType.values()[ordinal];
-    }
-
     public void apply(Punishment punishment) {
         if (apply != null)
             apply.accept(punishment);
@@ -34,7 +28,6 @@ public enum PunishmentType {
         if (remove != null)
             remove.accept(punishment);
     }
-
 
     public boolean isPermanent() {
         return !this.name().startsWith("TEMP_");
