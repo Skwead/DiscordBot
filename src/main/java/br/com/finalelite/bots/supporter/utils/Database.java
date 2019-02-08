@@ -102,7 +102,8 @@ public class Database {
     }
 
     public String getCaptchaUserIdByChannelId(String channelId) {
-        try (val rs = captchas.select(new EzSelect("userId").where().equals("channelId", channelId)).getResultSet()) {
+        try (val rs = captchas.select(new EzSelect("userId")
+                .where().equals("channelId", channelId)).getResultSet()) {
             if (rs.next())
                 return rs.getString("userId");
         } catch (SQLException e) {
@@ -112,12 +113,12 @@ public class Database {
     }
 
     public Punishment getActivePunishmentByUser(String targetId, PunishmentType... types) {
-        Preconditions.checkNotNull(types);
-        Preconditions.checkState(types.length != 0, "Types cannot be empty");
+        checkTypes(types);
 
         val select = preparePunishmentSelectQuery(types);
-        select.and().equals("target", targetId);
+        select.and().equals("target", targetId).limit(1);
 
+        System.out.println(select);
         try (val result = punishments.select(select)
                 .getResultSet()) {
             if (result.next())
@@ -126,6 +127,28 @@ public class Database {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<Punishment> getActivePunishmentsByUser(String targetId, PunishmentType... types) {
+        checkTypes(types);
+
+        val list = new ArrayList<Punishment>();
+
+        val select = preparePunishmentSelectQuery(types);
+        select.and().equals("target", targetId);
+
+        return getPunishments(list, select);
+    }
+
+    private List<Punishment> getPunishments(ArrayList<Punishment> list, EzSelect select) {
+        try (val result = punishments.select(select)
+                .getResultSet()) {
+            while (result.next())
+                list.add(buildPunishment(result));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public String getCaptchaChannelIdByUserId(String userId) {
@@ -182,21 +205,18 @@ public class Database {
     }
 
     public List<Punishment> getActivePunishmentsByType(PunishmentType... types) {
-        Preconditions.checkNotNull(types);
-        Preconditions.checkState(types.length != 0, "Types cannot be empty");
+        checkTypes(types);
 
         val list = new ArrayList<Punishment>();
 
         val select = preparePunishmentSelectQuery(types);
 
-        try (val result = punishments.select(select)
-                .getResultSet()) {
-            while (result.next())
-                list.add(buildPunishment(result));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
+        return getPunishments(list, select);
+    }
+
+    private void checkTypes(PunishmentType[] types) {
+        Preconditions.checkNotNull(types);
+        Preconditions.checkState(types.length != 0, "Types cannot be empty");
     }
 
     private EzSelect preparePunishmentSelectQuery(PunishmentType[] types) {
@@ -207,9 +227,7 @@ public class Database {
                 .or()
                 .moreThan("end", new Date().getTime() / 1000)
                 .closeParentheses()
-                .and().equals("reverted", false)
-                .limit(1);
-
+                .and().equals("reverted", false);
         val where = select.and().openParentheses();
         IntStream.range(0, types.length).forEach(index -> {
             val type = types[index];
