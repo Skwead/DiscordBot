@@ -81,7 +81,8 @@ public class Database {
                         .withColumn(new EzColumnBuilder("relatedMessage", EzDataType.VARCHAR, 64)
                                 .withDefaultValue(null))
                         .withColumn(new EzColumnBuilder("type", EzDataType.VARCHAR, 32, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL)
+                        .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR,
+                        256, EzAttribute.NOT_NULL)
                                 .withDefaultValue("Nenhum motivo informado"))
                         .withColumn(new EzColumnBuilder("end", EzDataType.INTEGER, EzAttribute.NOT_NULL)
                                 .withDefaultValue(-1))
