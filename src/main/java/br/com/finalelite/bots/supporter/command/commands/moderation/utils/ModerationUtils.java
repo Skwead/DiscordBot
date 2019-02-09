@@ -1,10 +1,21 @@
 package br.com.finalelite.bots.supporter.command.commands.moderation.utils;
 
 import br.com.finalelite.bots.supporter.Supporter;
+import br.com.finalelite.bots.supporter.utils.DiscordUtils;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ModerationUtils {
@@ -36,7 +47,81 @@ public class ModerationUtils {
 
         val supporter = Supporter.getInstance();
         val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getModLogId());
-        channel.sendMessage(embed.build()).complete();
+        channel.sendMessage(embed.build()).queue();
+        //sendProof(channel, punishment);
+    }
+
+
+    public static void sendProof(TextChannel channel, Punishment punishment) {
+        try {
+            val userAvatar = DiscordUtils.getUserAvatar(punishment.getAuthor().getUser());
+            val base = ImageIO.read(Supporter.class.getResourceAsStream("/message_base.png"));
+
+            val image = new BufferedImage(base.getWidth(), base.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            val graphic = image.getGraphics();
+            val username = punishment.getAuthor().getEffectiveName();
+
+            // avatar
+            graphic.drawImage(userAvatar, 15, 15, 40, 40, null);
+            // backgroudn
+            graphic.drawImage(base, 0, 0, null);
+
+            // username
+            graphic.setColor(Color.WHITE);
+            graphic.setFont(new Font("Arial", Font.PLAIN, 14));
+            val nameWidth = graphic.getFontMetrics().stringWidth(username);
+            val nameHeight = graphic.getFontMetrics().getHeight();
+            graphic.drawString(username, 15 + 40 + 20, 15 + nameHeight);
+
+            // date
+            graphic.setColor(new Color(0x57595e));
+            graphic.setFont(new Font("Arial", Font.PLAIN, 12));
+            val formatter = new SimpleDateFormat("hh:mm a");
+            val formattedDate = "Hoje às " + formatter.format(punishment.getDate());
+            val dateHeight = graphic.getFontMetrics().getHeight();
+            graphic.drawString(formattedDate, 15 + 40 + 20 + 5 + nameWidth, 3 + 15 + dateHeight);
+
+            // message
+            graphic.setColor(new Color(0xbbbdbf));
+            graphic.setFont(new Font("Arial", Font.PLAIN, 13));
+            graphic.drawString(punishment.getReason(), 15 + 40 + 20, 37 + 15);
+
+            val bytes = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", bytes);
+            channel.sendFile(bytes.toByteArray(), "proof.png").queue();
+        } catch (IOException e) {
+            SimpleLogger.sendStackTraceToOwner(e);
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    public static void sendReasonAsMessage(TextChannel channel, Punishment punishment) {
+        try {
+            val format = new SimpleDateFormat("hh:mm a");
+            val connection = (HttpURLConnection) new URL(punishment.getAuthor().getUser().getAvatarUrl()).openConnection();
+            connection.addRequestProperty("User-Agent", "Mozilla/4.76");
+            val userImage = ImageIO.read(connection.getInputStream());
+            val image = new BufferedImage(500, 200, BufferedImage.TYPE_INT_ARGB);
+            val graphic = image.getGraphics();
+            graphic.setColor(new Color(0x36393f));
+            graphic.fillRect(0, 0, 500, 200);
+            graphic.drawImage(userImage, 20, 20, 50, 50, null);
+            graphic.setColor(new Color(0xFFFFFF));
+            graphic.setFont(new Font("Arial", Font.PLAIN, 20));
+            graphic.drawString(punishment.getReason(), 20 + 20 + 10, 20 + 50 + 20);
+            graphic.drawString(punishment.getAuthor().getNickname() == null ?
+                    punishment.getAuthor().getEffectiveName() :
+                    punishment.getAuthor().getNickname(), 20 + 50 + 20, 40);
+            graphic.setColor(new Color(0x2C2F33));
+            graphic.setFont(new Font("Arial", Font.PLAIN, 14));
+            graphic.drawString("Hoje às " + format.format(punishment.getDate()), 20 + 50 + 20 + 100, 40);
+            val bytes = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", bytes);
+            channel.sendFile(bytes.toByteArray(), "proof.png", new MessageBuilder("eita").build()).complete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void logRevertModeration(Punishment punishment) {
@@ -65,7 +150,7 @@ public class ModerationUtils {
 
         val supporter = Supporter.getInstance();
         val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getModLogId());
-        channel.sendMessage(embed.build()).complete();
+        channel.sendMessage(embed.build()).queue();
     }
 
     public static void apply(Punishment punishment) {
@@ -96,14 +181,6 @@ public class ModerationUtils {
         val hours = getUnitAndUpdateDuration(3600, remaingSeconds);
         val minutes = getUnitAndUpdateDuration(60, remaingSeconds);
         val seconds = getUnitAndUpdateDuration(1, remaingSeconds);
-
-//        val years = durationInSeconds / 31536000;
-//        val months = (durationInSeconds % 31536000) / 2592000;
-//        val weeks = (durationInSeconds % 2592000) / 604800;
-//        val days = (durationInSeconds % 604800) / 86400;
-//        val hours = (durationInSeconds % 86400) / 3600;
-//        val minutes = (durationInSeconds % 3600) / 60;
-//        val seconds = durationInSeconds % 60;
 
         StringBuilder sb = new StringBuilder();
 
