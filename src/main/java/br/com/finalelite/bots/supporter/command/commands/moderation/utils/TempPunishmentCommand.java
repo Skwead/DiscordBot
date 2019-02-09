@@ -64,9 +64,13 @@ public abstract class TempPunishmentCommand extends Command {
             argumentIndex += 2;
         } while (endsWithComma);
 
-        var reason = "Nenhum motivo mencionado";
-        if (args.length >= argumentIndex) {
-            reason = Arrays.stream(args).skip(argumentIndex).collect(Collectors.joining(" "));
+        var reason = Arrays.stream(args).skip(argumentIndex).collect(Collectors.joining(" "));
+        if(reason.isEmpty())
+            reason = "Nenhum motivo mencionado";
+        
+        if(reason.length() > 256) {
+            sendError(textChannel, author, "motivo muito longo.", 30);
+            return;
         }
 
         try {
