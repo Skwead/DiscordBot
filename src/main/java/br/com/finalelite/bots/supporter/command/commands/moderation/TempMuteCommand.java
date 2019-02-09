@@ -27,7 +27,7 @@ public class TempMuteCommand extends TempPunishmentCommand {
                         .getMembersWithRoles(mutedRole)
                         .forEach(member -> {
                             val punishment = instance.getDatabase().getActivePunishmentByUser(member.getUser().getId(),
-                                    PunishmentType.TEMP_MUTE, PunishmentType.BAN);
+                                    PunishmentType.TEMP_MUTE, PunishmentType.MUTE);
                             if (punishment == null) {
                                 SimpleLogger.log("Found invalid muted user %s#%s (s), unmuting...",
                                         member.getNickname() == null ? member.getEffectiveName() : member.getNickname(),
