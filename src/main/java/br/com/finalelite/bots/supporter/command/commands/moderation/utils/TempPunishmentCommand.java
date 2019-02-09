@@ -65,8 +65,9 @@ public abstract class TempPunishmentCommand extends Command {
         } while (endsWithComma);
 
         var reason = "Nenhum motivo mencionado";
-        if (args.length >= argumentIndex + 2)
+        if (args.length >= argumentIndex) {
             reason = Arrays.stream(args).skip(argumentIndex).collect(Collectors.joining(" "));
+        }
 
         try {
             val punishment = Punishment.builder()
