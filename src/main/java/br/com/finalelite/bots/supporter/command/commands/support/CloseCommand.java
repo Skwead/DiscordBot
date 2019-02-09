@@ -23,14 +23,11 @@ public class CloseCommand extends Command {
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
         val supporter = Supporter.getInstance();
         val ticket = supporter.getDatabase().getTicketByChannelId(channel.getId());
-        guild.getTextChannelById(supporter.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
+//        guild.getTextChannelById(supporter.getConfig().getSupportChannelId()).getMessageById(ticket.getMessageId()).complete().delete().complete();
         supporter.getDatabase().closeTicket(ticket);
         clearPermissions(channel, guild);
         sendSuccess(channel, author, "ticket fechado.");
-        val pv = supporter.getJda().getUserById(ticket.getUserId()).openPrivateChannel().complete();
         message.delete().complete();
-        if (pv == null)
-            return;
     }
 
     private void clearPermissions(MessageChannel channel, Guild guild) {

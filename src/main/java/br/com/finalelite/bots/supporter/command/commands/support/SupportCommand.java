@@ -65,8 +65,8 @@ public class SupportCommand extends Command {
 
         AddCommand.addUser(newChannel, guild.getMember(author));
 
-        val warnMsg = sendSuccess(channel, author, "aguarde...");
-        var ticket = supporter.getDatabase().createReturningTicket(author.getId(), warnMsg.getId(), subject, newChannel.getId());
+        val warnMsg = sendSuccess(channel, author, "aguarde...", 60);
+        var ticket = supporter.getDatabase().createReturningTicket(author.getId(), subject, newChannel.getId());
         newChannel.getManager().setName("\uD83D\uDC9A-ticket-" + ticket.getId()).complete();
         val msg = newChannel.sendMessage(new MessageBuilder(
                 ("\nTicket " + ticket.getId() + "\nAssunto: " + subject +

@@ -51,7 +51,6 @@ public class Database {
                 new EzTableBuilder("discord_tickets")
                         .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
                         .withColumn(new EzColumnBuilder("userId", EzDataType.VARCHAR, 64))
-                        .withColumn(new EzColumnBuilder("messageId", EzDataType.VARCHAR, 64))
                         .withColumn(new EzColumnBuilder("channelId", EzDataType.VARCHAR, 64))
                         .withColumn(new EzColumnBuilder("subject", EzDataType.VARCHAR, 500))
                         .withColumn(new EzColumnBuilder("status", EzDataType.TINYINT))
@@ -82,7 +81,7 @@ public class Database {
                                 .withDefaultValue(null))
                         .withColumn(new EzColumnBuilder("type", EzDataType.VARCHAR, 32, EzAttribute.NOT_NULL))
                         .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR,
-                        256, EzAttribute.NOT_NULL)
+                                256, EzAttribute.NOT_NULL)
                                 .withDefaultValue("Nenhum motivo informado"))
                         .withColumn(new EzColumnBuilder("end", EzDataType.INTEGER, EzAttribute.NOT_NULL)
                                 .withDefaultValue(-1))
@@ -294,9 +293,9 @@ public class Database {
     }
 
     // creates a ticket and return a instance
-    public Ticket createReturningTicket(String userId, String messageId, String subject, String channelId) {
+    public Ticket createReturningTicket(String userId, String subject, String channelId) {
         try {
-            tickets.insert(new EzInsert("userId, subject, channelId, status, messageId", userId, subject, channelId, TicketStatus.OPENED.ordinal(), messageId)).close();
+            tickets.insert(new EzInsert("userid, subject, channelId, status", userId, subject, channelId, TicketStatus.OPENED.ordinal())).close();
             val rs = tickets.select(new EzSelect("id")
                     .where().equals("channelId", channelId)
                     .limit(1)).getResultSet();
@@ -304,22 +303,22 @@ public class Database {
                 return null;
             int id = rs.getInt("id");
             rs.close();
-            return new Ticket(id, userId, messageId, channelId, subject, TicketStatus.OPENED);
+            return new Ticket(id, userId, channelId, subject, TicketStatus.OPENED);
         } catch (SQLException e) {
             reconnectSQL(e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return createReturningTicket(userId, messageId, subject, channelId);
+                return createReturningTicket(userId, subject, channelId);
         }
         return null;
     }
 
     // gets the ticket by the channel id
     public Ticket getTicketByChannelId(String channelId) {
-        try (val rs = tickets.select(new EzSelect("id, messageId, userId, subject, status")
+        try (val rs = tickets.select(new EzSelect("*")
                 .where().equals("channelId", channelId)).getResultSet()) {
             if (!rs.next())
                 return null;
-            val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), rs.getString("messageId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
+            val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
             rs.close();
 
             return ticket;
