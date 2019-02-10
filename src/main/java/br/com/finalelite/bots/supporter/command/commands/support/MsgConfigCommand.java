@@ -21,7 +21,7 @@ public class MsgConfigCommand extends Command {
         super(
                 "msgconfig",
                 "configura as mensagens pre-definidas",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.ADMIN,
                 CommandChannelChecker.STAFF,
                 DefaultCommandCategory.SUPPORT
         );

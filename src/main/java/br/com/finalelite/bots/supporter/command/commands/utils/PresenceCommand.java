@@ -17,7 +17,7 @@ public class PresenceCommand extends Command {
         super(
                 "jogando",
                 "muda a presença do bot",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MANAGER,
                 CommandChannelChecker.STAFF,
                 DefaultCommandCategory.UTILS
         );

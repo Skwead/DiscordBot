@@ -9,7 +9,7 @@ public class UnMuteCommand extends RevertPunishmentCommand {
         super(
                 "unmute",
                 "desilencia um usuário do Discord",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MODERATOR,
                 PunishmentType.MUTE, PunishmentType.TEMP_MUTE
         );
     }

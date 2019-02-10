@@ -20,7 +20,7 @@ public class SayCommand extends Command {
         super(
                 "say",
                 "faz o bot enviar uma mensagem",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MANAGER,
                 CommandChannelChecker.DISABLE,
                 DefaultCommandCategory.UTILS
         );

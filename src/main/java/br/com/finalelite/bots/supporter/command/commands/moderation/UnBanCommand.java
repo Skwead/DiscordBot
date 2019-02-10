@@ -9,7 +9,7 @@ public class UnBanCommand extends RevertPunishmentCommand {
         super(
                 "unban",
                 "desbane um usuário do Discord",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MODERATOR,
                 PunishmentType.BAN, PunishmentType.TEMP_BAN
         );
     }

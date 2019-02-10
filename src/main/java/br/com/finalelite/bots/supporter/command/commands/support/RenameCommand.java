@@ -18,7 +18,7 @@ public class RenameCommand extends Command {
         super(
                 "renomear",
                 "renomeia o ticket",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 CommandChannelChecker.TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );

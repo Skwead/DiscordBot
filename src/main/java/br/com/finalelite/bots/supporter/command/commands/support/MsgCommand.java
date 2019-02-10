@@ -36,7 +36,7 @@ public class MsgCommand extends Command {
         super(
                 "msg",
                 "envia uma mensagem pre-definida",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
                 DefaultCommandCategory.SUPPORT
         );

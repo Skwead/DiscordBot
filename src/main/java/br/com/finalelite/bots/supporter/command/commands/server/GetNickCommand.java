@@ -17,7 +17,7 @@ public class GetNickCommand extends Command {
         super(
                 "getnick",
                 "pega o nome do usuário usado no cadastro do site",
-                CommandPermission.STAFF,
+                CommandPermission.ADMIN,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
                 DefaultCommandCategory.SERVER
         );

@@ -17,7 +17,7 @@ public class GetUserIdCommand extends Command {
         super(
                 "getid",
                 "pega o identificador único (ID) do usuário a partir do email",
-                CommandPermission.STAFF,
+                CommandPermission.ADMIN,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
                 DefaultCommandCategory.SERVER
         );

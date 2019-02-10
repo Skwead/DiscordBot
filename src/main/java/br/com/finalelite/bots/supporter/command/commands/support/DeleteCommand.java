@@ -20,7 +20,7 @@ public class DeleteCommand extends Command {
         super(
                 "deletar",
                 "deleta o ticket, enviando para o canal de logs",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 CommandChannelChecker.CLOSED_TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );

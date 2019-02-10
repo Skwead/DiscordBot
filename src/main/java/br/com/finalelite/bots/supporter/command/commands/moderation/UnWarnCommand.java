@@ -9,7 +9,7 @@ public class UnWarnCommand extends RevertPunishmentCommand {
         super(
                 "unwarn",
                 "remover uma repreensão feita a um usuário no Discord",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MODERATOR,
                 PunishmentType.WARN
         );
     }

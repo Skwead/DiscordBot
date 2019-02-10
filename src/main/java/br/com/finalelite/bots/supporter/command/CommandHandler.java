@@ -31,7 +31,6 @@ public class CommandHandler {
         val author = event.getAuthor();
         val guild = event.getGuild();
         val textChannel = event.getTextChannel();
-        val parent = textChannel.getParent();
         val rawContent = message.getContentRaw();
         val supporter = Supporter.getInstance();
 
@@ -54,27 +53,31 @@ public class CommandHandler {
 
         // prepare to execute the command
         val executedCommand = commands.get(command);
-        // check if its staff only
-        if (executedCommand.getPermission() == CommandPermission.STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getStaffRoleId())))) {
-            Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
-            SimpleLogger.logMessage(textChannel, author, message, "CODE 1");
-            return false;
-        }
 
-        // check if its major staff
-        if (executedCommand.getPermission() == CommandPermission.MAJOR_STAFF && !(guild.getMemberById(author.getId()).getRoles().contains(guild.getRoleById(supporter.getConfig().getAdminRoleId())))) {
-            Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
-            SimpleLogger.logMessage(textChannel, author, message, "CODE 2");
-            return false;
+        // check if it have a special permission
+        if (executedCommand.getPermission() != CommandPermission.EVERYONE) {
+            if (executedCommand.getPermission() == CommandPermission.BOT_OWNER) {
+                if (!author.getId().equalsIgnoreCase(supporter.getConfig().getOwnerId())) {
+                    Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+                    SimpleLogger.logMessage(textChannel, author, message, "> CODE 4");
+                    return false;
+                }
+            } else {
+                val neededRolePosition = supporter.getJda().getRoleById(executedCommand.getPermission().getRoleId()).getPosition();
+                if (guild.getMember(author).getRoles().get(0).getPosition() < neededRolePosition) {
+                    Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+                    SimpleLogger.logMessage(textChannel, author, message, "> CODE 1");
+                    return false;
+                }
+            }
         }
-
 
         if (!executedCommand.getChecker().canRun(textChannel)) {
-            SimpleLogger.logMessage(textChannel, author, message, "CODE 3");
+            SimpleLogger.logMessage(textChannel, author, message, "> CODE 3");
             return false;
         }
 
-        SimpleLogger.logMessage(textChannel, author, message, "CODE 0");
+        SimpleLogger.logMessage(textChannel, author, message, "> CODE 0");
         // if passed it all, finally run the command
         executedCommand.run(message, guild, textChannel, author, args);
 

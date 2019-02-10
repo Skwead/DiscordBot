@@ -12,7 +12,7 @@ public class TempMuteCommand extends TempPunishmentCommand {
         super(
                 "tempmute",
                 "silencia temporáriamente um usuário do Discord",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 PunishmentType.TEMP_MUTE
         );
 

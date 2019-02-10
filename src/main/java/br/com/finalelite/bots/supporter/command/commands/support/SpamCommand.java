@@ -17,7 +17,7 @@ public class SpamCommand extends Command {
         super(
                 "spam",
                 "marca um ticket como spam e o deleta",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 CommandChannelChecker.CLOSED_TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );

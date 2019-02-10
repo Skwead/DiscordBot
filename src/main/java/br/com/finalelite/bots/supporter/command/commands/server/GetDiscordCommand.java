@@ -17,7 +17,7 @@ public class GetDiscordCommand extends Command {
         super(
                 "getdiscord",
                 "pega o Discord usado na ativação de um VIP a partir do ID da compra",
-                CommandPermission.STAFF,
+                CommandPermission.ADMIN,
                 CommandChannelChecker.TICKET_MANAGEMENT_AND_STAFF,
                 DefaultCommandCategory.SERVER
         );

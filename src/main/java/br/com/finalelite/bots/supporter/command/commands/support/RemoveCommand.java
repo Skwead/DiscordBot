@@ -13,7 +13,7 @@ public class RemoveCommand extends Command {
         super(
                 "remover",
                 "remove um usuário do ticket",
-                CommandPermission.STAFF,
+                CommandPermission.SUPPORT,
                 CommandChannelChecker.TICKET_MANAGEMENT,
                 DefaultCommandCategory.SUPPORT
         );

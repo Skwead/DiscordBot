@@ -13,7 +13,7 @@ public class TempBanCommand extends TempPunishmentCommand {
         super(
                 "tempban",
                 "bane um usuário temporáriamente do Discord",
-                CommandPermission.MAJOR_STAFF,
+                CommandPermission.MODERATOR,
                 PunishmentType.TEMP_BAN
         );
 

@@ -10,7 +10,12 @@ import java.util.Date;
 public class WarnCommand extends PunishmentCommand {
 
     public WarnCommand() {
-        super("warn", "repreende um usuário no Discord", CommandPermission.STAFF, PunishmentType.WARN);
+        super(
+                "warn",
+                "repreende um usuário no Discord",
+                CommandPermission.MODERATOR,
+                PunishmentType.WARN
+        );
     }
 
     @Override

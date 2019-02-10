@@ -18,9 +18,15 @@ public class Config {
     @Builder.Default
     private final String ownerId = "the owner id";
     @Builder.Default
-    private final String staffRoleId = "staff role id";
+    private final String supportRoleId = "support role id";
     @Builder.Default
-    private final String adminRoleId = "major staff role id";
+    private final String moderatorRoleId = "moderator role id";
+    @Builder.Default
+    private final String adminRoleId = "admin role id";
+    @Builder.Default
+    private final String managerRoleId = "manager role id";
+    @Builder.Default
+    private final String masterRoleId = "master role id";
     @Builder.Default
     private final String modLogId = "moderation log channel id";
     @Builder.Default
@@ -34,7 +40,7 @@ public class Config {
     @Builder.Default
     private final String verifyChannelId = "verified channel id";
     @Builder.Default
-    private final String staffChannelId = "staff role id";
+    private final String staffChannelId = "staff channel id";
     @Builder.Default
     private final String mutedRoleId = "muted role id";
     @Builder.Default
@@ -68,6 +74,7 @@ public class Config {
         return new ConfigBuilder();
     }
 
+    // TODO FIX ME PLZ
     private static Map<String, String> getDefaultMessages() {
         val map = new HashMap<String, String>();
         map.put("welcome", "Welcome, {user_mention}, what can we do for you today?");

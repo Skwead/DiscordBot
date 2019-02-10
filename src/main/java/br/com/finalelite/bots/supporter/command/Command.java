@@ -35,6 +35,7 @@ public abstract class Command {
         if (removeSeconds == -1)
             return msg;
 
+        // TODO: Create just 1 Thread
         new Thread(() -> {
             try {
                 Thread.sleep(removeSeconds * 1000);
