@@ -3,18 +3,23 @@ package br.com.finalelite.bots.supporter.command;
 import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.var;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class CommandHandler {
     @Getter
     private final String prefix;
+
+    public CommandHandler(String prefix) {
+        this.prefix = prefix;
+        Supporter.getInstance().getJda().addEventListener(new MessageListener());
+    }
 
     private Map<String, Command> commands = new HashMap<>();
 
@@ -82,6 +87,30 @@ public class CommandHandler {
         executedCommand.run(message, guild, textChannel, author, args);
 
         return true;
+    }
+
+    private class MessageListener extends ListenerAdapter {
+        @Override
+        public void onMessageReceived(MessageReceivedEvent event) {
+            val message = event.getMessage();
+            val channel = message.getChannel();
+            val author = message.getAuthor();
+            val config = Supporter.getInstance().getConfig();
+
+            if (author.isBot())
+                return; // limit the "friends type" hoho
+
+            if (channel.getType() == ChannelType.PRIVATE) {
+                // lets disable message in the DM
+                channel.sendMessage(String.format("Não respondo via DM ainda, utilize o chat <#%s> para executar os comandos.", config.getSupportChannelId())).complete();
+                return;
+            }
+
+            // okay, lets handle the command. If this is a invalid command and it's executed in the support channel, delete this spam message
+            if (!handle(event) && channel.getId().equals(config.getSupportChannelId())) {
+                message.delete().complete();
+            }
+        }
     }
 
 }

@@ -2,34 +2,26 @@ package br.com.finalelite.bots.supporter;
 
 import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.moderation.*;
-import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
+import br.com.finalelite.bots.supporter.listeners.JoinListener;
+import br.com.finalelite.bots.supporter.listeners.logs.MessageListener;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Supporter extends ListenerAdapter {
+public class Supporter {
 
     @Getter
     // singleton
@@ -116,8 +108,9 @@ public class Supporter extends ListenerAdapter {
             // set the "Playing" status
             jda.getPresence().setGame(config.getPresence().toGame());
 
-            // register some events listener in this file
-            jda.addEventListener(this);
+            // register some event listeners
+            jda.addEventListener(new JoinListener());
+//            jda.addEventListener(new MessageListener());
 
             // print some usefull information
             SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
@@ -262,93 +255,6 @@ public class Supporter extends ListenerAdapter {
         SimpleLogger.log(String.format("Shutting down. %s", reason));
         SimpleLogger.sendLogToOwner(String.format(":warning: Shutting down your bot: %s", reason));
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
-    }
-
-
-    /*
-
-        THE EVENTS LITENERS
-
-     */
-
-    @Override
-    public void onGuildJoin(GuildJoinEvent event) {
-        // lets block someone of "steal" the bot
-        if (jda.getGuilds().size() == 0)
-            return; // oh, okay this is the first guild
-        // grr, seems like someone else get the bot invite
-        shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
-    }
-
-    @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        // send a welcome message to the new user :)
-        val user = event.getUser();
-        val pv = event.getUser().openPrivateChannel().complete();
-        if (pv == null) // i don't know if this is possible, but lets check
-            return;
-
-        val ban = Supporter.getInstance().getDatabase().getActivePunishmentByUser(event.getUser().getId(), PunishmentType.TEMP_BAN);
-        if (ban != null) {
-            SimpleLogger.log("%s#%s (%s) did an ooopsie: %s%n", user.getName(), user.getDiscriminator(), user.getId(), ban.getReason());
-            pv.sendMessage(new MessageBuilder()
-                    .setContent(
-                            String.format("**Vocẽ não pode entrar no nosso Discord por estar banido.**" +
-                                            "\nPunidor por: %s" +
-                                            "\nMotivo: %s" +
-                                            "\nAcaba em: %s" +
-                                            "\n\nSe a punição foi injusta, entre em contato no email `contato@finalelite.com.br`.",
-                                    ban.getAuthor().getNickname() == null ? ban.getAuthor().getEffectiveName() : ban.getAuthor().getNickname(),
-                                    ban.getReason(),
-                                    SimpleLogger.format(ban.getEnd())))
-                    .build()
-            ).complete();
-            event.getGuild().getController().kick(event.getGuild().getMember(user), ban.getReason()).complete();
-            return;
-        }
-
-        if (config.getWelcomeMessage() == null) // oh, there's no welcome message :(
-            return;
-
-        try {
-            // get the user picture and put in the server's image
-            val userImage = DiscordUtils.getUserAvatar(user); // get the user avatar
-            val baseImage = ImageIO.read(Supporter.class.getResourceAsStream("/image.png")); // get the base image
-            val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB); // create some place to build the image
-            val graphic = image.getGraphics();
-            graphic.drawImage(userImage, 367, 26, 178, 178, null); // draw the user avatar
-            graphic.drawImage(baseImage, 0, 0, null); // draw the base image
-            val bytes = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", bytes); // get the bytes
-            pv.sendFile(bytes.toByteArray(), "welcome.png", new MessageBuilder(config.getWelcomeMessage()).build()).complete(); // send
-        } catch (IOException e) {
-            // >:( we cannot send the image, so lets just send the message
-            pv.sendMessage(new MessageBuilder(config.getWelcomeMessage()).build()).complete();
-        }
-    }
-
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        val message = event.getMessage();
-        val channel = message.getChannel();
-        val author = message.getAuthor();
-
-        if (author.isBot())
-            return; // limit the "friends type" hoho
-
-        if (author.getId().equals(jda.getSelfUser().getId())) // comment this line if you're a "s a d b o y"
-            return; // this one too
-
-        if (channel.getType() == ChannelType.PRIVATE) {
-            // lets disable message in the DM
-            channel.sendMessage(String.format("Não respondo via DM ainda, utilize o chat <#%s> para executar os comandos.", config.getSupportChannelId())).complete();
-            return;
-        }
-
-        // okay, lets handle the command. If this is a invalid command and it's executed in the support channel, delete this spam message
-        if (!commandHandler.handle(event) && channel.getId().equals(config.getSupportChannelId())) {
-            message.delete().complete();
-        }
     }
 
 }
