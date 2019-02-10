@@ -139,6 +139,7 @@ public class Supporter extends ListenerAdapter {
         commandHandler.registerCommand(new SayCommand());
         commandHandler.registerCommand(new RolesCommand());
         commandHandler.registerCommand(new PresenceCommand());
+        commandHandler.registerCommand(new ClearCommand());
 
         // finalelite
         commandHandler.registerCommand(new VIPCommand());
