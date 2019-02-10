@@ -74,7 +74,7 @@ public class VerifyCommand extends Command {
             supporter.getDatabase().createCaptcha(author.getId(), channel.getId());
 
             val newTextChannel = guild.getTextChannelById(channel.getId());
-            supporter.getChannelsToRemove().put(newTextChannel.getId(), (int) (new Date().getTime() / 1000));
+            supporter.getCaptchaChannels().put(newTextChannel.getId(), (int) (new Date().getTime() / 1000));
             val imageBytes = supporter.getCaptcha().createNewCaptcha(author.getId());
             sendSuccess(textChannel, author, String.format("Resolva o captcha no canal <#%s> para poder acessar o servidor.", channel.getId()), 20);
             newTextChannel.sendFile(imageBytes, "captcha.jpg",
@@ -115,14 +115,14 @@ public class VerifyCommand extends Command {
             if (result) {
                 guild.getController().addRolesToMember(guild.getMember(author), guild.getRoleById(supporter.getConfig().getVerifiedRoleId())).complete();
                 supporter.getDatabase().setCaptchaStatus(channel.getId(), (byte) 1);
-                supporter.getChannelsToRemove().remove(textChannel.getId());
+                supporter.getCaptchaChannels().remove(textChannel.getId());
                 textChannel.delete().complete();
             } else {
                 val times = supporter.getCaptcha().getTries(author.getId());
                 if (times >= 5) {
                     guild.getController().kick(guild.getMember(author), "Tentativas esgotadas.").complete();
                     supporter.getDatabase().setCaptchaStatus(channel.getId(), (byte) -1);
-                    supporter.getChannelsToRemove().remove(textChannel.getId());
+                    supporter.getCaptchaChannels().remove(textChannel.getId());
                     textChannel.delete().complete();
                     return;
                 }
@@ -144,7 +144,7 @@ public class VerifyCommand extends Command {
 
             event.getGuild().getTextChannelById(channelId).delete().complete();
             supporter.getDatabase().setCaptchaStatus(channelId, (byte) -4);
-            supporter.getChannelsToRemove().remove(channelId);
+            supporter.getCaptchaChannels().remove(channelId);
         }
     }
 

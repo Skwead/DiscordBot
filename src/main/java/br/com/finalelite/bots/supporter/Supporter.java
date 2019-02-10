@@ -25,8 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,19 +32,30 @@ import java.util.stream.Collectors;
 public class Supporter extends ListenerAdapter {
 
     @Getter
+    // singleton
     private static Supporter instance;
     @Getter
+    // the api
     private JDA jda;
     @Getter
+    // the bot config
+    // (there's a lot of things in the config, like the token, the bot owner, etc)
     private Config config;
     @Getter
+    // the database
+    // (SQL, using EzSQL as API)
     private Database database;
     @Getter
+    // a simple command handler
     private CommandHandler commandHandler;
     @Getter
+    // a captcha builder
+    // (used to verify user account)
     private Captcha captcha = new Captcha();
     @Getter
-    private Map<String, Integer> channelsToRemove = new HashMap<>();
+    // a map of the Catpcha channel id and the time epoch of the channel creation
+    // (used to delete old channels)
+    private Map<String, Integer> captchaChannels = new HashMap<>();
 
     public Supporter() {
         instance = this;
@@ -97,12 +106,20 @@ public class Supporter extends ListenerAdapter {
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();
             SimpleLogger.log("Logged.");
+
+            // check if the bot is in our guild and only in our guild
             if (jda.getGuilds().size() == 0)
                 System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
             else if (jda.getGuilds().size() > 1)
                 shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
+
+            // set the "Playing" status
             jda.getPresence().setGame(config.getPresence().toGame());
+
+            // register some events listener in this file
             jda.addEventListener(this);
+
+            // print some usefull information
             SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
             SimpleLogger.log("Unverified Members: %d", jda.getGuilds().get(0).getMembers().stream()
                     .filter(member -> member.getRoles().size() == 0).count());
@@ -111,11 +128,13 @@ public class Supporter extends ListenerAdapter {
             SimpleLogger.log("Voice channels: %d", jda.getGuilds().get(0).getVoiceChannels().size());
             SimpleLogger.log("Roles count: %d", jda.getGuilds().get(0).getRoles().size());
             SimpleLogger.log("Categories count: %d", jda.getGuilds().get(0).getCategories().size());
+
         } catch (InterruptedException | LoginException e) {
             SimpleLogger.log("Cannot login.");
             e.printStackTrace();
             System.exit(-2);
         }
+
         // add a handler to the exit event, just to send to the bot owner
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
 
@@ -173,11 +192,11 @@ public class Supporter extends ListenerAdapter {
                     e.printStackTrace();
                 }
 
-                if (channelsToRemove.isEmpty())
+                if (captchaChannels.isEmpty())
                     continue;
 
-                val newList = new HashMap<>(channelsToRemove);
-                channelsToRemove.forEach((channelId, createIn) -> {
+                val newList = new HashMap<>(captchaChannels);
+                captchaChannels.forEach((channelId, createIn) -> {
                     val c = getJda().getTextChannelById(channelId);
                     if (c == null)
                         return;
@@ -193,7 +212,7 @@ public class Supporter extends ListenerAdapter {
                         newList.remove(channelId);
                     }
                 });
-                channelsToRemove = newList;
+                captchaChannels = newList;
             }
         }).start();
     }
@@ -245,9 +264,16 @@ public class Supporter extends ListenerAdapter {
         jda.shutdownNow(); // i don't know if this is really necessary, but sounds great
     }
 
+
+    /*
+
+        THE EVENTS LITENERS
+
+     */
+
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        // lets block someone of "steal" my bot
+        // lets block someone of "steal" the bot
         if (jda.getGuilds().size() == 0)
             return; // oh, okay this is the first guild
         // grr, seems like someone else get the bot invite
@@ -286,9 +312,7 @@ public class Supporter extends ListenerAdapter {
 
         try {
             // get the user picture and put in the server's image
-            val connection = (HttpURLConnection) new URL(user.getAvatarUrl()).openConnection();
-            connection.addRequestProperty("User-Agent", "Mozilla/4.76"); // avoid 403 errors
-            val userImage = ImageIO.read(connection.getInputStream()); // get the user avatar
+            val userImage = DiscordUtils.getUserAvatar(user); // get the user avatar
             val baseImage = ImageIO.read(Supporter.class.getResourceAsStream("/image.png")); // get the base image
             val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB); // create some place to build the image
             val graphic = image.getGraphics();
@@ -308,6 +332,9 @@ public class Supporter extends ListenerAdapter {
         val message = event.getMessage();
         val channel = message.getChannel();
         val author = message.getAuthor();
+
+        if (author.isBot())
+            return; // limit the "friends type" hoho
 
         if (author.getId().equals(jda.getSelfUser().getId())) // comment this line if you're a "s a d b o y"
             return; // this one too

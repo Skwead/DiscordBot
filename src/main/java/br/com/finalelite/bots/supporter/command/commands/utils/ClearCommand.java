@@ -59,7 +59,7 @@ public class ClearCommand extends Command {
             return;
         }
 
-        // delete the user message
+        // add one more message (the one that the author sent)
         if (channel == textChannel)
             amount++;
 
