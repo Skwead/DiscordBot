@@ -90,9 +90,6 @@ public class Supporter {
             SimpleLogger.sendStackTraceToOwner((Exception) throwable);
         });
 
-        // create a command handler with '!' as prefix
-        commandHandler = new CommandHandler("!");
-
         // try to connect to Discord
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();
@@ -109,7 +106,6 @@ public class Supporter {
 
             // register some event listeners
             jda.addEventListener(new JoinListener());
-//            jda.addEventListener(new MessageListener());
 
             // print some usefull information
             SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
@@ -129,6 +125,9 @@ public class Supporter {
 
         // add a handler to the exit event, just to send to the bot owner
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
+
+        // create a command handler with '!' as prefix
+        commandHandler = new CommandHandler("!");
 
         // register many commands
 
