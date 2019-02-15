@@ -58,7 +58,7 @@ public class VIPCommand extends Command {
                 message.delete().complete();
                 return;
             }
-//            Main.getDatabase().setInvoicePaid(id);
+            Supporter.getInstance().getDatabase().setInvoicePaid(id);
             guild.getController().addRolesToMember(guild.getMemberById(user.getId()), guild.getRoleById(invoice.getVip().getRoleId())).complete();
             sendSuccess(textChannel, author, String.format("VIP ativado para a compra ID `%d`.", id));
             message.delete().complete();

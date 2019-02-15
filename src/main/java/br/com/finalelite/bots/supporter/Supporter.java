@@ -6,7 +6,6 @@ import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
 import br.com.finalelite.bots.supporter.listeners.JoinListener;
-import br.com.finalelite.bots.supporter.listeners.logs.MessageListener;
 import br.com.finalelite.bots.supporter.utils.*;
 import lombok.Getter;
 import lombok.val;
