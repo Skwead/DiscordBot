@@ -63,7 +63,7 @@ public class ModerationUtils {
 
             // avatar
             graphic.drawImage(userAvatar, 15, 15, 40, 40, null);
-            // backgroudn
+            // background
             graphic.drawImage(base, 0, 0, null);
 
             // username
