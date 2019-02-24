@@ -1,7 +1,8 @@
 package br.com.finalelite.bots.supporter.command.commands.moderation.utils;
 
-import lombok.Builder;
-import lombok.Data;
+import br.com.finalelite.bots.supporter.Supporter;
+import com.gitlab.pauloo27.core.sql.*;
+import lombok.*;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -10,22 +11,54 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.Date;
 
 @Builder
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Name("punishments")
 public class Punishment {
 
-    private final int id;
-    private final Date date;
-    private final String authorId;
-    private final Member author;
-    private final String targetId;
-    private final Member target;
-    private final Guild relatedGuild;
-    private final TextChannel relatedChannel;
-    private final Message relatedMessage;
-    private final PunishmentType type;
-    private final String reason;
-    private final Date end;
-    private final boolean reverted;
+    @Id
+    private int id;
+
+    @DefaultAttributes.NotNull
+    @Name("date")
+    private int dateSeconds;
+
+    @DefaultAttributes.NotNull
+    @Length(64)
+    private String authorId;
+
+    @DefaultAttributes.NotNull
+    @Length(64)
+    private String targetId;
+
+    @DefaultAttributes.NotNull
+    @Length(64)
+    private String relatedGuildId;
+
+    @Length(64)
+    private String relatedChannelId;
+
+    @Length(64)
+    private String relatedMessageId;
+
+    @DefaultAttributes.NotNull
+    private PunishmentType type;
+
+    @DefaultAttributes.NotNull
+    @Length(256)
+    @Builder.Default
+    private String reason = "Nenhum motivo informado";
+
+    @DefaultAttributes.NotNull
+    @Name("end")
+    private int endSeconds;
+
+    @DefaultAttributes.NotNull
+    @DefaultValue
+    @Builder.Default
+    private boolean reverted = false;
 
     public void apply() {
         type.apply(this);
@@ -33,6 +66,40 @@ public class Punishment {
 
     public void revert() {
         type.revert(this);
+    }
+
+    public Guild getRelatedGuild() {
+        return Supporter.getGuildById(relatedGuildId);
+    }
+
+    public TextChannel getRelatedChannel() {
+        return Supporter.getTextChannelById(relatedChannelId);
+    }
+
+    public Message getRelatedMessage() {
+        return Supporter.getMessageById(relatedChannelId, relatedMessageId);
+    }
+
+    public Member getAuthor() {
+        return Supporter.getMemberById(relatedGuildId, authorId);
+    }
+
+    public Member getTarget() {
+        return Supporter.getMemberById(relatedGuildId, targetId);
+    }
+
+    public Date getDate() {
+        return new Date(((long) dateSeconds) * 1000);
+    }
+
+    public Date getEnd() {
+        return new Date(((long) endSeconds) * 1000);
+    }
+
+    public static int parseDate(Date date) {
+        if(date == null)
+            return -1;
+        return (int) (date.getTime() / 1000);
     }
 
 }

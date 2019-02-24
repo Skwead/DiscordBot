@@ -24,54 +24,37 @@ public class PunishmentActions {
             return;
 
         if (punishments.size() == 1)
-            ModerationUtils.apply(Punishment.builder()
-                    .date(punishment.getDate())
-                    .author(punishment.getAuthor())
-                    .target(punishment.getTarget())
-                    .relatedGuild(punishment.getRelatedGuild())
-                    .relatedChannel(punishment.getRelatedChannel())
-                    .relatedMessage(punishment.getRelatedMessage())
-                    .type(PunishmentType.TEMP_MUTE)
-                    .reason("2/5 avisos: " + punishment.getReason())
-                    .end(new Date(punishment.getDate().getTime() + (long) TimeUnits.HOURS.convert(24, TimeUnits.MILLISECONDS)))
-                    .build());
+            ModerationUtils.apply(clonePunishment(
+                    punishment,
+                    PunishmentType.TEMP_MUTE,
+                    punishments.size(),
+                    TimeUnits.HOURS.addToDate(punishment.getDate(), 24)
+            ).build());
 
         if (punishments.size() == 2)
-            ModerationUtils.apply(Punishment.builder()
-                    .date(punishment.getDate())
-                    .author(punishment.getAuthor())
-                    .target(punishment.getTarget())
-                    .relatedGuild(punishment.getRelatedGuild())
-                    .relatedChannel(punishment.getRelatedChannel())
-                    .relatedMessage(punishment.getRelatedMessage())
-                    .type(PunishmentType.KICK)
-                    .reason("3/5 avisos: " + punishment.getReason())
-                    .build());
+            ModerationUtils.apply(clonePunishment(
+                    punishment,
+                    PunishmentType.KICK,
+                    punishments.size(),
+                    null
+            ).build());
 
         if (punishments.size() == 3)
-            ModerationUtils.apply(Punishment.builder()
-                    .date(punishment.getDate())
-                    .author(punishment.getAuthor())
-                    .target(punishment.getTarget())
-                    .relatedGuild(punishment.getRelatedGuild())
-                    .relatedChannel(punishment.getRelatedChannel())
-                    .relatedMessage(punishment.getRelatedMessage())
-                    .type(PunishmentType.TEMP_BAN)
-                    .reason("4/5 avisos: " + punishment.getReason())
-                    .end(new Date(punishment.getDate().getTime() + (long) TimeUnits.HOURS.convert(24, TimeUnits.MILLISECONDS)))
-                    .build());
+            ModerationUtils.apply(clonePunishment(
+                    punishment,
+                    PunishmentType.TEMP_BAN,
+                    punishments.size(),
+                    TimeUnits.HOURS.addToDate(punishment.getDate(), 24)
+            ).build());
 
         if (punishments.size() == 4)
-            ModerationUtils.apply(Punishment.builder()
-                    .date(punishment.getDate())
-                    .author(punishment.getAuthor())
-                    .target(punishment.getTarget())
-                    .relatedGuild(punishment.getRelatedGuild())
-                    .relatedChannel(punishment.getRelatedChannel())
-                    .relatedMessage(punishment.getRelatedMessage())
-                    .type(PunishmentType.BAN)
-                    .reason("5/5 avisos: " + punishment.getReason())
-                    .build());
+            ModerationUtils.apply(clonePunishment(
+                    punishment,
+                    PunishmentType.BAN,
+                    punishments.size(),
+                    null
+            ).build());
+
     };
 
     public static final Consumer<Punishment> MUTE = punishment -> punishment.getRelatedGuild().getController()
@@ -79,4 +62,21 @@ public class PunishmentActions {
 
     public static final Consumer<Punishment> UNMUTE = punishment -> punishment.getRelatedGuild().getController()
             .removeRolesFromMember(punishment.getTarget(), Supporter.getRoleById(Supporter.getInstance().getConfig().getMutedRoleId())).complete();
+
+    private static Punishment.PunishmentBuilder clonePunishment(Punishment punishment, PunishmentType type, int punishmentCount, Date end) {
+        val builder = Punishment.builder()
+                .dateSeconds(punishment.getDateSeconds())
+                .authorId(punishment.getAuthorId())
+                .targetId(punishment.getTargetId())
+                .relatedGuildId(punishment.getRelatedGuildId())
+                .relatedChannelId(punishment.getRelatedChannelId())
+                .relatedMessageId(punishment.getRelatedMessageId())
+                .type(type)
+                .reason(String.format("%d/5 avisos: %s", punishmentCount + 1, punishment.getReason()));
+
+        if (end != null)
+            builder.endSeconds(Punishment.parseDate(end));
+
+        return builder;
+    }
 }

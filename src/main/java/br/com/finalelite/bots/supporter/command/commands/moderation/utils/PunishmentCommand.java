@@ -40,14 +40,13 @@ public abstract class PunishmentCommand extends Command {
         val now = new Date();
         try {
             val punishment = Punishment.builder()
-                    .author(guild.getMember(author))
-                    .relatedGuild(guild)
+                    .authorId(author.getId())
+                    .relatedGuildId(guild.getId())
                     .type(type)
-                    .date(now)
-                    .end(getDefaultEndDate(now))
+                    .dateSeconds(Punishment.parseDate(now))
+                    .endSeconds(Punishment.parseDate(getDefaultEndDate(now)))
                     .reason(reason)
-                    .target(guild.getMember(user)
-                    );
+                    .targetId(user.getId());
 
             ModerationUtils.apply(punishment.build());
             sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " punido com sucesso.");

@@ -5,6 +5,7 @@ import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.vip.VIP;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -52,7 +53,11 @@ public class VIPCommand extends Command {
                 message.delete().complete();
                 return;
             }
-            val result = supporter.getDatabase().registerVIP(user.getId(), invoice.getId());
+            val result = supporter.getDatabase().registerVIP(
+                    VIP.builder()
+                            .discordId(user.getId()).
+                            invoice(invoice).build()
+            );
             if (result == 1) {
                 sendError(textChannel, author, "informações já usadas para ativar um VIP.", 15);
                 message.delete().complete();

@@ -172,15 +172,15 @@ public class ModerationUtils {
     }
 
     public static String formatDuration(long durationInSeconds) {
-        val remaingSeconds = new AtomicLong(durationInSeconds);
+        val reamingSeconds = new AtomicLong(durationInSeconds);
 
-        val years = getUnitAndUpdateDuration(31536000, remaingSeconds);
-        val months = getUnitAndUpdateDuration(2592000, remaingSeconds);
-        val weeks = getUnitAndUpdateDuration(604800, remaingSeconds);
-        val days = getUnitAndUpdateDuration(86400, remaingSeconds);
-        val hours = getUnitAndUpdateDuration(3600, remaingSeconds);
-        val minutes = getUnitAndUpdateDuration(60, remaingSeconds);
-        val seconds = getUnitAndUpdateDuration(1, remaingSeconds);
+        val years = getUnitAndUpdateDuration(31536000, reamingSeconds);
+        val months = getUnitAndUpdateDuration(2592000, reamingSeconds);
+        val weeks = getUnitAndUpdateDuration(604800, reamingSeconds);
+        val days = getUnitAndUpdateDuration(86400, reamingSeconds);
+        val hours = getUnitAndUpdateDuration(3600, reamingSeconds);
+        val minutes = getUnitAndUpdateDuration(60, reamingSeconds);
+        val seconds = getUnitAndUpdateDuration(1, reamingSeconds);
 
         StringBuilder sb = new StringBuilder();
 

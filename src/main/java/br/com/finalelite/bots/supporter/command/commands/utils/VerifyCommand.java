@@ -5,6 +5,7 @@ import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.utils.Captcha;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -32,7 +33,7 @@ public class VerifyCommand extends Command {
         supporter.getJda().addEventListener(new EventListener());
         supporter.getJda().getCategoryById(supporter.getConfig().getCaptchaCategoryId())
                 .getTextChannels().forEach(textChannel -> {
-            supporter.getDatabase().setCaptchaStatus(textChannel.getId(), (byte) -2);
+            supporter.getDatabase().setCaptchaStatus(textChannel.getId(), Captcha.Status.RESTARTED);
             textChannel.delete().complete();
         });
         val channel = supporter.getJda().getTextChannelById(supporter.getConfig().getVerifyChannelId());
@@ -114,14 +115,14 @@ public class VerifyCommand extends Command {
             val result = supporter.getCaptcha().check(author.getId(), message.getContentRaw());
             if (result) {
                 guild.getController().addRolesToMember(guild.getMember(author), guild.getRoleById(supporter.getConfig().getVerifiedRoleId())).complete();
-                supporter.getDatabase().setCaptchaStatus(channel.getId(), (byte) 1);
+                supporter.getDatabase().setCaptchaStatus(channel.getId(), Captcha.Status.SUCCESS);
                 supporter.getCaptchaChannels().remove(textChannel.getId());
                 textChannel.delete().complete();
             } else {
                 val times = supporter.getCaptcha().getTries(author.getId());
                 if (times >= 5) {
                     guild.getController().kick(guild.getMember(author), "Tentativas esgotadas.").complete();
-                    supporter.getDatabase().setCaptchaStatus(channel.getId(), (byte) -1);
+                    supporter.getDatabase().setCaptchaStatus(channel.getId(), Captcha.Status.TOO_MANY_ATTEMPTS);
                     supporter.getCaptchaChannels().remove(textChannel.getId());
                     textChannel.delete().complete();
                     return;
@@ -129,7 +130,10 @@ public class VerifyCommand extends Command {
                 val imageBytes = supporter.getCaptcha().createAnotherCaptcha(author.getId());
                 textChannel.getManager().setSlowmode(times * 5 + 5).complete();
                 textChannel.sendFile(imageBytes, "captcha.jpg",
-                        new MessageBuilder("Digite e envie o texto na imagem abaixo. Você tem mais " + (5 - times) + " tentativa(s).").build()).complete();
+                        new MessageBuilder(
+                                String.format("Digite e envie o texto na imagem abaixo. Você tem mais %d tentativa(s).",
+                                        5 - times))
+                                .build()).complete();
             }
         }
 
@@ -143,7 +147,7 @@ public class VerifyCommand extends Command {
                 return;
 
             event.getGuild().getTextChannelById(channelId).delete().complete();
-            supporter.getDatabase().setCaptchaStatus(channelId, (byte) -4);
+            supporter.getDatabase().setCaptchaStatus(channelId, Captcha.Status.GUILD_LEFT);
             supporter.getCaptchaChannels().remove(channelId);
         }
     }

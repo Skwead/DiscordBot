@@ -65,26 +65,27 @@ public abstract class TempPunishmentCommand extends Command {
         } while (endsWithComma);
 
         var reason = Arrays.stream(args).skip(argumentIndex).collect(Collectors.joining(" "));
-        if(reason.isEmpty())
+        if (reason.isEmpty())
             reason = "Nenhum motivo mencionado";
-        
-        if(reason.length() > 256) {
+
+        if (reason.length() > 256) {
             sendError(textChannel, author, "motivo muito longo.", 30);
             return;
         }
 
         try {
             val punishment = Punishment.builder()
-                    .author(guild.getMember(author))
-                    .relatedGuild(guild)
+                    .authorId(author.getId())
+                    .relatedGuildId(guild.getId())
                     .type(type)
-                    .date(now)
-                    .end(end)
+                    .dateSeconds(Punishment.parseDate(now))
+                    .endSeconds(Punishment.parseDate(end))
                     .reason(reason)
-                    .target(guild.getMember(user)
-                    );
+                    .targetId(user.getId());
 
-            ModerationUtils.apply(punishment.build());
+            val built = punishment.build();
+
+            ModerationUtils.apply(built);
             sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " punido com sucesso.");
             return;
         } catch (Exception e) {

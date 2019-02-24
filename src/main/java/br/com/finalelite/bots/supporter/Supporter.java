@@ -42,7 +42,7 @@ public class Supporter {
     @Getter
     // a captcha builder
     // (used to verify user account)
-    private Captcha captcha = new Captcha();
+    private CaptchaManager captcha = new CaptchaManager();
     @Getter
     // a map of the Catpcha channel id and the time epoch of the channel creation
     // (used to delete old channels)
@@ -199,7 +199,7 @@ public class Supporter {
                         channel.getGuild().getController()
                                 .kick(channel.getGuild().getMemberById(getDatabase()
                                         .getCaptchaUserIdByChannelId(channelId)), "Tempo limite.").complete();
-                        getDatabase().setCaptchaStatus(channelId, (byte) -3);
+                        getDatabase().setCaptchaStatus(channelId, Captcha.Status.TIMED_OUT);
                         newList.remove(channelId);
                     }
                 });

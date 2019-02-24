@@ -5,6 +5,8 @@ import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.ticket.Ticket;
+import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -66,7 +68,9 @@ public class SupportCommand extends Command {
         AddCommand.addUser(newChannel, guild.getMember(author));
 
         val warnMsg = sendSuccess(channel, author, "aguarde...", 60);
-        var ticket = supporter.getDatabase().createReturningTicket(author.getId(), subject, newChannel.getId());
+        var ticket = supporter.getDatabase().createReturningTicket(
+                Ticket.builder().userId(author.getId()).subject(subject).status(TicketStatus.OPENED).channelId(newChannel.getId()).build()
+        );
         newChannel.getManager().setName("\uD83D\uDC9A-ticket-" + ticket.getId()).complete();
         val msg = newChannel.sendMessage(new MessageBuilder(
                 ("\nTicket " + ticket.getId() + "\nAssunto: " + subject +

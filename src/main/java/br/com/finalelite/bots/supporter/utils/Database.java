@@ -6,17 +6,18 @@ import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punish
 import br.com.finalelite.bots.supporter.ticket.Ticket;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
+import br.com.finalelite.bots.supporter.vip.VIP;
 import com.gitlab.pauloo27.core.sql.*;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
@@ -30,187 +31,96 @@ public class Database {
 
     @Getter
     private EzSQL sql;
-    private EzTable tickets;
-    private EzTable captchas;
-    private EzTable enabledVIPS;
-    private EzTable punishments;
+    private Table tickets;
+    private Table captchas;
+    private Table enabledVIPS;
+    private Table punishments;
 
     private static void handleException(Exception e) {
         SimpleLogger.sendStackTraceToOwner(e);
     }
 
     public void connect() throws SQLException, ClassNotFoundException {
-        sql = new EzSQL(EzSQLType.MYSQL)
+        sql = new EzMySQL()
                 .withAddress(address, port)
                 .withDefaultDatabase(database)
                 .withLogin(username, password);
 
         sql.registerDriver().connect();
 
-        tickets = sql.createIfNotExists(
-                new EzTableBuilder("discord_tickets")
-                        .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
-                        .withColumn(new EzColumnBuilder("userId", EzDataType.VARCHAR, 64))
-                        .withColumn(new EzColumnBuilder("channelId", EzDataType.VARCHAR, 64))
-                        .withColumn(new EzColumnBuilder("subject", EzDataType.VARCHAR, 500))
-                        .withColumn(new EzColumnBuilder("status", EzDataType.TINYINT))
+        tickets = sql.createIfNotExists(Ticket.class);
+
+        enabledVIPS = sql.createIfNotExists(VIP.class);
+
+        sql.registerDataType(Invoice.class, DefaultDataTypes.BIGINT);
+        sql.registerSerializer(Invoice.class,
+                new DataSerializer<>(
+                        Invoice::getId,
+                        (invoiceClass, invoiceId) -> getInvoiceById((long) invoiceId)
+                )
         );
 
-        enabledVIPS = sql.createIfNotExists(
-                new EzTableBuilder("enabled_vips")
-                        .withColumn(new EzColumnBuilder("invoiceId", EzDataType.BIGINT, EzAttribute.UNIQUE))
-                        .withColumn(new EzColumnBuilder("discordId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE)));
+        punishments = sql.createIfNotExists(Punishment.class);
 
-        captchas = sql.createIfNotExists(
-                new EzTableBuilder("captchas")
-                        .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
-                        .withColumn(new EzColumnBuilder("channelId", EzDataType.VARCHAR, 64, EzAttribute.UNIQUE))
-                        .withColumn(new EzColumnBuilder("status", EzDataType.TINYINT).withDefaultValue(0))
-                        .withColumn(new EzColumnBuilder("userId", EzDataType.VARCHAR, 64)));
-
-        punishments = sql.createIfNotExists(
-                new EzTableBuilder("punishments")
-                        .withColumn(new EzColumnBuilder("id", EzDataType.PRIMARY_KEY))
-                        .withColumn(new EzColumnBuilder("date", EzDataType.INTEGER, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("author", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("target", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("relatedGuild", EzDataType.VARCHAR, 64, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("relatedChannel", EzDataType.VARCHAR, 64)
-                                .withDefaultValue(null))
-                        .withColumn(new EzColumnBuilder("relatedMessage", EzDataType.VARCHAR, 64)
-                                .withDefaultValue(null))
-                        .withColumn(new EzColumnBuilder("type", EzDataType.VARCHAR, 32, EzAttribute.NOT_NULL))
-                        .withColumn(new EzColumnBuilder("reason", EzDataType.VARCHAR,
-                                256, EzAttribute.NOT_NULL)
-                                .withDefaultValue("Nenhum motivo informado"))
-                        .withColumn(new EzColumnBuilder("end", EzDataType.INTEGER, EzAttribute.NOT_NULL)
-                                .withDefaultValue(-1))
-                        .withColumn(new EzColumnBuilder("reverted", EzDataType.BOOLEAN, EzAttribute.NOT_NULL)
-                                .withDefaultValue(false))
-        );
-
+        captchas = sql.createIfNotExists(Captcha.class);
     }
 
-    public byte createCaptcha(String userId, String channelId) {
-        try {
-            captchas.insertAndClose(new EzInsert("userId, channelId", userId, channelId));
-            return 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
+    public void createCaptcha(String userId, String channelId) {
+        captchas.insert(Captcha.builder().userId(userId).channelId(channelId).build()).executeAndClose();
     }
 
     public String getCaptchaUserIdByChannelId(String channelId) {
-        try (val rs = captchas.select(new EzSelect("userId")
-                .where().equals("channelId", channelId)).getResultSet()) {
-            if (rs.next())
-                return rs.getString("userId");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return captchas.select()
+                .where().equals("channelId", channelId).execute().to(Captcha.class).getUserId();
     }
 
     public Punishment getActivePunishmentByUser(String targetId, PunishmentType... types) {
         checkTypes(types);
 
         val select = preparePunishmentSelectQuery(types);
-        select.and().equals("target", targetId).limit(1);
+        select.and().equals("targetId", targetId).limit(1);
 
-        try (val result = punishments.select(select)
-                .getResultSet()) {
-            if (result.next())
-                return buildPunishment(result);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return select.execute().to(Punishment.class);
     }
 
     public List<Punishment> getActivePunishmentsByUser(String targetId, PunishmentType... types) {
         checkTypes(types);
 
-        val list = new ArrayList<Punishment>();
-
-        val select = preparePunishmentSelectQuery(types);
-        select.and().equals("target", targetId);
-
-        return getPunishments(list, select);
-    }
-
-    private List<Punishment> getPunishments(ArrayList<Punishment> list, EzSelect select) {
-        try (val result = punishments.select(select)
-                .getResultSet()) {
-            while (result.next())
-                list.add(buildPunishment(result));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
+        return preparePunishmentSelectQuery(types)
+                .and().equals("targetId", targetId).execute()
+                .toList(Punishment.class);
     }
 
     public String getCaptchaChannelIdByUserId(String userId) {
-        try (val rs = captchas.select(new EzSelect("channelId")
+        val captcha = captchas.select()
                 .where().equals("userId", userId)
-                .and().equals("status", 0)).getResultSet()) {
-            if (rs.next())
-                return rs.getString("channelId");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+                .limit(1)
+                .and().equals("status", Captcha.Status.WAITING.name()).execute().to(Captcha.class);
+
+        if (captcha == null)
+            return null;
+
+        return captcha.getChannelId();
     }
 
     public void addPunishment(Punishment punishment) {
-        try {
-            punishments.insertAndClose(
-                    new EzInsert("date, author, target, relatedGuild, relatedChannel, relatedMessage, type, reason, end",
-                            punishment.getDate().getTime() / 1000,
-                            punishment.getAuthor().getUser().getId(),
-                            punishment.getTarget().getUser().getId(),
-                            punishment.getRelatedGuild().getId(),
-                            punishment.getRelatedChannel() == null ? null : punishment.getRelatedChannel().getId(),
-                            punishment.getRelatedMessage() == null ? null : punishment.getRelatedMessage().getId(),
-                            punishment.getType().name(),
-                            punishment.getReason(),
-                            punishment.getEnd() == null ? -1 : punishment.getEnd().getTime() / 1000
-
-                    ));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        punishments.insert(punishment).executeAndClose();
     }
 
     public boolean revertPunishment(Punishment punishment) {
-        try (val result = punishments.update(new EzUpdate()
-                .set("reverted", true)
-                .where().equals("id", punishment.getId()))) {
-            return result.getUpdatedRows() != 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        punishment.setReverted(true);
+
+        return punishments.update(punishment).execute().getUpdatedRows() != 0;
     }
 
     public Punishment getPunishmentById(int id) {
-        try (val rs = punishments.select(new EzSelect("*").where().equals("id", id)).getResultSet()) {
-            if (rs.next())
-                return buildPunishment(rs);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return punishments.select().where().equals("id", id).execute().to(Punishment.class);
     }
 
     public List<Punishment> getActivePunishmentsByType(PunishmentType... types) {
         checkTypes(types);
 
-        val list = new ArrayList<Punishment>();
-
-        val select = preparePunishmentSelectQuery(types);
-
-        return getPunishments(list, select);
+        return preparePunishmentSelectQuery(types).execute().toList(Punishment.class);
     }
 
     private void checkTypes(PunishmentType[] types) {
@@ -218,8 +128,9 @@ public class Database {
         Preconditions.checkState(types.length != 0, "Types cannot be empty");
     }
 
-    private EzSelect preparePunishmentSelectQuery(PunishmentType[] types) {
-        val select = new EzSelect("*");
+    private Select preparePunishmentSelectQuery(PunishmentType[] types) {
+        val select = punishments.select();
+
         select.where()
                 .openParentheses()
                 .equals("end", -1)
@@ -240,49 +151,19 @@ public class Database {
         return select;
     }
 
-    public Punishment buildPunishment(ResultSet rs) {
-        try {
-            return Punishment.builder()
-                    .id(rs.getInt("id"))
-                    .date(new Date(rs.getLong("date") * 1000))
-                    .authorId(rs.getString("author"))
-                    .author(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("author")))
-                    .targetId(rs.getString("target"))
-                    .target(Supporter.getMemberById(rs.getString("relatedGuild"), rs.getString("target")))
-                    .relatedGuild(Supporter.getGuildById(rs.getString("relatedGuild")))
-                    .relatedChannel(rs.getString("relatedChannel") == null ? null : Supporter.getTextChannelById(rs.getString("relatedChannel")))
-                    .relatedMessage(rs.getString("relatedChannel") == null ? null : Supporter.getMessageById(rs.getString("relatedChannel"), rs.getString("relatedMessage")))
-                    .type(PunishmentType.valueOf(rs.getString("type")))
-                    .reason(rs.getString("reason"))
-                    .end(rs.getLong("end") == -1 ? null : new Date(rs.getLong("end") * 1000))
-                    .reverted(rs.getBoolean("reverted")).build();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void setCaptchaStatus(String channelId, byte status) {
-        try {
-            captchas.update(new EzUpdate().set("status", status).where().equals("channelId", channelId)).close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void setCaptchaStatus(String channelId, Captcha.Status status) {
+        captchas.update().set("status", status.name()).where().equals("channelId", channelId).executeAndClose();
     }
 
     public void removeCaptchaByChannelId(String channelId) {
-        try {
-            captchas.delete(new EzDelete().where().equals("channelId", channelId)).close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        captchas.delete().where().equals("channelId", channelId).executeAndClose();
     }
 
     // checks if the user has committed spam
     public boolean canCreateTicket(String userId) {
-        try (val rs = tickets.select(new EzSelect("userId")
+        try (val rs = tickets.select()
                 .where().equals("userId", userId)
-                .and().equals("status", TicketStatus.SPAM.ordinal())).getResultSet()) {
+                .and().equals("status", TicketStatus.SPAM.name()).execute().getResultSet()) {
             return !rs.next();
         } catch (SQLException e) {
             reconnectSQL(e);
@@ -293,70 +174,49 @@ public class Database {
     }
 
     // creates a ticket and return a instance
-    public Ticket createReturningTicket(String userId, String subject, String channelId) {
+    public Ticket createReturningTicket(Ticket ticket) {
         try {
-            tickets.insert(new EzInsert("userid, subject, channelId, status", userId, subject, channelId, TicketStatus.OPENED.ordinal())).close();
-            val rs = tickets.select(new EzSelect("id")
-                    .where().equals("channelId", channelId)
-                    .limit(1)).getResultSet();
+            tickets.insert(ticket).executeAndClose();
+
+            val rs = tickets.select("id")
+                    .limit(1).execute().getResultSet();
             if (!rs.next())
                 return null;
             int id = rs.getInt("id");
             rs.close();
-            return new Ticket(id, userId, channelId, subject, TicketStatus.OPENED);
+            ticket.setId(id);
+            return ticket;
         } catch (SQLException e) {
             reconnectSQL(e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return createReturningTicket(userId, subject, channelId);
+                return createReturningTicket(ticket);
         }
         return null;
     }
 
     // gets the ticket by the channel id
     public Ticket getTicketByChannelId(String channelId) {
-        try (val rs = tickets.select(new EzSelect("*")
-                .where().equals("channelId", channelId)).getResultSet()) {
-            if (!rs.next())
-                return null;
-            val ticket = new Ticket(rs.getInt("id"), rs.getString("userId"), channelId, rs.getString("subject"), TicketStatus.getFromOrdinalId(rs.getByte("status")));
-            rs.close();
-
-            return ticket;
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getTicketByChannelId(channelId);
-        }
-        return null;
+        return tickets.select().where().equals("channelId", channelId).execute().to(Ticket.class);
     }
 
     // closes a ticket
     public void closeTicket(Ticket ticket) {
-        try {
-            tickets.update(new EzUpdate().set("status", TicketStatus.CLOSED.ordinal()).where().equals("id", ticket.getId())).close();
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                closeTicket(ticket);
-        }
+        ticket.setStatus(TicketStatus.CLOSED);
+        tickets.update(ticket).executeAndClose();
     }
 
     // marks ticket as spam
     public void markTicketAsSpam(Ticket ticket) {
-        try {
-            tickets.update(new EzUpdate().set("status", TicketStatus.SPAM.ordinal()).where().equals("id", ticket.getId())).close();
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                markTicketAsSpam(ticket);
-        }
+        ticket.setStatus(TicketStatus.SPAM);
+
+        tickets.update(ticket);
     }
 
     // checks if the user has an opened ticket
     public boolean hasOpenedTicket(String userId) {
-        try (val rs = tickets.select(new EzSelect("userId")
+        try (val rs = tickets.select("userId")
                 .where().equals("userId", userId)
-                .and().equals("status", TicketStatus.OPENED.ordinal())).getResultSet()) {
+                .and().equals("status", TicketStatus.OPENED.name()).execute().getResultSet()) {
             return !rs.next();
         } catch (SQLException e) {
             reconnectSQL(e);
@@ -465,19 +325,20 @@ public class Database {
     }
 
     // registers a vip to a invoice (to avoid 2 people to use the same invoice)
-    public byte registerVIP(String discordId, long invoiceId) {
-        try {
-            enabledVIPS.insertAndClose(new EzInsert("discordId, invoiceId", discordId, invoiceId));
-            return 0;
-        } catch (SQLException e) {
+    public byte registerVIP(VIP vip) {
+        AtomicInteger status = new AtomicInteger();
+        enabledVIPS.insert(vip).executeAndClose(e -> {
             // haha, someone trying to use the same invoice to get the VIP?
             if (e.getMessage().startsWith("Duplicate entry"))
-                return 1;
-            reconnectSQL(e);
+                status.set(1);
+            reconnectSQL((SQLException) e);
             if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return registerVIP(discordId, invoiceId);
-        }
-        return 2;
+                status.set(2);
+        });
+        if (status.get() == 2)
+            return registerVIP(vip);
+
+        return (byte) status.get();
     }
 
     // gets the user id by the email used in the site

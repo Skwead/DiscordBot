@@ -2,6 +2,7 @@ package br.com.finalelite.bots.supporter.utils.time;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,6 +81,10 @@ public class Unit {
      */
     public double convert(double value, Unit target) {
         return (value * unitInSeconds) / (target.getUnitInSeconds());
+    }
+
+    public Date addToDate(Date date, double value) {
+        return new Date((long) (date.getTime() + (value * unitInSeconds * 1000)));
     }
 
     /**

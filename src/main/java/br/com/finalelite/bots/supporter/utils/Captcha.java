@@ -1,52 +1,40 @@
 package br.com.finalelite.bots.supporter.utils;
 
-import com.octo.captcha.service.CaptchaServiceException;
-import com.octo.captcha.service.image.DefaultManageableImageCaptchaService;
-import com.octo.captcha.service.image.ImageCaptchaService;
-import lombok.val;
+import com.gitlab.pauloo27.core.sql.Id;
+import com.gitlab.pauloo27.core.sql.Length;
+import com.gitlab.pauloo27.core.sql.Name;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Name("captchas")
 public class Captcha {
 
-    private final ImageCaptchaService service = new DefaultManageableImageCaptchaService();
-    private final Map<String, Integer> ids = new HashMap<>();
+    @Id
+    private int id;
 
-    public byte[] createNewCaptcha(String id) {
-        ids.put(id, 1);
-        return getImage(id);
+    @Length(64)
+    private String userId;
+
+    @Length(64)
+    private String channelId;
+
+    @Builder.Default
+    @Length(18)
+    private Status status = Status.WAITING;
+
+    public enum Status {
+        WAITING,
+        SUCCESS,
+        TIMED_OUT,
+        GUILD_LEFT,
+        TOO_MANY_ATTEMPTS,
+        RESTARTED
     }
 
-    public byte[] createAnotherCaptcha(String id) {
-        ids.put(id, ids.get(id) + 1);
-        return getImage(id);
-    }
-
-    private byte[] getImage(String id) {
-        val jpegOutputStream = new ByteArrayOutputStream();
-        try {
-            val challenge =
-                    service.getImageChallengeForID(id, Locale.ENGLISH);
-
-            ImageIO.write(challenge, "jpg", jpegOutputStream);
-        } catch (CaptchaServiceException e) {
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return jpegOutputStream.toByteArray();
-    }
-
-    public int getTries(String id) {
-        return ids.getOrDefault(id, 0);
-    }
-
-    public boolean check(String id, String text) {
-        return service.validateResponseForID(id, text);
-    }
 }
