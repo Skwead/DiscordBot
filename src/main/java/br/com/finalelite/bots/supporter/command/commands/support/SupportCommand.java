@@ -58,9 +58,11 @@ public class SupportCommand extends Command {
             return;
         }
 
-        val abstractChannel = guild.getController().createTextChannel("ticket-" + author.getId())
+        val abstractChannel = guild.getController()
+                .createTextChannel("ticket-" + author.getId())
                 .setParent(guild.getCategoryById(supporter.getConfig().getOpenedCategoryId()))
-                .setTopic(subject).complete();
+                .setTopic(subject)
+                .complete();
 
         val newChannel = guild.getTextChannelById(abstractChannel.getId());
         newChannel.getManager()

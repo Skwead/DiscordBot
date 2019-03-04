@@ -15,13 +15,12 @@ import java.util.Map;
 public class CommandHandler {
     @Getter
     private final String prefix;
+    private Map<String, Command> commands = new HashMap<>();
 
     public CommandHandler(String prefix) {
         this.prefix = prefix;
         Supporter.getInstance().getJda().addEventListener(new MessageListener());
     }
-
-    private Map<String, Command> commands = new HashMap<>();
 
     public void registerCommand(Command command) {
         commands.put(command.getName().toLowerCase(), command);

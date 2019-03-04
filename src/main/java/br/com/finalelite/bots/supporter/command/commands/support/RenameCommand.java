@@ -39,7 +39,7 @@ public class RenameCommand extends Command {
 
         val database = Supporter.getInstance().getDatabase();
         val ticket = database.getTicketByChannelId(textChannel.getId());
-        
+
         textChannel.getManager().setName(ticket.getStatus().getEmoji() + "-ticket-" + text.replace(" ", "-")).complete();
 
         ticket.setName(text.replace(" ", "-"));

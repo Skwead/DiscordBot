@@ -60,6 +60,12 @@ public class Punishment {
     @Builder.Default
     private boolean reverted = false;
 
+    public static int parseDate(Date date) {
+        if (date == null)
+            return -1;
+        return (int) (date.getTime() / 1000);
+    }
+
     public void apply() {
         type.apply(this);
     }
@@ -94,12 +100,6 @@ public class Punishment {
 
     public Date getEnd() {
         return new Date(((long) endSeconds) * 1000);
-    }
-
-    public static int parseDate(Date date) {
-        if(date == null)
-            return -1;
-        return (int) (date.getTime() / 1000);
     }
 
 }
