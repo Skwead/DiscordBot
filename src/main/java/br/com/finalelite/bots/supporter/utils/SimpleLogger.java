@@ -29,6 +29,10 @@ public class SimpleLogger {
         return formatter.format(date);
     }
 
+    public static String format(int date) {
+        return formatter.format(new Date(date * 1000L));
+    }
+
     public static void log(String line) {
 //        logger.info(line);
         System.out.printf("[%s] %s%n", format(new Date()), line);
