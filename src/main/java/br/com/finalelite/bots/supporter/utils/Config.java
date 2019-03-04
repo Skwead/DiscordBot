@@ -44,6 +44,8 @@ public class Config {
     @Builder.Default
     private final String mutedRoleId = "muted role id";
     @Builder.Default
+    private final String transcriptionFolder = "/home/user/path/to/save";
+    @Builder.Default
     private final String openedCategoryId = "support category id";
     @Builder.Default
     private final String closedCategoryId = "closed tickets category id";
@@ -77,8 +79,8 @@ public class Config {
     // TODO FIX ME PLZ
     private static Map<String, String> getDefaultMessages() {
         val map = new HashMap<String, String>();
-        map.put("welcome", "Welcome, {user_mention}, what can we do for you today?");
-        map.put("bye", "Bye, {user_mention}, we're to help.");
+        map.put("welcome", "Welcome, ${user_mention}, what can we do for you today?");
+        map.put("bye", "Bye, ${user_mention}, we're to help.");
         return map;
     }
 }
