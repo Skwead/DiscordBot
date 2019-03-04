@@ -1,10 +1,9 @@
 package br.com.finalelite.bots.supporter.ticket;
 
-import com.gitlab.pauloo27.core.sql.DefaultAttributes;
-import com.gitlab.pauloo27.core.sql.Id;
-import com.gitlab.pauloo27.core.sql.Length;
-import com.gitlab.pauloo27.core.sql.Name;
+import br.com.finalelite.bots.supporter.Supporter;
+import com.gitlab.pauloo27.core.sql.*;
 import lombok.*;
+import net.dv8tion.jda.core.entities.User;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,8 +24,22 @@ public class Ticket {
     @Length(64)
     private String subject;
 
+    @Length(32)
+    private String name;
+
     @DefaultAttributes.NotNull
     private TicketStatus status;
+
+    @DefaultAttributes.NotNull
+    private int date;
+
+    @DefaultValue
+    @Builder.Default
+    private int closeDate = -1;
+
+    public User getUser() {
+        return Supporter.getUserById(userId);
+    }
 }
 
 
