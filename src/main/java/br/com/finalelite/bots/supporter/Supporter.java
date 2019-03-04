@@ -4,6 +4,7 @@ import br.com.finalelite.bots.supporter.command.CommandHandler;
 import br.com.finalelite.bots.supporter.command.commands.moderation.*;
 import br.com.finalelite.bots.supporter.command.commands.server.*;
 import br.com.finalelite.bots.supporter.command.commands.support.*;
+import br.com.finalelite.bots.supporter.command.commands.support.utils.TicketLogger;
 import br.com.finalelite.bots.supporter.command.commands.utils.*;
 import br.com.finalelite.bots.supporter.listeners.JoinListener;
 import br.com.finalelite.bots.supporter.utils.*;
@@ -47,6 +48,9 @@ public class Supporter {
     // a map of the Catpcha channel id and the time epoch of the channel creation
     // (used to delete old channels)
     private Map<String, Integer> captchaChannels = new HashMap<>();
+    // the ticket transcriptor
+    @Getter
+    private TicketLogger ticketLogger = new TicketLogger();
 
     public Supporter() {
         instance = this;

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ticket #${id} - ${subject}</title>
+    <link type="text/css" rel="stylesheet" href="../assets/css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="../assets/css/bootstrap-responsive.css"/>
+    <link type="text/css" rel="stylesheet" href="../assets/css/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="../assets/css/hljs-github.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../assets/css/style.css"/>
+
+    <style>
+    img.emoji {
+      cursor: pointer;
+      height: 2em;
+      width: 2em;
+      margin: 0 .05em 0 .1em;
+      vertical-align: -0.1em;
+    }
+    </style>
+
+    <script src="https://twemoji.maxcdn.com/2/twemoji.min.js"></script>
+
+    <script>
+        // sleep time expects milliseconds
+        function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+        }
+
+        function escapeHTML(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function formatSubject() {
+            var subject = document.getElementById("subject").innerHTML;
+            console.log("Subject: " + subject);
+            if(subject.length >= 25) {
+                document.getElementById("subject").innerHTML = subject.substr(0, 22) + "...";
+                var currentHTML = document.getElementById("content-body").innerHTML;
+                document.getElementById("content-body").innerHTML = "<h1>" + escapeHTML(subject) + "</h1><br>" + currentHTML;
+            }
+
+        }
+    </script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span3" style="position: sticky; position: -webkit-sticky; top: 0; right: 10px">
+            <h3><strong>${ticket_display_name}</strong></h3>
+            <br>
+
+            <table id="infos" style="width:100%">
+                <tr>
+                    <td>Assunto:</td>
+                    <td id="subject">${subject}</td>
+                </tr>
+                <tr>
+                    <td>Usuário:</td>
+                    <td><img class="message-avatar" src="${user_avatar}">
+                        <b data-userId="${user_id}" id="info-name" class="message-username">${user_name}</b></td>
+                </tr>
+                <tr>
+                    <td>Criado em:</td>
+                    <td>${date}</td>
+                </tr>
+                <tr>
+                    <td>Fechado em:</td>
+                    <td>${close_date}</td>
+                </tr>
+                <tr id="customData0" hidden="" style="font-size: 0px;" style="transition: all 1s;">
+                    <td id="customData0-key" style="transition: all 0.3s; height: 0px;">key:</td>
+                    <td id="customData0-value" style="transition: all 0.3s;">value</td>
+                </tr>
+                <tr id="customData1" hidden="" style="font-size: 0px;" style="transition: all 1s;">
+                    <td id="customData1-key" style="transition: all 0.3s; height: 0px;">key:</td>
+                    <td id="customData1-value" style="transition: all 0.3s;">value</td>
+                </tr>
+                <tr id="customData2" hidden="" style="font-size: 0px;" style="transition: all 1s;">
+                    <td id="customData2-key" style="transition: all 0.3s; height: 0px;">key:</td>
+                    <td id="customData2-value" style="transition: all 0.3s;">value</td>
+                </tr>
+            </table>
+            <div id="footer" style="text-align: center; font-size: 10px; bottom: 0px;">
+                <h3>Sobre</h3>
+                <p>Gerado pelo sistema de suporte da Rede Final Elite. Baseado no tema Mixubootstrap2col do
+                    <a target="_blank" href="https://github.com/mixu/markdown-styles/">Markdown Styles</a>.</p>
+                <p>Rede Final Elite &copy; - Alguns direitos reservados.</p>
+            </div>
+        </div>
+
+        <div id="content-body" class="span9 main" style="word-wrap: break-word;">
+            <h2>Mensagens</h2>
+            <br>
+            <p>
+
+            <table id="messages-list">
+                ${messages}
+            </table>
+
+            <br>
+            <br>
+            <h2>Anexos</h2>
+
+            ${attachments}
+        </div>
+    </div>
+</div>
+<script>
+    var messages = document.getElementById('messages-list');
+    twemoji.parse(messages, {"size":72});
+</script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+<script>
+    formatSubject();
+</script>
+<script>
+	var attachments = document.getElementById("attachments-list");
+
+    Array.from(attachments.getElementsByTagName("figure")).forEach(function(attachment) {
+    	if(attachment.getAttribute('class') !== 'file') {
+            image = attachment.getElementsByTagName("img")[0];
+            imageSize = image.naturalHeight;
+
+            if(imageSize >= 200) {
+                attachment.setAttribute("class", "incomplete");
+                image.setAttribute("width", "20%");
+                image.setAttribute("class", "large-attachment");
+            } else {
+                attachment.setAttribute("class", "complete");
+            }
+        }
+    });
+</script>
+<script>
+    var info = document.getElementById("info-name");
+
+    function toggle(id, key, value) {
+        main = "customData" + id
+        valueElement = main  + "-value"
+        keyElement = main + "-key"
+
+        document.getElementById(main).style.fontSize = "0px";
+
+        sleep(120).then(() => {
+            document.getElementById(keyElement).innerHTML = key;
+            document.getElementById(valueElement).innerHTML = value;
+            document.getElementById(main).removeAttribute("hidden");
+
+            if(key === "") {
+                document.getElementById(main).setAttribute("hidden", "");
+            }
+
+            sleep(120).then(() => {
+                document.getElementById(main).style.fontSize = "14px";
+            });
+        });
+    };
+
+    info.addEventListener('click', () => {
+        toggle(0, "ID do usuário:", info.getAttribute("data-userId"));
+        sleep(250).then(() => {
+            toggle(1, "", "");
+        });
+        sleep(550).then(() => {
+            toggle(2, "", "");
+        });
+    });
+
+    elements = document.getElementById("messages-list").getElementsByTagName("tr");
+
+    Array.from(elements).forEach(function(element) {
+        element.addEventListener('click', () => {
+            toggle(0, "ID do usuário:", element.getAttribute("data-userId"));
+            sleep(250).then(() => {
+                toggle(1, "Enviada em:", element.getAttribute("data-date"));
+            });
+            sleep(550).then(() => {
+                toggle(2, "ID da mensagem:", element.getAttribute("data-messageId"));
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -5,16 +5,10 @@ import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
-import br.com.finalelite.bots.supporter.command.commands.support.utils.TicketLogger;
+import br.com.finalelite.bots.supporter.utils.SimpleLogger;
 import lombok.val;
-import lombok.var;
-import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
-
-import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DeleteCommand extends Command {
     public DeleteCommand() {
@@ -27,7 +21,7 @@ public class DeleteCommand extends Command {
         );
     }
 
-    public static void deleteTicket(Message message, Guild guild, TextChannel channel, User author) {
+    public static void deleteTicket(Message message, Guild guild, TextChannel channel) {
         Channel logChannel;
         if (guild.getTextChannelsByName("tickets-log", false).size() == 0) {
             logChannel = guild.getController().createTextChannel("tickets-log").setParent(guild.getCategoryById(Supporter.getInstance().getConfig().getClosedCategoryId())).complete();
@@ -35,46 +29,29 @@ public class DeleteCommand extends Command {
             logChannel = guild.getTextChannelsByName("tickets-log", false).get(0);
         }
 
-
         val log = guild.getTextChannelById(logChannel.getId());
         val ticket = Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
-        val sb = new StringBuilder();
-        val messageList = channel.getIterableHistory().complete();
-        Collections.reverse(messageList);
-        val name = ticket.getStatus().getEmoji() + (ticket.getName() == null ? "" : "-" + ticket.getName());
-        val index = new AtomicInteger();
+        val base64 = Supporter.getInstance().getTicketLogger().generateLog(ticket);
 
-        messageList.forEach(msg -> {
-            if (msg.getAttachments().size() != 0) {
-                msg.getAttachments().forEach(attachment -> {
-                    try {
-                        val id = index.getAndIncrement();
-                        log.sendFile(attachment.getInputStream(), attachment.getFileName(), new MessageBuilder(String.format("**Anexo %d >** [%s] Ticket %d: %s", id, msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a X dd/MM/yyyy")), ticket.getId(), msg.getContentRaw())).build()).complete();
-                        sb.append(String.format("[%s] %s (%s) > %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), "ANEXO " + id));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } else {
-                sb.append(String.format("[%s] %s (%s): %s\n", msg.getCreationTime().format(DateTimeFormatter.ofPattern("hh:mm:ss a dd/MM/yyyy")), msg.getAuthor().getName(), msg.getAuthor().getId(), msg.getContentRaw()));
-            }
-        });
-        val user = Supporter.getUserById(ticket.getUserId());
-        var username = "Usuário inválido (" + ticket.getUserId() + ")";
-        if (user != null)
-            username = user.getAsMention();
-        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()),
-                new MessageBuilder(String.format("%s: %s (%d) criado por %s",
-                        name,
-                        ticket.getSubject(),
-                        ticket.getId(),
-                        username)).build())
-                .complete();
+        val embed = new EmbedBuilder()
+                .setColor(0x23f723)
+                .setTitle("Ticket Fechado - Abrir Resumo", "https://finalelite.com.br/docs/tickets/" + base64)
+                .setAuthor("Final Elite", "https://finalelite.com.br", Supporter.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .addField("ID", String.valueOf(ticket.getId()), true)
+                .addField("Nome", ticket.getName() == null ? "Não definido" : ticket.getName(), true)
+                .addField("Avaliação", "Não avaliado", true)
+                .addField("Base64", base64, true)
+                .addField("Assunto", ticket.getSubject(), true)
+                .addField("Tipo", "Não definido", true)
+                .setFooter(ticket.getUser().getName() + "#" + ticket.getUser().getDiscriminator() + " - " + SimpleLogger.format(ticket.getDate()), ticket.getUser().getAvatarUrl());
+
+        log.sendMessage(embed.build()).complete();
+
         guild.getTextChannelById(channel.getId()).delete().complete();
     }
 
     @Override
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
-        deleteTicket(message, guild, channel, author);
+        deleteTicket(message, guild, channel);
     }
 }
