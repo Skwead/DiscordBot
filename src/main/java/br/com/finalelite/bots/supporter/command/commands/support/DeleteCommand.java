@@ -5,6 +5,7 @@ import br.com.finalelite.bots.supporter.command.Command;
 import br.com.finalelite.bots.supporter.command.CommandChannelChecker;
 import br.com.finalelite.bots.supporter.command.CommandPermission;
 import br.com.finalelite.bots.supporter.command.DefaultCommandCategory;
+import br.com.finalelite.bots.supporter.command.commands.support.utils.TicketLogger;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -33,13 +34,16 @@ public class DeleteCommand extends Command {
         } else {
             logChannel = guild.getTextChannelsByName("tickets-log", false).get(0);
         }
+
+
         val log = guild.getTextChannelById(logChannel.getId());
         val ticket = Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
         val sb = new StringBuilder();
         val messageList = channel.getIterableHistory().complete();
         Collections.reverse(messageList);
-        val name = channel.getName().startsWith("\uD83D\uDC9A") ? "\uD83D\uDDA4" + channel.getName().substring(channel.getName().indexOf("-")) : channel.getName();
+        val name = ticket.getStatus().getEmoji() + (ticket.getName() == null ? "" : "-" + ticket.getName());
         val index = new AtomicInteger();
+
         messageList.forEach(msg -> {
             if (msg.getAttachments().size() != 0) {
                 msg.getAttachments().forEach(attachment -> {
@@ -59,7 +63,13 @@ public class DeleteCommand extends Command {
         var username = "Usuário inválido (" + ticket.getUserId() + ")";
         if (user != null)
             username = user.getAsMention();
-        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()), new MessageBuilder(String.format("%s: %s (%d) criado por %s", name, ticket.getSubject(), ticket.getId(), username)).build()).complete();
+        log.sendFile(sb.toString().getBytes(), String.format("ticket-%d.txt", ticket.getId()),
+                new MessageBuilder(String.format("%s: %s (%d) criado por %s",
+                        name,
+                        ticket.getSubject(),
+                        ticket.getId(),
+                        username)).build())
+                .complete();
         guild.getTextChannelById(channel.getId()).delete().complete();
     }
 

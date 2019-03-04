@@ -29,14 +29,22 @@ public class RenameCommand extends Command {
         val text = String.join(" ", args);
         if (text.isEmpty()) {
             sendError(textChannel, author, "use `!renomear <nome>`.", 10);
+            return;
         }
-        if (textChannel.getParent().getId().equals(Supporter.getInstance().getConfig().getOpenedCategoryId()))
-            textChannel.getManager().setName("\uD83D\uDC9A-ticket-" + text.replace(" ", "-")).complete();
-        else if (textChannel.getName().startsWith("\uD83D\uDDA4")) {
-            textChannel.getManager().setName("\uD83D\uDDA4-ticket-" + text.replace(" ", "-")).complete();
-        } else {
-            textChannel.getManager().setName("\uD83D\uDC97-ticket-" + text.replace(" ", "-")).complete();
+
+        if (text.length() > 32) {
+            sendError(textChannel, author, "o nome deve ter no máximo 32 de tamanho.", 10);
+            return;
         }
+
+        val database = Supporter.getInstance().getDatabase();
+        val ticket = database.getTicketByChannelId(textChannel.getId());
+        
+        textChannel.getManager().setName(ticket.getStatus().getEmoji() + "-ticket-" + text.replace(" ", "-")).complete();
+
+        ticket.setName(text.replace(" ", "-"));
+        database.updateTicket(ticket);
+
         message.delete().complete();
     }
 }

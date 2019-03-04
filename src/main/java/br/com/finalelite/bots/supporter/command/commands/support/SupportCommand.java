@@ -15,6 +15,8 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Date;
+
 public class SupportCommand extends Command {
 
     public SupportCommand() {
@@ -69,16 +71,25 @@ public class SupportCommand extends Command {
 
         val warnMsg = sendSuccess(channel, author, "aguarde...", 60);
         var ticket = supporter.getDatabase().createReturningTicket(
-                Ticket.builder().userId(author.getId()).subject(subject).status(TicketStatus.OPENED).channelId(newChannel.getId()).build()
+                Ticket.builder()
+                        .userId(author.getId())
+                        .subject(subject)
+                        .status(TicketStatus.OPENED)
+                        .channelId(newChannel.getId())
+                        .date((int) (new Date().getTime() / 1000))
+                        .build()
         );
-        newChannel.getManager().setName("\uD83D\uDC9A-ticket-" + ticket.getId()).complete();
+
+        newChannel.getManager().setName(TicketStatus.OPENED.getEmoji() + "-ticket-" + ticket.getId()).complete();
+
         val msg = newChannel.sendMessage(new MessageBuilder(
                 ("\nTicket " + ticket.getId() + "\nAssunto: " + subject +
                         "\nUsuário: " + author.getAsMention()) + "\n\n**Envie aqui fotos, vídeos, prints e perguntas. Quando seu problema estiver resolvido mande `!fechar`**").build()).complete();
+
         msg.pin().complete();
+
         warnMsg.editMessage(new MessageBuilder(":white_check_mark: Ticket criado, " + author.getAsMention() + ". Mande suas mensagens em <#" + newChannel.getId() + ">.").build()).complete();
         message.delete().complete();
-
     }
 
 }
