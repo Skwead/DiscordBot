@@ -179,6 +179,8 @@ public class Database {
             tickets.insert(ticket).executeAndClose();
 
             val rs = tickets.select("id")
+                    .where().equals("status", TicketStatus.OPENED.name())
+                    .and().equals("userId", ticket.getUserId())
                     .limit(1).execute().getResultSet();
             if (!rs.next())
                 return null;
@@ -202,6 +204,7 @@ public class Database {
     // closes a ticket
     public void closeTicket(Ticket ticket) {
         ticket.setStatus(TicketStatus.CLOSED);
+        ticket.setCloseDate((int) (new Date().getTime() / 1000));
         tickets.update(ticket).executeAndClose();
     }
 
@@ -369,5 +372,9 @@ public class Database {
             Supporter.getInstance().shutdown("Cannot reconnect to SQL");
             System.exit(-3);
         }
+    }
+
+    public void updateTicket(Ticket ticket) {
+        tickets.update(ticket).executeAndClose();
     }
 }
