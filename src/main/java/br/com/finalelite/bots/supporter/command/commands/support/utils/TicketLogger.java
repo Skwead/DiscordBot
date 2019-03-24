@@ -133,7 +133,7 @@ public class TicketLogger {
 
             var formattedContent = formatPlaceHolders(message, linkedMessage, true, messagePlaceHolders);
 
-            messages.append("\n").append(formattedContent);
+            messages.append("\n").append(formattedContent.replace(":white_check_mark:", "\u2705"));
             return;
         }
 

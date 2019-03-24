@@ -22,6 +22,12 @@ public class Ticket {
     private String channelId;
 
     @Length(64)
+    private String rateMessageId;
+
+    @Length(64)
+    private String logMessageId;
+
+    @Length(64)
     private String subject;
 
     @Length(32)
@@ -29,6 +35,8 @@ public class Ticket {
 
     @DefaultAttributes.NotNull
     private TicketStatus status;
+
+    private TicketRate rate;
 
     @DefaultAttributes.NotNull
     private int date;

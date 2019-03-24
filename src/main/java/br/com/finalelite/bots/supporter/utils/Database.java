@@ -4,6 +4,7 @@ import br.com.finalelite.bots.supporter.Supporter;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.Punishment;
 import br.com.finalelite.bots.supporter.command.commands.moderation.utils.PunishmentType;
 import br.com.finalelite.bots.supporter.ticket.Ticket;
+import br.com.finalelite.bots.supporter.ticket.TicketRate;
 import br.com.finalelite.bots.supporter.ticket.TicketStatus;
 import br.com.finalelite.bots.supporter.vip.Invoice;
 import br.com.finalelite.bots.supporter.vip.VIP;
@@ -157,6 +158,23 @@ public class Database {
 
     public void removeCaptchaByChannelId(String channelId) {
         captchas.delete().where().equals("channelId", channelId).executeAndClose();
+    }
+
+    public Ticket rateTicketByMessageId(TicketRate rate, String messageId) {
+        tickets.update()
+                .set("rate", rate.name())
+                .where()
+                .equals("rateMessageId", messageId)
+                .executeAndClose();
+
+        return tickets.select().where().equals("rateMessageId", messageId).execute().to(Ticket.class);
+    }
+
+    public void deleteTicket(Ticket ticket, String logMessageId, String rateMessageId) {
+        ticket.setStatus(TicketStatus.DELETED);
+        ticket.setLogMessageId(logMessageId);
+        ticket.setRateMessageId(rateMessageId);
+        tickets.update(ticket).executeAndClose();
     }
 
     // checks if the user has committed spam

@@ -27,7 +27,7 @@ public class SpamCommand extends Command {
     public void run(Message message, Guild guild, TextChannel channel, User author, String[] args) {
         val ticket = Supporter.getInstance().getDatabase().getTicketByChannelId(channel.getId());
         Supporter.getInstance().getDatabase().markTicketAsSpam(ticket);
-        DeleteCommand.deleteTicket(message, guild, channel, author);
+        DeleteCommand.deleteTicket(message, guild, channel);
     }
 
 }

@@ -10,7 +10,8 @@ import java.util.Arrays;
 public enum TicketStatus {
     CLOSED("\uD83D\uDC97"),
     OPENED("\uD83D\uDC9A"),
-    SPAM("\uD83D\uDDA4");
+    SPAM("\uD83D\uDDA4"),
+    DELETED("");
 
     private final String emoji;
 
