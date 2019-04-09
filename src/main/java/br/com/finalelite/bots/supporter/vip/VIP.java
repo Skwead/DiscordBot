@@ -1,10 +1,20 @@
 package br.com.finalelite.bots.supporter.vip;
 
-import lombok.Data;
+import com.gitlab.pauloo27.core.sql.DefaultAttributes;
+import com.gitlab.pauloo27.core.sql.Length;
+import com.gitlab.pauloo27.core.sql.Name;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Name("vips")
 public class VIP {
-    private final String discordId;
-    private final Invoice invoice;
-
+    @DefaultAttributes.Unique
+    @Length(64)
+    private String discordId;
+    @DefaultAttributes.Unique
+    private Invoice invoice;
 }

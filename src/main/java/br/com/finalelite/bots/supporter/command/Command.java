@@ -10,12 +10,8 @@ public abstract class Command {
     private final String name;
     private final String description;
     private final CommandPermission permission;
-    private final boolean usableInSupportChannel;
-    private final boolean usableInOpenedCategory;
-    private final boolean usableInClosedCategory;
-    private final boolean usableInStaffChannel;
-
-    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
+    private final CommandChannelChecker checker;
+    private final DefaultCommandCategory category;
 
     public static Message sendError(MessageChannel channel, User user, String message) {
         return sendError(channel, user, message, -1);
@@ -39,6 +35,7 @@ public abstract class Command {
         if (removeSeconds == -1)
             return msg;
 
+        // TODO: Create just 1 Thread
         new Thread(() -> {
             try {
                 Thread.sleep(removeSeconds * 1000);
@@ -49,4 +46,6 @@ public abstract class Command {
         }).start();
         return msg;
     }
+
+    public abstract void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args);
 }
