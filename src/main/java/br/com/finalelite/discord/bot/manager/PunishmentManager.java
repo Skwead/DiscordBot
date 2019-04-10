@@ -4,6 +4,7 @@ import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.entity.punishment.Punishment;
 import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
+import br.com.finalelite.discord.bot.utils.time.TimeUnits;
 import lombok.val;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -24,7 +25,7 @@ public class PunishmentManager {
     private static final String banEmoji = "<:blobban:531459039998115840>";
     private static final String revertEmoji = ":leftwards_arrow_with_hook: ";
 
-    public static void logApplyModeration(Punishment punishment) {
+    public void logApplyModeration(Punishment punishment) {
         val author = punishment.getAuthor();
         val target = punishment.getTarget();
 
@@ -41,9 +42,18 @@ public class PunishmentManager {
                         author.getUser().getAvatarUrl());
         if (!punishment.getType().isPermanent()) {
             embed.addField(":timer: Duração",
-                    formatDuration((int) ((punishment.getEnd().getTime() - punishment.getDate().getTime()) / 1000)),
+                    TimeUnits.formatDuration((int) ((punishment.getEnd().getTime() - punishment.getDate().getTime()) / 1000)),
                     true);
             embed.addField(":clock: Fim", SimpleLogger.format(punishment.getEnd()), true);
+        }
+
+        if (punishment.isNsfw()) {
+            embed.addField(":beginner: Prova", "(NSFW)", true);
+        } else {
+            embed.addField(":beginner: Prova", punishment.getProof() == null ? "Nenhuma prova mencionada" : punishment.getProof(), true);
+            if (punishment.getProof() != null && punishment.getProof().matches(DiscordUtils.IMAGE_URL_REGEX)) {
+                embed.setImage(punishment.getProof());
+            }
         }
 
         val supporter = Bot.getInstance();
@@ -53,7 +63,7 @@ public class PunishmentManager {
     }
 
 
-    public static void sendProof(TextChannel channel, Punishment punishment) {
+    public void sendProof(TextChannel channel, Punishment punishment) {
         try {
             val userAvatar = DiscordUtils.getUserAvatar(punishment.getAuthor().getUser());
             val base = ImageIO.read(Bot.class.getResourceAsStream("/message_base.png"));
@@ -96,36 +106,7 @@ public class PunishmentManager {
         }
     }
 
-    @SuppressWarnings("Duplicates")
-    public static void sendReasonAsMessage(TextChannel channel, Punishment punishment) {
-        try {
-            val format = new SimpleDateFormat("hh:mm a");
-            val connection = (HttpURLConnection) new URL(punishment.getAuthor().getUser().getAvatarUrl()).openConnection();
-            connection.addRequestProperty("User-Agent", "Mozilla/4.76");
-            val userImage = ImageIO.read(connection.getInputStream());
-            val image = new BufferedImage(500, 200, BufferedImage.TYPE_INT_ARGB);
-            val graphic = image.getGraphics();
-            graphic.setColor(new Color(0x36393f));
-            graphic.fillRect(0, 0, 500, 200);
-            graphic.drawImage(userImage, 20, 20, 50, 50, null);
-            graphic.setColor(new Color(0xFFFFFF));
-            graphic.setFont(new Font("Arial", Font.PLAIN, 20));
-            graphic.drawString(punishment.getReason(), 20 + 20 + 10, 20 + 50 + 20);
-            graphic.drawString(punishment.getAuthor().getNickname() == null ?
-                    punishment.getAuthor().getEffectiveName() :
-                    punishment.getAuthor().getNickname(), 20 + 50 + 20, 40);
-            graphic.setColor(new Color(0x2C2F33));
-            graphic.setFont(new Font("Arial", Font.PLAIN, 14));
-            graphic.drawString("Hoje às " + format.format(punishment.getDate()), 20 + 50 + 20 + 100, 40);
-            val bytes = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", bytes);
-            channel.sendFile(bytes.toByteArray(), "proof.png", new MessageBuilder("eita").build()).complete();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void logRevertModeration(Punishment punishment) {
+    public void logRevertModeration(Punishment punishment) {
         val author = punishment.getAuthor();
         val target = punishment.getTarget();
 
@@ -154,13 +135,13 @@ public class PunishmentManager {
         channel.sendMessage(embed.build()).queue();
     }
 
-    public static void apply(Punishment punishment) {
+    public void apply(Punishment punishment) {
         punishment.apply();
         logApplyModeration(punishment);
         Bot.getInstance().getDatabase().addPunishment(punishment);
     }
 
-    public static void revert(Punishment punishment) {
+    public void revert(Punishment punishment) {
         punishment.revert();
         logRevertModeration(punishment);
         Bot.getInstance().getDatabase().revertPunishment(punishment);
@@ -172,72 +153,4 @@ public class PunishmentManager {
         return unitValue;
     }
 
-    public static String formatDuration(long durationInSeconds) {
-        val reamingSeconds = new AtomicLong(durationInSeconds);
-
-        val years = getUnitAndUpdateDuration(31536000, reamingSeconds);
-        val months = getUnitAndUpdateDuration(2592000, reamingSeconds);
-        val weeks = getUnitAndUpdateDuration(604800, reamingSeconds);
-        val days = getUnitAndUpdateDuration(86400, reamingSeconds);
-        val hours = getUnitAndUpdateDuration(3600, reamingSeconds);
-        val minutes = getUnitAndUpdateDuration(60, reamingSeconds);
-        val seconds = getUnitAndUpdateDuration(1, reamingSeconds);
-
-        StringBuilder sb = new StringBuilder();
-
-        if (years >= 1) {
-            sb.append(years);
-            sb.append(years == 1 ? " ano" : " anos");
-        }
-
-
-        if (months >= 1) {
-            if (sb.length() != 0)
-                sb.append(weeks == 0 ? " e " : ", ");
-
-            sb.append(months);
-            sb.append(months == 1 ? " mês" : " meses");
-        }
-
-        if (weeks >= 1) {
-            if (sb.length() != 0)
-                sb.append(days == 0 ? " e " : ", ");
-
-            sb.append(weeks);
-            sb.append(weeks == 1 ? " semana" : " semanas");
-        }
-
-        if (days >= 1) {
-            if (sb.length() != 0)
-                sb.append(minutes == 0 ? " e " : ", ");
-
-            sb.append(days);
-            sb.append(days == 1 ? " dia" : " dias");
-        }
-
-        if (hours >= 1) {
-            if (sb.length() != 0)
-                sb.append(minutes == 0 ? " e " : ", ");
-
-            sb.append(hours);
-            sb.append(hours == 1 ? " hora" : " horas");
-        }
-
-        if (minutes >= 1) {
-            if (sb.length() != 0)
-                sb.append(seconds == 0 ? " e " : ", ");
-
-            sb.append(minutes);
-            sb.append(minutes == 1 ? " minuto" : " minutos");
-        }
-
-        if (seconds >= 1) {
-            if (sb.length() != 0)
-                sb.append(" e ");
-
-            sb.append(seconds);
-            sb.append(seconds == 1 ? " segundo" : " segundos");
-        }
-        return sb.toString();
-    }
 }

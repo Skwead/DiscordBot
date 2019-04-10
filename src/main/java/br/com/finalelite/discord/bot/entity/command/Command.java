@@ -1,8 +1,8 @@
 package br.com.finalelite.discord.bot.entity.command;
 
+import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import lombok.Data;
-import lombok.val;
 import net.dv8tion.jda.core.entities.*;
 
 @Data
@@ -28,6 +28,10 @@ public abstract class Command {
 
     public Message sendSuccess(MessageChannel channel, User user, String message, int removeSeconds) {
         return DiscordUtils.sendSuccess(channel, user, message, removeSeconds);
+    }
+
+    public String getDisplayName() {
+        return Bot.getInstance().getCommandManager().getPrefix() + name;
     }
 
     public Message deleteAfter(int removeSeconds, Message msg) {

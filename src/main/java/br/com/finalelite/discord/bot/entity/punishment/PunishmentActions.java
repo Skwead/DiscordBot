@@ -20,12 +20,12 @@ public class PunishmentActions {
                     .unban(punishment.getTargetId()).complete();
 
     public static final Consumer<Punishment> WARN = punishment -> {
-        val punishments = Bot.getInstance().getDatabase().getActivePunishmentsByType(PunishmentType.WARN);
+        val punishments = Bot.getInstance().getDatabase().getActivePunishmentsByUser(punishment.getTargetId(), PunishmentType.WARN);
         if (punishments.size() == 0)
             return;
 
         if (punishments.size() == 1)
-            PunishmentManager.apply(clonePunishment(
+            Bot.getInstance().getPunishmentManager().apply(clonePunishment(
                     punishment,
                     PunishmentType.TEMP_MUTE,
                     punishments.size(),
@@ -33,7 +33,7 @@ public class PunishmentActions {
             ).build());
 
         if (punishments.size() == 2)
-            PunishmentManager.apply(clonePunishment(
+            Bot.getInstance().getPunishmentManager().apply(clonePunishment(
                     punishment,
                     PunishmentType.KICK,
                     punishments.size(),
@@ -41,7 +41,7 @@ public class PunishmentActions {
             ).build());
 
         if (punishments.size() == 3)
-            PunishmentManager.apply(clonePunishment(
+            Bot.getInstance().getPunishmentManager().apply(clonePunishment(
                     punishment,
                     PunishmentType.TEMP_BAN,
                     punishments.size(),
@@ -49,7 +49,7 @@ public class PunishmentActions {
             ).build());
 
         if (punishments.size() == 4)
-            PunishmentManager.apply(clonePunishment(
+            Bot.getInstance().getPunishmentManager().apply(clonePunishment(
                     punishment,
                     PunishmentType.BAN,
                     punishments.size(),

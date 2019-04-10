@@ -7,10 +7,7 @@ import br.com.finalelite.discord.bot.commands.support.utils.TicketLogger;
 import br.com.finalelite.discord.bot.commands.utils.*;
 import br.com.finalelite.discord.bot.entity.Config;
 import br.com.finalelite.discord.bot.listeners.JoinListener;
-import br.com.finalelite.discord.bot.manager.CaptchaManager;
-import br.com.finalelite.discord.bot.manager.CommandManager;
-import br.com.finalelite.discord.bot.manager.ConfigManager;
-import br.com.finalelite.discord.bot.manager.DatabaseManager;
+import br.com.finalelite.discord.bot.manager.*;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.Getter;
 import lombok.val;
@@ -47,6 +44,8 @@ public class Bot {
     // the ticket transcriptor
     @Getter
     private TicketLogger ticketLogger = new TicketLogger();
+    @Getter
+    private PunishmentManager punishmentManager;
 
     public Bot() {
         instance = this;
@@ -60,6 +59,8 @@ public class Bot {
         tryConnectToDiscord(config);
 
         setupFallbacks();
+
+        punishmentManager = new PunishmentManager();
 
         registerCommands();
     }

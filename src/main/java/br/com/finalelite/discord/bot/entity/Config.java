@@ -1,12 +1,16 @@
 package br.com.finalelite.discord.bot.entity;
 
 import br.com.finalelite.discord.bot.entity.Presence;
+import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
+import br.com.finalelite.discord.bot.entity.punishment.Rule;
+import br.com.finalelite.discord.bot.utils.time.TimeUnits;
 import lombok.Builder;
 import lombok.Data;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Game;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -16,6 +20,8 @@ public class Config {
     private final String token = "your token";
     @Builder.Default
     private final String dateFormat = "HH:mm:ss Z yyyy/MM/dd";
+    @Builder.Default
+    private final Map<String, Rule> rules = getDefaultRules();
     @Builder.Default
     private final String ownerId = "the owner id";
     @Builder.Default
@@ -83,5 +89,20 @@ public class Config {
         map.put("welcome", "Welcome, ${user_mention}, what can we do for you today?");
         map.put("bye", "Bye, ${user_mention}, we're to help.");
         return map;
+    }
+
+    private static Map<String, Rule> getDefaultRules() {
+        val rules = new HashMap<String, Rule>();
+
+        rules.put("Spam", new Rule("Mensagem repetitivas ou inrritantes.", PunishmentType.WARN, -1, false, "\uD83D\uDCE7"));
+
+        rules.put("Ofensa", new Rule("Desrespeitar algum membro do grupo.", PunishmentType.TEMP_MUTE,
+                (long) TimeUnits.DAYS.convert(1, TimeUnits.SECONDS), false, "\uD83D\uDD95"));
+
+        rules.put("Doxing", new Rule("Extração e/ou divulgação de informações privadas.", PunishmentType.BAN, -1, false, "\uD83D\uDC41"));
+
+        rules.put("Divulgação", new Rule("Divulgação de serviços ou produto não solicitados.", PunishmentType.BAN, -1, false, "‼"));
+
+        return rules;
     }
 }

@@ -1,5 +1,6 @@
 package br.com.finalelite.discord.bot.entity.command;
 
+import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.entity.command.Command;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
@@ -51,7 +52,7 @@ public abstract class PunishmentCommand extends Command {
                     .reason(reason)
                     .targetId(user.getId());
 
-            PunishmentManager.apply(punishment.build());
+            Bot.getInstance().getPunishmentManager().apply(punishment.build());
             sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " punido com sucesso.");
             return;
         } catch (Exception e) {

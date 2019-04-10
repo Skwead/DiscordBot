@@ -52,19 +52,26 @@ public class Punishment {
     private String reason = "Nenhum motivo informado";
 
     @DefaultAttributes.NotNull
+    @Length(256)
+    @Builder.Default
+    private String proof = "Nenhuma prova informada";
+
+    @DefaultAttributes.NotNull
     @Name("end")
     private int endSeconds;
 
-    @DefaultAttributes.NotNull
-    @DefaultValue
-    @Builder.Default
-    private boolean reverted = false;
+    @Length(64)
+    private String revertedById;
 
     public static int parseDate(Date date) {
         if (date == null)
             return -1;
         return (int) (date.getTime() / 1000);
     }
+
+    @DefaultValue
+    @Builder.Default
+    private boolean nsfw = false;
 
     public void apply() {
         type.apply(this);
@@ -100,6 +107,10 @@ public class Punishment {
 
     public Date getEnd() {
         return new Date(((long) endSeconds) * 1000);
+    }
+
+    public Member getRevertedBy() {
+        return Bot.getMemberById(relatedGuildId, revertedById);
     }
 
 }

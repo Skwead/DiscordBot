@@ -1,10 +1,6 @@
 package br.com.finalelite.discord.bot.entity.command;
 
-import br.com.finalelite.discord.bot.entity.command.Command;
-import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
-import br.com.finalelite.discord.bot.entity.command.CommandPermission;
-import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
-import br.com.finalelite.discord.bot.manager.PunishmentManager;
+import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.entity.punishment.Punishment;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
@@ -88,7 +84,7 @@ public abstract class TempPunishmentCommand extends Command {
 
             val built = punishment.build();
 
-            PunishmentManager.apply(built);
+            Bot.getInstance().getPunishmentManager().apply(built);
             sendSuccess(textChannel, author, " usuário " + user.getAsMention() + " punido com sucesso.");
             return;
         } catch (Exception e) {

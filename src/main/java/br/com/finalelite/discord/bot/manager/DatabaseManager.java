@@ -66,6 +66,21 @@ public class DatabaseManager {
         punishments = sql.createIfNotExists(Punishment.class);
 
         captchas = sql.createIfNotExists(Captcha.class);
+
+        // keep the connection alive
+        new Thread(() -> {
+            try {
+                Thread.sleep(60 * 60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                punishments.select("id").where().equals("id", 1).limit(1).execute().close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
 
     public void createCaptcha(String userId, String channelId) {
@@ -111,8 +126,6 @@ public class DatabaseManager {
     }
 
     public boolean revertPunishment(Punishment punishment) {
-        punishment.setReverted(true);
-
         return punishments.update(punishment).execute().getUpdatedRows() != 0;
     }
 
@@ -140,7 +153,7 @@ public class DatabaseManager {
                 .or()
                 .moreThan("end", new Date().getTime() / 1000)
                 .closeParentheses()
-                .and().equals("reverted", false);
+                .and().isNull("revertedById");
         val where = select.and().openParentheses();
         IntStream.range(0, types.length).forEach(index -> {
             val type = types[index];

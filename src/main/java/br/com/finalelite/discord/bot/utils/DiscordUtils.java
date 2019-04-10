@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DiscordUtils {
 
+    public static final String IMAGE_URL_REGEX = "(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\\.(?:jpg|gif|png))(?:\\?([^#]*))?(?:#(.*))?";
     private static Map<Message, Long> DELETE_QUEUE = new HashMap<>();
 
     static {

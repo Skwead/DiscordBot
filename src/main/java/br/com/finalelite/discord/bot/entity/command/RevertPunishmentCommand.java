@@ -35,7 +35,7 @@ public abstract class RevertPunishmentCommand extends Command {
         val user = userId == null ? message.getMentionedUsers().get(0) : null;
         val punishment = Bot.getInstance().getDatabase().getActivePunishmentByUser(userId == null ? user.getId() : userId, types);
         if (punishment != null) {
-            PunishmentManager.revert(punishment);
+            Bot.getInstance().getPunishmentManager().revert(punishment);
             sendSuccess(textChannel, author, "usuário despunido.", 40);
         } else
             sendError(textChannel, author, "usuário não encontra-se punido.", 30);
