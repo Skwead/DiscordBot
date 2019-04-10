@@ -15,21 +15,19 @@ public abstract class Command {
     private final DefaultCommandCategory category;
 
     public Message sendError(MessageChannel channel, User user, String message) {
-        return sendError(channel, user, message, -1);
+        return DiscordUtils.sendError(channel, user, message, -1);
     }
 
     public Message sendSuccess(MessageChannel channel, User user, String message) {
-        return sendSuccess(channel, user, message, -1);
+        return DiscordUtils.sendSuccess(channel, user, message, -1);
     }
 
     public Message sendError(MessageChannel channel, User user, String message, int removeSeconds) {
-        val msg = channel.sendMessage(String.format(":x: %s, %s", user.getAsMention(), message)).complete();
-        return deleteAfter(removeSeconds, msg);
+        return DiscordUtils.sendError(channel, user, message, removeSeconds);
     }
 
     public Message sendSuccess(MessageChannel channel, User user, String message, int removeSeconds) {
-        val msg = channel.sendMessage(String.format(":white_check_mark: %s, %s", user.getAsMention(), message)).complete();
-        return deleteAfter(removeSeconds, msg);
+        return DiscordUtils.sendSuccess(channel, user, message, removeSeconds);
     }
 
     public Message deleteAfter(int removeSeconds, Message msg) {

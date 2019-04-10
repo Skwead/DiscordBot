@@ -3,6 +3,7 @@ package br.com.finalelite.discord.bot.utils;
 import br.com.finalelite.discord.bot.Bot;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import javax.imageio.ImageIO;
@@ -57,6 +58,24 @@ public class DiscordUtils {
 
         DELETE_QUEUE.put(message, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(afterSeconds));
         return message;
+    }
+
+    public static Message sendError(MessageChannel channel, User user, String message) {
+        return sendError(channel, user, message, -1);
+    }
+
+    public static Message sendSuccess(MessageChannel channel, User user, String message) {
+        return sendSuccess(channel, user, message, -1);
+    }
+
+    public static Message sendError(MessageChannel channel, User user, String message, int removeSeconds) {
+        val msg = channel.sendMessage(String.format(":x: %s, %s", user.getAsMention(), message)).complete();
+        return deleteAfter(removeSeconds, msg);
+    }
+
+    public static Message sendSuccess(MessageChannel channel, User user, String message, int removeSeconds) {
+        val msg = channel.sendMessage(String.format(":white_check_mark: %s, %s", user.getAsMention(), message)).complete();
+        return deleteAfter(removeSeconds, msg);
     }
 
 

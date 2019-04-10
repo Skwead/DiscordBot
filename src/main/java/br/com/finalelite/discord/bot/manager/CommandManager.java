@@ -3,6 +3,7 @@ package br.com.finalelite.discord.bot.manager;
 import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.entity.command.Command;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
+import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.Getter;
 import lombok.val;
@@ -64,14 +65,14 @@ public class CommandManager {
         if (executedCommand.getPermission() != CommandPermission.EVERYONE) {
             if (executedCommand.getPermission() == CommandPermission.BOT_OWNER) {
                 if (!author.getId().equalsIgnoreCase(supporter.getConfig().getOwnerId())) {
-                    Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+                    DiscordUtils.sendError(textChannel, author, "você não pode usar esse comando.", 10);
                     SimpleLogger.logMessage(textChannel, author, message, "> CODE 4");
                     return false;
                 }
             } else {
                 val neededRolePosition = supporter.getJda().getRoleById(executedCommand.getPermission().getRoleId()).getPosition();
                 if (guild.getMember(author).getRoles().get(0).getPosition() < neededRolePosition) {
-                    Command.sendError(textChannel, author, "você não pode usar esse comando.", 10);
+                    DiscordUtils.sendError(textChannel, author, "você não pode usar esse comando.", 10);
                     SimpleLogger.logMessage(textChannel, author, message, "> CODE 1");
                     return false;
                 }
