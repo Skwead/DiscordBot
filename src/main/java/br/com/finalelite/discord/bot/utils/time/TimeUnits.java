@@ -1,7 +1,11 @@
 package br.com.finalelite.discord.bot.utils.time;
 
-import java.util.ArrayList;
+import lombok.val;
+
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A RSpigot class.
@@ -12,7 +16,7 @@ import java.util.List;
  */
 public class TimeUnits {
 
-    private static List<Unit> units = new ArrayList<>();
+    private static List<Unit> units = new LinkedList<>();
 
     /**
      * Seconds unit.
@@ -55,6 +59,28 @@ public class TimeUnits {
 
     public static Unit getUnitByName(String name) {
         return units.stream().filter(unit -> unit.isValid(name)).findFirst().orElse(null);
+    }
+
+    private static void appendUnit(StringBuilder builder, AtomicLong durationInSeconds, Unit unit) {
+        long unitValue = (long) (durationInSeconds.get() / unit.getUnitInSeconds());
+        val unitInSeconds = (long) unit.getUnitInSeconds();
+        if (unitValue >= 1) {
+            durationInSeconds.set(durationInSeconds.get() - (unitInSeconds * unitValue));
+            builder.append(unit.pluralizeWithAmount(unitValue)).append(" ");
+        }
+    }
+
+    public static String formatDuration(long durationInSeconds) {
+        val duration = new AtomicLong(durationInSeconds);
+        val builder = new StringBuilder();
+
+        val units = new LinkedList<>(TimeUnits.units);
+        Collections.reverse(units);
+
+        units.forEach(unit ->
+                TimeUnits.appendUnit(builder, duration, unit));
+
+        return builder.toString().trim();
     }
 
 }

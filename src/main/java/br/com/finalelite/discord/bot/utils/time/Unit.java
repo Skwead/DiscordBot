@@ -37,6 +37,30 @@ public class Unit {
     }
 
     /**
+     * Gets the name in plural or in the singular.
+     *
+     * @return The name in singular if it's 1 and plural otherwise.
+     */
+    public String pluralize(double amount) {
+        if (amount == 1)
+            return name;
+
+        return plural;
+    }
+
+    /**
+     * Gets the name in plural or in the singular.
+     *
+     * @return The name in singular if it's 1 and plural otherwise.
+     */
+    public String pluralizeWithAmount(long amount) {
+        if (amount == 1)
+            return amount + "  " + name;
+
+        return amount + " " + plural;
+    }
+
+    /**
      * Gets the unit name.
      *
      * @return The name
