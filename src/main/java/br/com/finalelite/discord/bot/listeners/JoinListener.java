@@ -1,7 +1,7 @@
 package br.com.finalelite.discord.bot.listeners;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.command.commands.moderation.utils.PunishmentType;
+import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
 import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.val;

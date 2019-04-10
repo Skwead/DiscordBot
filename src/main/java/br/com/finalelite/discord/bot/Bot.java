@@ -1,17 +1,17 @@
 package br.com.finalelite.discord.bot;
 
-import br.com.finalelite.discord.bot.command.CommandHandler;
-import br.com.finalelite.bots.main.command.commands.moderation.*;
-import br.com.finalelite.bots.main.command.commands.server.*;
-import br.com.finalelite.bots.main.command.commands.support.*;
-import br.com.finalelite.discord.bot.command.commands.support.utils.TicketLogger;
-import br.com.finalelite.bots.main.command.commands.utils.*;
-import br.com.finalelite.discord.bot.command.commands.utils.*;
+import br.com.finalelite.discord.bot.manager.CommandManager;
+import br.com.finalelite.discord.bot.commands.support.utils.TicketLogger;
+import br.com.finalelite.discord.bot.commands.utils.*;
 import br.com.finalelite.discord.bot.listeners.JoinListener;
-import br.com.finalelite.bots.main.utils.*;
-import br.com.finalelite.discord.bot.command.commands.moderation.*;
-import br.com.finalelite.discord.bot.command.commands.server.*;
-import br.com.finalelite.discord.bot.command.commands.support.*;
+import br.com.finalelite.discord.bot.commands.moderation.*;
+import br.com.finalelite.discord.bot.commands.server.*;
+import br.com.finalelite.discord.bot.commands.support.*;
+import br.com.finalelite.discord.bot.manager.ConfigManager;
+import br.com.finalelite.discord.bot.entity.Captcha;
+import br.com.finalelite.discord.bot.manager.CaptchaManager;
+import br.com.finalelite.discord.bot.entity.Config;
+import br.com.finalelite.discord.bot.manager.DatabaseManager;
 import br.com.finalelite.discord.bot.utils.*;
 import lombok.Getter;
 import lombok.val;
@@ -41,10 +41,10 @@ public class Bot {
     @Getter
     // the database
     // (SQL, using EzSQL as API)
-    private Database database;
+    private DatabaseManager database;
     @Getter
     // a simple command handler
-    private CommandHandler commandHandler;
+    private CommandManager commandHandler;
     @Getter
     // a captcha builder
     // (used to verify user account)
@@ -82,7 +82,7 @@ public class Bot {
         }
 
         // connect to the database
-        database = new Database(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
+        database = new DatabaseManager(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
         try {
             database.connect();
             SimpleLogger.log("Connected to MySQL.");
@@ -136,7 +136,7 @@ public class Bot {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
 
         // create a command handler with '!' as prefix
-        commandHandler = new CommandHandler("!");
+        commandHandler = new CommandManager("!");
 
         // register many commands
 
