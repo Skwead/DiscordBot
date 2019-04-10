@@ -17,6 +17,16 @@ import java.io.IOException;
 
 public class JoinListener extends ListenerAdapter {
 
+    private BufferedImage baseImage;
+
+    public JoinListener() {
+        try {
+            baseImage = ImageIO.read(Bot.class.getResourceAsStream("/image.png")); // get the base image
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         val supporter = Bot.getInstance();
@@ -61,7 +71,6 @@ public class JoinListener extends ListenerAdapter {
         try {
             // get the user picture and put in the server's image
             val userImage = DiscordUtils.getUserAvatar(user); // get the user avatar
-            val baseImage = ImageIO.read(Bot.class.getResourceAsStream("/image.png")); // get the base image
             val image = new BufferedImage(906, 398, BufferedImage.TYPE_INT_ARGB); // create some place to build the image
             val graphic = image.getGraphics();
             graphic.drawImage(userImage, 367, 26, 178, 178, null); // draw the user avatar
