@@ -35,7 +35,7 @@ public class HelpCommand extends Command {
 
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
-        val commandMap = Bot.getInstance().getCommandHandler().getCommandMap();
+        val commandMap = Bot.getInstance().getCommandManager().getCommandMap();
         val commands = new HashMap<DefaultCommandCategory, List<Command>>();
 
         commandMap.values().forEach(command -> {
@@ -62,7 +62,7 @@ public class HelpCommand extends Command {
         commands.forEach((category, commandList) -> {
             val sb = new StringBuilder();
             commandList.forEach(command ->
-                    sb.append(command.getPermission() == CommandPermission.EVERYONE ? everyoneEmoji : staffEmoji).append(" `").append(Bot.getInstance().getCommandHandler().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
+                    sb.append(command.getPermission() == CommandPermission.EVERYONE ? everyoneEmoji : staffEmoji).append(" `").append(Bot.getInstance().getCommandManager().getPrefix()).append(command.getName()).append("`: **").append(command.getDescription()).append(".**\n"));
 
             embed.addBlankField(false);
             embed.addField(String.format("\n%s **%s**\n", category.getEmojiName(), category.getName()), sb.toString(), false);

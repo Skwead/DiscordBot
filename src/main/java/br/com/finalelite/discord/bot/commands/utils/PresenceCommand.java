@@ -44,8 +44,7 @@ public class PresenceCommand extends Command {
 
             support.getJda().getPresence().setGame(config.getPresence().toGame());
 
-            ConfigManager.saveConfigToFile(config);
-            support.loadConfig();
+            Bot.getInstance().getConfigManager().reloadConfig(config);
 
             sendSuccess(textChannel, author, "presença alterada.");
         } catch (IllegalArgumentException e) {

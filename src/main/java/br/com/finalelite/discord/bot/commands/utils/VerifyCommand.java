@@ -75,8 +75,8 @@ public class VerifyCommand extends Command {
             supporter.getDatabase().createCaptcha(author.getId(), channel.getId());
 
             val newTextChannel = guild.getTextChannelById(channel.getId());
-            supporter.getCaptchaChannels().put(newTextChannel.getId(), (int) (new Date().getTime() / 1000));
-            val imageBytes = supporter.getCaptcha().createNewCaptcha(author.getId());
+            supporter.getCaptchaManager().getCaptchaChannels().put(newTextChannel.getId(), (int) (new Date().getTime() / 1000));
+            val imageBytes = supporter.getCaptchaManager().createNewCaptcha(author.getId());
             sendSuccess(textChannel, author, String.format("Resolva o captcha no canal <#%s> para poder acessar o servidor.", channel.getId()), 20);
             newTextChannel.sendFile(imageBytes, "captcha.jpg",
                     new MessageBuilder(author.getAsMention() + "\nDigite e envie o texto na imagem abaixo. Você tem 5 tentativas e 5 minutos.").build()).complete();
@@ -112,22 +112,22 @@ public class VerifyCommand extends Command {
                 return;
             }
 
-            val result = supporter.getCaptcha().check(author.getId(), message.getContentRaw());
+            val result = supporter.getCaptchaManager().check(author.getId(), message.getContentRaw());
             if (result) {
                 guild.getController().addRolesToMember(guild.getMember(author), guild.getRoleById(supporter.getConfig().getVerifiedRoleId())).complete();
                 supporter.getDatabase().setCaptchaStatus(channel.getId(), Captcha.Status.SUCCESS);
-                supporter.getCaptchaChannels().remove(textChannel.getId());
+                supporter.getCaptchaManager().getCaptchaChannels().remove(textChannel.getId());
                 textChannel.delete().complete();
             } else {
-                val times = supporter.getCaptcha().getTries(author.getId());
+                val times = supporter.getCaptchaManager().getTries(author.getId());
                 if (times >= 5) {
                     guild.getController().kick(guild.getMember(author), "Tentativas esgotadas.").complete();
                     supporter.getDatabase().setCaptchaStatus(channel.getId(), Captcha.Status.TOO_MANY_ATTEMPTS);
-                    supporter.getCaptchaChannels().remove(textChannel.getId());
+                    supporter.getCaptchaManager().getCaptchaChannels().remove(textChannel.getId());
                     textChannel.delete().complete();
                     return;
                 }
-                val imageBytes = supporter.getCaptcha().createAnotherCaptcha(author.getId());
+                val imageBytes = supporter.getCaptchaManager().createAnotherCaptcha(author.getId());
                 textChannel.getManager().setSlowmode(times * 5 + 5).complete();
                 textChannel.sendFile(imageBytes, "captcha.jpg",
                         new MessageBuilder(
@@ -148,7 +148,7 @@ public class VerifyCommand extends Command {
 
             event.getGuild().getTextChannelById(channelId).delete().complete();
             supporter.getDatabase().setCaptchaStatus(channelId, Captcha.Status.GUILD_LEFT);
-            supporter.getCaptchaChannels().remove(channelId);
+            supporter.getCaptchaManager().getCaptchaChannels().remove(channelId);
         }
     }
 

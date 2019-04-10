@@ -1,18 +1,17 @@
 package br.com.finalelite.discord.bot;
 
-import br.com.finalelite.discord.bot.manager.CommandManager;
-import br.com.finalelite.discord.bot.commands.support.utils.TicketLogger;
-import br.com.finalelite.discord.bot.commands.utils.*;
-import br.com.finalelite.discord.bot.listeners.JoinListener;
 import br.com.finalelite.discord.bot.commands.moderation.*;
 import br.com.finalelite.discord.bot.commands.server.*;
 import br.com.finalelite.discord.bot.commands.support.*;
-import br.com.finalelite.discord.bot.manager.ConfigManager;
-import br.com.finalelite.discord.bot.entity.Captcha;
-import br.com.finalelite.discord.bot.manager.CaptchaManager;
+import br.com.finalelite.discord.bot.commands.support.utils.TicketLogger;
+import br.com.finalelite.discord.bot.commands.utils.*;
 import br.com.finalelite.discord.bot.entity.Config;
+import br.com.finalelite.discord.bot.listeners.JoinListener;
+import br.com.finalelite.discord.bot.manager.CaptchaManager;
+import br.com.finalelite.discord.bot.manager.CommandManager;
+import br.com.finalelite.discord.bot.manager.ConfigManager;
 import br.com.finalelite.discord.bot.manager.DatabaseManager;
-import br.com.finalelite.discord.bot.utils.*;
+import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
@@ -20,11 +19,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.*;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class Bot {
 
@@ -37,69 +32,39 @@ public class Bot {
     @Getter
     // the bot config
     // (there's a lot of things in the config, like the token, the bot owner, etc)
-    private Config config;
+    private ConfigManager configManager;
     @Getter
     // the database
     // (SQL, using EzSQL as API)
     private DatabaseManager database;
     @Getter
     // a simple command handler
-    private CommandManager commandHandler;
+    private CommandManager commandManager;
     @Getter
-    // a captcha builder
+    // a captchaManager builder
     // (used to verify user account)
-    private CaptchaManager captcha = new CaptchaManager();
-    @Getter
-    // a map of the Catpcha channel id and the time epoch of the channel creation
-    // (used to delete old channels)
-    private Map<String, Integer> captchaChannels = new HashMap<>();
+    private CaptchaManager captchaManager = new CaptchaManager();
     // the ticket transcriptor
     @Getter
     private TicketLogger ticketLogger = new TicketLogger();
 
     public Bot() {
         instance = this;
-        // create the config if not exists
-        val file = new File("config.json");
-        if (!file.exists()) {
-            val defaultConfig = Config.builder().build();
-            ConfigManager.saveConfigToFile(defaultConfig);
-            SimpleLogger.log("Default config file created, please, configure and run the bot again.");
-            System.exit(0);
-        }
 
-        // l o a d t h e c o n f i g
-        loadConfig();
-        // believe you or not
+        configManager = new ConfigManager();
 
-        // check if the config is missing something
-        val nullValues = checkConfig();
-        if (!nullValues.isEmpty()) {
-            SimpleLogger.log("Cannot find `%s` in the config.",
-                    nullValues.stream().map(Field::getName).collect(Collectors.joining(", ")));
-            SimpleLogger.log("Please, fix the config before run the bot.");
-            System.exit(0);
-        }
+        val config = getConfig();
 
-        // connect to the database
-        database = new DatabaseManager(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
-        try {
-            database.connect();
-            SimpleLogger.log("Connected to MySQL.");
-        } catch (SQLException | ClassNotFoundException e) {
-            // or not
-            SimpleLogger.log("Cannot connect to database.");
-            e.printStackTrace();
-            System.exit(-3);
-        }
+        connectToDatabase(config);
 
-        // add a handler, this will send the stacktrace to the owner in the DM
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            throwable.printStackTrace();
-            SimpleLogger.sendStackTraceToOwner((Exception) throwable);
-        });
+        tryConnectToDiscord(config);
 
-        // try to connect to Discord
+        setupFallbacks();
+
+        registerCommands();
+    }
+
+    private void tryConnectToDiscord(Config config) {
         try {
             jda = new JDABuilder(config.getToken()).build().awaitReady();
             SimpleLogger.log("Logged.");
@@ -116,103 +81,97 @@ public class Bot {
             // register some event listeners
             jda.addEventListener(new JoinListener());
 
-            // print some usefull information
-            SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
-            SimpleLogger.log("Unverified Members: %d", jda.getGuilds().get(0).getMembers().stream()
-                    .filter(member -> member.getRoles().size() == 0).count());
-            SimpleLogger.log("Total channels: %d", jda.getGuilds().get(0).getChannels().size());
-            SimpleLogger.log("Text channels: %d", jda.getGuilds().get(0).getTextChannels().size());
-            SimpleLogger.log("Voice channels: %d", jda.getGuilds().get(0).getVoiceChannels().size());
-            SimpleLogger.log("Roles count: %d", jda.getGuilds().get(0).getRoles().size());
-            SimpleLogger.log("Categories count: %d", jda.getGuilds().get(0).getCategories().size());
+            printBotInformation();
 
         } catch (InterruptedException | LoginException e) {
             SimpleLogger.log("Cannot login.");
             e.printStackTrace();
             System.exit(-2);
         }
+    }
 
+    private void printBotInformation() {
+        SimpleLogger.log("Members: %d", jda.getGuilds().get(0).getMembers().size());
+        SimpleLogger.log("Unverified Members: %d", jda.getGuilds().get(0).getMembers().stream()
+                .filter(member -> member.getRoles().size() == 0).count());
+        SimpleLogger.log("Total channels: %d", jda.getGuilds().get(0).getChannels().size());
+        SimpleLogger.log("Text channels: %d", jda.getGuilds().get(0).getTextChannels().size());
+        SimpleLogger.log("Voice channels: %d", jda.getGuilds().get(0).getVoiceChannels().size());
+        SimpleLogger.log("Roles count: %d", jda.getGuilds().get(0).getRoles().size());
+        SimpleLogger.log("Categories count: %d", jda.getGuilds().get(0).getCategories().size());
+    }
+
+    private void setupFallbacks() {
         // add a handler to the exit event, just to send to the bot owner
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown("Exited by user")));
+        // add a handler, this will send the stacktrace to the owner in the DM
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            throwable.printStackTrace();
+            SimpleLogger.sendStackTraceToOwner((Exception) throwable);
+        });
+    }
 
+    private void connectToDatabase(Config config) {
+        database = new DatabaseManager(config.getSqlAddress(), config.getSqlPort(), config.getSqlUsername(), config.getSqlPassword(), config.getSqlDatabase());
+        try {
+            database.connect();
+            SimpleLogger.log("Connected to MySQL.");
+        } catch (SQLException | ClassNotFoundException e) {
+            // or not
+            SimpleLogger.log("Cannot connect to database.");
+            e.printStackTrace();
+            System.exit(-3);
+        }
+    }
+
+    public Config getConfig() {
+        if (configManager == null)
+            return null;
+        return configManager.getConfig();
+    }
+
+    private void registerCommands() {
         // create a command handler with '!' as prefix
-        commandHandler = new CommandManager("!");
+        commandManager = new CommandManager("!");
 
-        // register many commands
+        /* support */
+        commandManager.registerCommand(new AddCommand());
+        commandManager.registerCommand(new MsgCommand());
+        commandManager.registerCommand(new DeleteCommand());
+        commandManager.registerCommand(new RenameCommand());
+        commandManager.registerCommand(new MsgConfigCommand());
+        commandManager.registerCommand(new SupportCommand());
+        commandManager.registerCommand(new CloseCommand());
+        commandManager.registerCommand(new RemoveCommand());
+        commandManager.registerCommand(new SpamCommand());
 
-        // support
-        commandHandler.registerCommand(new AddCommand());
-        commandHandler.registerCommand(new MsgCommand());
-        commandHandler.registerCommand(new DeleteCommand());
-        commandHandler.registerCommand(new RenameCommand());
-        commandHandler.registerCommand(new MsgConfigCommand());
-        commandHandler.registerCommand(new SupportCommand());
-        commandHandler.registerCommand(new CloseCommand());
-        commandHandler.registerCommand(new RemoveCommand());
-        commandHandler.registerCommand(new SpamCommand());
+        /* utils */
+        commandManager.registerCommand(new HelpCommand());
+        commandManager.registerCommand(new PingCommand());
+        commandManager.registerCommand(new VerifyCommand());
+        commandManager.registerCommand(new SayCommand());
+        commandManager.registerCommand(new RolesCommand());
+        commandManager.registerCommand(new PresenceCommand());
+        commandManager.registerCommand(new ClearCommand());
 
-        // utils
-        commandHandler.registerCommand(new HelpCommand());
-        commandHandler.registerCommand(new PingCommand());
-        commandHandler.registerCommand(new VerifyCommand());
-        commandHandler.registerCommand(new SayCommand());
-        commandHandler.registerCommand(new RolesCommand());
-        commandHandler.registerCommand(new PresenceCommand());
-        commandHandler.registerCommand(new ClearCommand());
+        /* finalelite */
+        commandManager.registerCommand(new VIPCommand());
+        commandManager.registerCommand(new GetUserIdCommand());
+        commandManager.registerCommand(new GetNickCommand());
+        commandManager.registerCommand(new SetNickCommand());
+        commandManager.registerCommand(new GetDiscordCommand());
+        commandManager.registerCommand(new InvoicesCommand());
 
-        // finalelite
-        commandHandler.registerCommand(new VIPCommand());
-        commandHandler.registerCommand(new GetUserIdCommand());
-        commandHandler.registerCommand(new GetNickCommand());
-        commandHandler.registerCommand(new SetNickCommand());
-        commandHandler.registerCommand(new GetDiscordCommand());
-        commandHandler.registerCommand(new InvoicesCommand());
-
-        // moderation
-        commandHandler.registerCommand(new BanCommand());
-        commandHandler.registerCommand(new WarnCommand());
-        commandHandler.registerCommand(new KickCommand());
-        commandHandler.registerCommand(new TempBanCommand());
-        commandHandler.registerCommand(new MuteCommand());
-        commandHandler.registerCommand(new TempMuteCommand());
-        commandHandler.registerCommand(new UnMuteCommand());
-        commandHandler.registerCommand(new UnBanCommand());
-        commandHandler.registerCommand(new UnWarnCommand());
-
-        // command disabled until the myocardium is released
-        // commandHandler.registerCommand(new LinkAccountCommand(new RelationsRepository(jda)));
-
-        // thread to auto close idle captchas
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1000 * 20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (captchaChannels.isEmpty())
-                    continue;
-
-                val newList = new HashMap<>(captchaChannels);
-                captchaChannels.forEach((channelId, createIn) -> {
-                    val c = getJda().getTextChannelById(channelId);
-                    if (c == null)
-                        return;
-
-                    val now = new Date();
-                    if (now.getTime() / 1000 >= createIn + 5 * 60) {
-                        c.delete().complete();
-                        val channel = jda.getTextChannelById(getConfig().getVerifyChannelId());
-                        channel.getGuild().getController()
-                                .kick(channel.getGuild().getMemberById(getDatabase()
-                                        .getCaptchaUserIdByChannelId(channelId)), "Tempo limite.").complete();
-                        getDatabase().setCaptchaStatus(channelId, Captcha.Status.TIMED_OUT);
-                        newList.remove(channelId);
-                    }
-                });
-                captchaChannels = newList;
-            }
-        }).start();
+        /* moderation */
+        commandManager.registerCommand(new BanCommand());
+        commandManager.registerCommand(new WarnCommand());
+        commandManager.registerCommand(new KickCommand());
+        commandManager.registerCommand(new TempBanCommand());
+        commandManager.registerCommand(new MuteCommand());
+        commandManager.registerCommand(new TempMuteCommand());
+        commandManager.registerCommand(new UnMuteCommand());
+        commandManager.registerCommand(new UnBanCommand());
+        commandManager.registerCommand(new UnWarnCommand());
     }
 
     public static Role getRoleById(String id) {
@@ -237,23 +196,6 @@ public class Bot {
 
     public static Message getMessageById(String channelId, String messageId) {
         return getInstance().getJda().getTextChannelById(channelId).getMessageById(messageId).complete();
-    }
-
-    public void loadConfig() {
-        config = ConfigManager.loadConfigFromFile();
-    }
-
-    public List<Field> checkConfig() {
-        val fields = config.getClass().getDeclaredFields();
-        return Arrays.stream(fields).filter(field -> {
-            try {
-                field.setAccessible(true);
-                return field.get(config) == null;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }).collect(Collectors.toList());
     }
 
     public void shutdown(String reason) {

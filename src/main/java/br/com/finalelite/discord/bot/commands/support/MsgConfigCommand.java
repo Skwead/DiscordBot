@@ -47,7 +47,7 @@ public class MsgConfigCommand extends Command {
         if (action.equalsIgnoreCase("remover")) {
             val config = Bot.getInstance().getConfig();
             config.getMessages().remove(shortcut);
-            ConfigManager.saveConfigToFile(config);
+            Bot.getInstance().getConfigManager().reloadConfig(config);
             sendSuccess(textChannel, author, String.format("mensagem `%s` removida com sucesso.", shortcut));
             return;
         }
@@ -69,7 +69,7 @@ public class MsgConfigCommand extends Command {
             }
 
             config.getMessages().put(shortcut, text);
-            ConfigManager.saveConfigToFile(config);
+            Bot.getInstance().getConfigManager().reloadConfig(config);
             sendSuccess(textChannel, author, String.format("mensagem `%s` adicionada com sucesso.", shortcut));
             return;
         }
@@ -83,7 +83,7 @@ public class MsgConfigCommand extends Command {
             }
 
             config.getMessages().put(shortcut, text);
-            ConfigManager.saveConfigToFile(config);
+            Bot.getInstance().getConfigManager().reloadConfig(config);
             sendSuccess(textChannel, author, String.format("mensagem `%s` editada com sucesso.", shortcut));
         }
     }
