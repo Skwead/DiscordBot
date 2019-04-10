@@ -62,7 +62,8 @@ public class CommandManager {
         val executedCommand = commands.get(command);
 
         // check if it have a special permission
-        if (executedCommand.getPermission() != CommandPermission.EVERYONE) {
+        if (executedCommand.getPermission() != CommandPermission.EVERYONE &&
+                !author.getId().equalsIgnoreCase(Bot.getInstance().getConfig().getOwnerId())) {
             if (executedCommand.getPermission() == CommandPermission.BOT_OWNER) {
                 if (!author.getId().equalsIgnoreCase(supporter.getConfig().getOwnerId())) {
                     DiscordUtils.sendError(textChannel, author, "você não pode usar esse comando.", 10);
