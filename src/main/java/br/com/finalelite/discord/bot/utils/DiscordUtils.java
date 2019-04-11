@@ -4,6 +4,7 @@ import br.com.finalelite.discord.bot.Bot;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import javax.imageio.ImageIO;
@@ -86,4 +87,18 @@ public class DiscordUtils {
         return ImageIO.read(connection.getInputStream());
     }
 
+    public static String uploadToImgur(Message message) {
+        val author = message.getAuthor();
+        val textChannel = message.getTextChannel();
+
+        if (!message.getAttachments().get(0).isImage()) {
+            sendError(textChannel, author, "a prova deve ser um link ou uma imagem anexada.", 20);
+            return null;
+        }
+
+        val uploadingMessage = sendSuccess(textChannel, author, "aguarde, carregando a prova...");
+        val link = Bot.getInstance().getImgurManager().upload(message.getAttachments().get(0).getUrl());
+        uploadingMessage.delete().queue();
+        return link;
+    }
 }

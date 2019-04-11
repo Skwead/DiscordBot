@@ -8,6 +8,7 @@ import br.com.finalelite.discord.bot.commands.utils.*;
 import br.com.finalelite.discord.bot.entity.Config;
 import br.com.finalelite.discord.bot.listeners.JoinListener;
 import br.com.finalelite.discord.bot.manager.*;
+import br.com.finalelite.discord.bot.manager.ImgurManager;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.Getter;
 import lombok.val;
@@ -46,6 +47,8 @@ public class Bot {
     private TicketLogger ticketLogger = new TicketLogger();
     @Getter
     private PunishmentManager punishmentManager;
+    @Getter
+    private ImgurManager imgurManager;
 
     public Bot() {
         instance = this;
@@ -63,6 +66,8 @@ public class Bot {
         punishmentManager = new PunishmentManager();
 
         registerCommands();
+
+        imgurManager =  new ImgurManager(config.getImgurClientId());
     }
 
     private void tryConnectToDiscord(Config config) {

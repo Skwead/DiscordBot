@@ -65,6 +65,8 @@ public class Config {
     @Builder.Default
     private final String vipCondeId = "vip role id";
     @Builder.Default
+    private final String imgurClientId = "imgur api client id";
+    @Builder.Default
     private final Presence presence = new Presence(Game.GameType.DEFAULT, "Here to help", "https://finalelite.com.br");
     @Builder.Default
     private final Map<String, String> messages = getDefaultMessages();
