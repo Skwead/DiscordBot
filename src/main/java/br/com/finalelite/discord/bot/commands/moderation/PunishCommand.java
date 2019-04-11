@@ -55,10 +55,11 @@ public class PunishCommand extends CommandBase {
             sendError(textChannel, author, "prova muito longa, por favor, use uma prova menor ou igual a 256.", 30);
             return;
         }
+        @SuppressWarnings("RedundantCast")
         var link = (String) null;
         if (message.getAttachments().size() != 0 && proofURL == null) {
             link = DiscordUtils.uploadToImgur(message);
-            if(link == null)
+            if (link == null)
                 return;
         }
 

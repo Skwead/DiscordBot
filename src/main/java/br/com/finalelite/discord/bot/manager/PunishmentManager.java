@@ -7,7 +7,6 @@ import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import br.com.finalelite.discord.bot.utils.time.TimeUnits;
 import lombok.val;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import javax.imageio.ImageIO;
@@ -15,8 +14,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,6 +21,12 @@ public class PunishmentManager {
 
     private static final String banEmoji = "<:blobban:531459039998115840>";
     private static final String revertEmoji = ":leftwards_arrow_with_hook: ";
+
+    public static long getUnitAndUpdateDuration(long unitInSeconds, AtomicLong durationInSeconds) {
+        val unitValue = durationInSeconds.get() / unitInSeconds;
+        durationInSeconds.set(durationInSeconds.get() - unitInSeconds * unitValue);
+        return unitValue;
+    }
 
     public void logApplyModeration(Punishment punishment) {
         val author = punishment.getAuthor();
@@ -61,7 +64,6 @@ public class PunishmentManager {
         channel.sendMessage(embed.build()).queue();
         //sendProof(channel, punishment);
     }
-
 
     public void sendProof(TextChannel channel, Punishment punishment) {
         try {
@@ -145,12 +147,6 @@ public class PunishmentManager {
         punishment.revert();
         logRevertModeration(punishment);
         Bot.getInstance().getDatabase().revertPunishment(punishment);
-    }
-
-    public static long getUnitAndUpdateDuration(long unitInSeconds, AtomicLong durationInSeconds) {
-        val unitValue = durationInSeconds.get() / unitInSeconds;
-        durationInSeconds.set(durationInSeconds.get() - unitInSeconds * unitValue);
-        return unitValue;
     }
 
 }

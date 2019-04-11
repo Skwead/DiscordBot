@@ -36,7 +36,7 @@ public abstract class PunishmentCommandBase extends CommandBase {
 
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
-        if(!isArgumentsValid(message, args)) {
+        if (!isArgumentsValid(message, args)) {
             sendError(textChannel, author, getErrorMessage(), 30);
         }
 
@@ -48,7 +48,7 @@ public abstract class PunishmentCommandBase extends CommandBase {
         var proof = "Nenhuma prova mencionada";
         if (message.getAttachments().size() != 0) {
             val link = DiscordUtils.uploadToImgur(message);
-            if(link == null)
+            if (link == null)
                 return;
             proof = link;
         }
@@ -57,7 +57,7 @@ public abstract class PunishmentCommandBase extends CommandBase {
 
         val endResult = getEndDate(now, message, args);
 
-        if(!endResult.valid) {
+        if (!endResult.valid) {
             sendError(textChannel, author, getErrorMessage(), 30);
             return;
         }

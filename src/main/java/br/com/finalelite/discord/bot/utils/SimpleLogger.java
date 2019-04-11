@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 public class SimpleLogger {
 
     private static final SimpleDateFormat formatter;
-//    private static Logger logger = JDALogger.getLog("BOT");
 
     static {
         if (Bot.getInstance().getConfig() != null)
@@ -34,7 +33,6 @@ public class SimpleLogger {
     }
 
     public static void log(String line) {
-//        logger.info(line);
         System.out.printf("[%s] %s%n", format(new Date()), line);
     }
 

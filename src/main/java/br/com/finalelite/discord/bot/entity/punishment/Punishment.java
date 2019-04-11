@@ -62,16 +62,15 @@ public class Punishment {
 
     @Length(64)
     private String revertedById;
+    @DefaultValue
+    @Builder.Default
+    private boolean nsfw = false;
 
     public static int parseDate(Date date) {
         if (date == null)
             return -1;
         return (int) (date.getTime() / 1000);
     }
-
-    @DefaultValue
-    @Builder.Default
-    private boolean nsfw = false;
 
     public void apply() {
         type.apply(this);

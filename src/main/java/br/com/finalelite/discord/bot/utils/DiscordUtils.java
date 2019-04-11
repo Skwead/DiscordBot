@@ -4,7 +4,6 @@ import br.com.finalelite.discord.bot.Bot;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import javax.imageio.ImageIO;

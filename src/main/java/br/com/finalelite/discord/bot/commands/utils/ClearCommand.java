@@ -44,6 +44,7 @@ public class ClearCommand extends CommandBase {
         }
 
         var channel = textChannel;
+        @SuppressWarnings("RedundantCast")
         var user = (User) null;
         if (message.getMentionedChannels().size() == 1)
             channel = message.getMentionedChannels().get(0);

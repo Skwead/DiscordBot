@@ -1,7 +1,6 @@
 package br.com.finalelite.discord.bot.entity.punishment;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.manager.PunishmentManager;
 import br.com.finalelite.discord.bot.utils.time.TimeUnits;
 import lombok.val;
 

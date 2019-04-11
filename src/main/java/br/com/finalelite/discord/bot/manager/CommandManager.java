@@ -1,7 +1,7 @@
 package br.com.finalelite.discord.bot.manager;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
@@ -18,18 +18,18 @@ import java.util.Map;
 public class CommandManager {
     @Getter
     private final String prefix;
-    private Map<String, Command> commands = new HashMap<>();
+    private Map<String, CommandBase> commands = new HashMap<>();
 
     public CommandManager(String prefix) {
         this.prefix = prefix;
         Bot.getInstance().getJda().addEventListener(new MessageListener());
     }
 
-    public void registerCommand(Command command) {
+    public void registerCommand(CommandBase command) {
         commands.put(command.getName().toLowerCase(), command);
     }
 
-    public Map<String, Command> getCommandMap() {
+    public Map<String, CommandBase> getCommandMap() {
         return commands;
     }
 

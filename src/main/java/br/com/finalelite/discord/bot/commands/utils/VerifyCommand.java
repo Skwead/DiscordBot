@@ -1,11 +1,11 @@
 package br.com.finalelite.discord.bot.commands.utils;
 
 import br.com.finalelite.discord.bot.Bot;
+import br.com.finalelite.discord.bot.entity.Captcha;
 import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
-import br.com.finalelite.discord.bot.entity.Captcha;
 import lombok.val;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;

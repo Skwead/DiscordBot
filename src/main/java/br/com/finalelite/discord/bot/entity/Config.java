@@ -1,6 +1,5 @@
 package br.com.finalelite.discord.bot.entity;
 
-import br.com.finalelite.discord.bot.entity.Presence;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
 import br.com.finalelite.discord.bot.entity.punishment.Rule;
 import br.com.finalelite.discord.bot.utils.time.TimeUnits;
@@ -10,7 +9,6 @@ import lombok.val;
 import net.dv8tion.jda.core.entities.Game;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Data
