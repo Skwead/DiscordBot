@@ -1,7 +1,7 @@
 package br.com.finalelite.discord.bot.commands.support;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
@@ -9,7 +9,7 @@ import br.com.finalelite.discord.bot.entity.ticket.Ticket;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
 
-public class CloseCommand extends Command {
+public class CloseCommand extends CommandBase {
     public CloseCommand() {
         super(
                 "fechar",

@@ -1,13 +1,13 @@
 package br.com.finalelite.discord.bot.commands.support;
 
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
 import lombok.val;
 import net.dv8tion.jda.core.entities.*;
 
-public class RemoveCommand extends Command {
+public class RemoveCommand extends CommandBase {
 
     public RemoveCommand() {
         super(

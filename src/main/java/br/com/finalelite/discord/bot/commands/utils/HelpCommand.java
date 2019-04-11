@@ -1,7 +1,7 @@
 package br.com.finalelite.discord.bot.commands.utils;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class HelpCommand extends Command {
+public class HelpCommand extends CommandBase {
 
     private final static String everyoneEmoji = "<:yeap:531458963770966016>";
     private final static String staffEmoji = ":hammer_pick:";
@@ -36,7 +36,7 @@ public class HelpCommand extends Command {
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         val commandMap = Bot.getInstance().getCommandManager().getCommandMap();
-        val commands = new HashMap<DefaultCommandCategory, List<Command>>();
+        val commands = new HashMap<DefaultCommandCategory, List<CommandBase>>();
 
         commandMap.values().forEach(command -> {
             val category = command.getCategory();
@@ -45,7 +45,7 @@ public class HelpCommand extends Command {
                 list.add(command);
                 commands.put(category, list);
             } else {
-                val list = new ArrayList<Command>();
+                val list = new ArrayList<CommandBase>();
                 list.add(command);
                 commands.put(category, list);
             }

@@ -1,7 +1,7 @@
 package br.com.finalelite.discord.bot.commands.support;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class MsgCommand extends Command {
+public class MsgCommand extends CommandBase {
     private final static Map<String, String> messages = Bot.getInstance().getConfig().getMessages();
     private static Map<String, PlaceHolder> placeHolders = new HashMap<>();
 

@@ -1,11 +1,10 @@
 package br.com.finalelite.discord.bot.commands.support;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
-import br.com.finalelite.discord.bot.manager.ConfigManager;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -15,7 +14,7 @@ import net.dv8tion.jda.core.entities.User;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class MsgConfigCommand extends Command {
+public class MsgConfigCommand extends CommandBase {
 
     public MsgConfigCommand() {
         super(

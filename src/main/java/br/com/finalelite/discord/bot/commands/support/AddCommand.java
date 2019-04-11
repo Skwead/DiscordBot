@@ -1,6 +1,6 @@
 package br.com.finalelite.discord.bot.commands.support;
 
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.entities.*;
 
 import java.util.Arrays;
 
-public class AddCommand extends Command {
+public class AddCommand extends CommandBase {
 
     public AddCommand() {
         super(
