@@ -1,14 +1,11 @@
 package br.com.finalelite.discord.bot.entity.command;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
-import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
-import br.com.finalelite.discord.bot.entity.command.CommandPermission;
-import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
-import br.com.finalelite.discord.bot.manager.PunishmentManager;
 import br.com.finalelite.discord.bot.entity.punishment.Punishment;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
+import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.var;
 import net.dv8tion.jda.core.entities.Guild;
@@ -20,20 +17,27 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public abstract class PunishmentCommand extends Command {
+public abstract class PunishmentCommandBase extends CommandBase {
 
     private PunishmentType type;
 
-    public PunishmentCommand(String name, String description, CommandPermission permission, PunishmentType type) {
-        super(name, description, permission, CommandChannelChecker.DISABLE, DefaultCommandCategory.MODERATION);
+    public PunishmentCommandBase(String name, String description, CommandPermission permission, PunishmentType type) {
+        super(
+                name,
+                description,
+                permission,
+                CommandChannelChecker.DISABLE,
+                DefaultCommandCategory.MODERATION
+        );
         this.type = type;
     }
 
+    protected abstract String getErrorMessage();
+
     @Override
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
-        if (message.getMentionedUsers().size() < 1 || args.length < 1 || !args[0].equals(message.getMentionedUsers().get(0).getAsMention())) {
-            sendError(textChannel, author, "use `!" + getName() + " <usuário> [<motivo>]`.", 30);
-            return;
+        if(!isArgumentsValid(message, args)) {
+            sendError(textChannel, author, getErrorMessage(), 30);
         }
 
         val user = message.getMentionedUsers().get(0);
@@ -41,15 +45,34 @@ public abstract class PunishmentCommand extends Command {
         if (args.length >= 2)
             reason = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
+        var proof = "Nenhuma prova mencionada";
+        if (message.getAttachments().size() != 0) {
+            val link = DiscordUtils.uploadToImgur(message);
+            if(link == null)
+                return;
+            proof = link;
+        }
+
         val now = new Date();
+
+        val endResult = getEndDate(now, message, args);
+
+        if(!endResult.valid) {
+            sendError(textChannel, author, getErrorMessage(), 30);
+            return;
+        }
+
+        val end = endResult.date;
+
         try {
             val punishment = Punishment.builder()
                     .authorId(author.getId())
                     .relatedGuildId(guild.getId())
                     .type(type)
                     .dateSeconds(Punishment.parseDate(now))
-                    .endSeconds(Punishment.parseDate(getDefaultEndDate(now)))
+                    .endSeconds(Punishment.parseDate(end))
                     .reason(reason)
+                    .proof(proof)
                     .targetId(user.getId());
 
             Bot.getInstance().getPunishmentManager().apply(punishment.build());
@@ -64,8 +87,14 @@ public abstract class PunishmentCommand extends Command {
         sendError(textChannel, author, "não foi possível punir esse usuário, **talvez** eu não tenha permissão.", 30);
     }
 
-    public Date getDefaultEndDate(Date now) {
-        return null;
+    protected abstract boolean isArgumentsValid(Message message, String[] args);
+
+    public abstract EndDateResult getEndDate(Date now, Message message, String[] args);
+
+    @RequiredArgsConstructor
+    protected static class EndDateResult {
+        private final boolean valid;
+        private final Date date;
     }
 
 }

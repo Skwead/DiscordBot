@@ -1,11 +1,12 @@
 package br.com.finalelite.discord.bot.commands.moderation;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
+import br.com.finalelite.discord.bot.entity.command.CommandBase;
 import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
 import br.com.finalelite.discord.bot.entity.punishment.Punishment;
+import br.com.finalelite.discord.bot.utils.DiscordUtils;
 import lombok.Data;
 import lombok.val;
 import lombok.var;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PunishCommand extends Command {
+public class PunishCommand extends CommandBase {
 
     /* The message id > the user id */
     private Map<String, PunishmentRequest> punishmentEmbeds = new HashMap<>();
@@ -56,19 +57,9 @@ public class PunishCommand extends Command {
         }
         var link = (String) null;
         if (message.getAttachments().size() != 0 && proofURL == null) {
-            val uploadingMessage = sendSuccess(textChannel, author, "aguarde, carregando a prova...");
-            try {
-                link = "";
-//                link = DiscordUtils.uploadIfValid(message);
-                uploadingMessage.delete().queue();
-                if (link == null) {
-                    sendError(textChannel, author, "a prova deve ser um link ou uma imagem anexada.", 20);
-                    return;
-                }
-            } catch (Exception e) {
-                sendError(textChannel, author, "um erro ocorreu ao tentar carregar imagem para o imgur.", 20);
+            link = DiscordUtils.uploadToImgur(message);
+            if(link == null)
                 return;
-            }
         }
 
         val proof = link == null ? proofURL : link;
@@ -87,7 +78,7 @@ public class PunishCommand extends Command {
                         .append("\n"));
 
         val embed = new EmbedBuilder()
-                .setAuthor("MBL Estudantil", "https://mblestudantil.com", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
 
                 .appendDescription(sb.toString())
 

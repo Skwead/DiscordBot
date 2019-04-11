@@ -1,11 +1,6 @@
 package br.com.finalelite.discord.bot.entity.command;
 
 import br.com.finalelite.discord.bot.Bot;
-import br.com.finalelite.discord.bot.entity.command.Command;
-import br.com.finalelite.discord.bot.entity.command.CommandChannelChecker;
-import br.com.finalelite.discord.bot.entity.command.CommandPermission;
-import br.com.finalelite.discord.bot.entity.command.DefaultCommandCategory;
-import br.com.finalelite.discord.bot.manager.PunishmentManager;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
 import lombok.val;
 import net.dv8tion.jda.core.entities.Guild;
@@ -13,11 +8,11 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-public abstract class RevertPunishmentCommand extends Command {
+public abstract class RevertPunishmentCommandBase extends CommandBase {
 
     private PunishmentType[] types;
 
-    public RevertPunishmentCommand(String name, String description, CommandPermission permission, PunishmentType... types) {
+    public RevertPunishmentCommandBase(String name, String description, CommandPermission permission, PunishmentType... types) {
         super(name, description, permission, CommandChannelChecker.DISABLE, DefaultCommandCategory.MODERATION);
         this.types = types;
     }

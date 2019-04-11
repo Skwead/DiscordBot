@@ -2,12 +2,12 @@ package br.com.finalelite.discord.bot.commands.moderation;
 
 import br.com.finalelite.discord.bot.Bot;
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
+import br.com.finalelite.discord.bot.entity.command.TempPunishmentCommandBase;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
-import br.com.finalelite.discord.bot.entity.command.TempPunishmentCommand;
 import br.com.finalelite.discord.bot.utils.SimpleLogger;
 import lombok.val;
 
-public class TempMuteCommand extends TempPunishmentCommand {
+public class TempMuteCommand extends TempPunishmentCommandBase {
     public TempMuteCommand() {
         super(
                 "tempmute",

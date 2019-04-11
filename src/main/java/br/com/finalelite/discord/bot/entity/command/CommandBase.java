@@ -6,7 +6,7 @@ import lombok.Data;
 import net.dv8tion.jda.core.entities.*;
 
 @Data
-public abstract class Command {
+public abstract class CommandBase {
 
     private final String name;
     private final String description;

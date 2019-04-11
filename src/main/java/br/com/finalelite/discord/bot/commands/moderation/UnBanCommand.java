@@ -2,9 +2,9 @@ package br.com.finalelite.discord.bot.commands.moderation;
 
 import br.com.finalelite.discord.bot.entity.command.CommandPermission;
 import br.com.finalelite.discord.bot.entity.punishment.PunishmentType;
-import br.com.finalelite.discord.bot.entity.command.RevertPunishmentCommand;
+import br.com.finalelite.discord.bot.entity.command.RevertPunishmentCommandBase;
 
-public class UnBanCommand extends RevertPunishmentCommand {
+public class UnBanCommand extends RevertPunishmentCommandBase {
     public UnBanCommand() {
         super(
                 "unban",
