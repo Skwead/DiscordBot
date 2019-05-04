@@ -1,16 +1,12 @@
 package com.github.pauloo27.discord.bot;
 
-import br.com.finalelite.discord.bot.commands.moderation.*;
-import br.com.finalelite.discord.bot.commands.support.*;
-import br.com.finalelite.discord.bot.commands.utils.*;
+import com.github.pauloo27.discord.bot.commands.moderation.*;
 import com.github.pauloo27.discord.bot.commands.support.*;
+import com.github.pauloo27.discord.bot.commands.utils.*;
 import com.github.pauloo27.discord.bot.entity.Config;
 import com.github.pauloo27.discord.bot.listeners.JoinListener;
-import br.com.finalelite.discord.bot.manager.*;
-import com.github.pauloo27.discord.bot.utils.SimpleLogger;
-import com.github.pauloo27.discord.bot.commands.moderation.*;
-import com.github.pauloo27.discord.bot.commands.utils.*;
 import com.github.pauloo27.discord.bot.manager.*;
+import com.github.pauloo27.discord.bot.utils.SimpleLogger;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.core.JDA;
