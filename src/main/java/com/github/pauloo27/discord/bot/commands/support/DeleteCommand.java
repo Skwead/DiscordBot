@@ -51,7 +51,7 @@ public class DeleteCommand extends CommandBase {
                 .setTitle("Ticket Fechado", null)
                 .setTimestamp(new Date().toInstant())
                 .setDescription("O seu ticket foi fechado, por favor, avalie o ticket clicando nos emojis abaixo.")
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .setFooter(ticket.getUser().getName() + "#" + ticket.getUser().getDiscriminator() + " - " + SimpleLogger.format(ticket.getDate()), ticket.getUser().getAvatarUrl());
 
 
@@ -85,7 +85,7 @@ public class DeleteCommand extends CommandBase {
         return new EmbedBuilder()
                 .setColor(0x23f723)
                 .setTitle("Ticket Fechado", null)
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .addField("ID", String.valueOf(ticket.getId()), true)
                 .addField("Nome", ticket.getName() == null ? "Não definido" : ticket.getName(), true)
                 .addField("Avaliação", ticket.getRate() == null ?

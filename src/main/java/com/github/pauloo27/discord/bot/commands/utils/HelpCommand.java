@@ -53,7 +53,7 @@ public class HelpCommand extends CommandBase {
 
         val embed = new EmbedBuilder()
                 .setColor(0xf1c65f)
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .setDescription("**Lista de comandos do bot**\n" +
                         everyoneEmoji + ": Comando para todos.\n" +
                         staffEmoji + ": Comando para a equipe.\n")

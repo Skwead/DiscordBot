@@ -55,7 +55,7 @@ public class JoinListener extends ListenerAdapter {
                                             "\nPunidor por: %s" +
                                             "\nMotivo: %s" +
                                             "\nAcaba em: %s" +
-                                            "\n\nSe a punição foi injusta, entre em contato no email `contato@finalelite.com.br`.",
+                                            "\n\n" + Bot.getInstance().getConfig().getAppealMessage(),
                                     ban.getAuthor().getNickname() == null ? ban.getAuthor().getEffectiveName() : ban.getAuthor().getNickname(),
                                     ban.getReason(),
                                     SimpleLogger.format(ban.getEnd())))

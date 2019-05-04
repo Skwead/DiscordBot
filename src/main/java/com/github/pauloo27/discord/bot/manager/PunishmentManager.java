@@ -34,7 +34,7 @@ public class PunishmentManager {
 
         val embed = new EmbedBuilder()
                 .setColor(0xf1c65f)
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .setDescription(String.format("%s **O usuário %s (%s) foi punido!**", banEmoji, target.getAsMention(), target.getUser().getId()))
 
                 .addField(":hammer_pick: Autor", String.format("%s", author.getAsMention()), true)
@@ -117,7 +117,7 @@ public class PunishmentManager {
 
         val embed = new EmbedBuilder()
                 .setColor(0xf27c5e)
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .setDescription(String.format("%s **O usuário %s (%s) foi despunido!**", revertEmoji,
                         targetId == null ? target.getAsMention() : "<@" + targetId + ">", targetId == null ? target.getUser().getId() : targetId))
 

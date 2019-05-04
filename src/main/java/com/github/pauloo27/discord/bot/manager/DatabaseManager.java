@@ -1,26 +1,25 @@
 package com.github.pauloo27.discord.bot.manager;
 
 import com.github.pauloo27.discord.bot.Bot;
+import com.github.pauloo27.discord.bot.entity.Captcha;
 import com.github.pauloo27.discord.bot.entity.punishment.Punishment;
 import com.github.pauloo27.discord.bot.entity.punishment.PunishmentType;
-import com.github.pauloo27.discord.bot.entity.Captcha;
 import com.github.pauloo27.discord.bot.entity.ticket.Ticket;
 import com.github.pauloo27.discord.bot.entity.ticket.TicketRate;
 import com.github.pauloo27.discord.bot.entity.ticket.TicketStatus;
 import com.github.pauloo27.discord.bot.utils.SimpleLogger;
-import com.github.pauloo27.discord.bot.entity.vip.Invoice;
-import com.github.pauloo27.discord.bot.entity.vip.VIP;
-import com.gitlab.pauloo27.core.sql.*;
+import com.gitlab.pauloo27.core.sql.EzMySQL;
+import com.gitlab.pauloo27.core.sql.EzSQL;
+import com.gitlab.pauloo27.core.sql.Select;
+import com.gitlab.pauloo27.core.sql.Table;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
@@ -36,7 +35,6 @@ public class DatabaseManager {
     private EzSQL sql;
     private Table tickets;
     private Table captchas;
-    private Table enabledVIPS;
     private Table punishments;
 
     private static void handleException(Exception e) {
@@ -52,16 +50,6 @@ public class DatabaseManager {
         sql.registerDriver().connect();
 
         tickets = sql.createIfNotExists(Ticket.class);
-
-        enabledVIPS = sql.createIfNotExists(VIP.class);
-
-        sql.registerDataType(Invoice.class, DefaultDataTypes.BIGINT);
-        sql.registerSerializer(Invoice.class,
-                new DataSerializer<>(
-                        Invoice::getId,
-                        (invoiceClass, invoiceId) -> getInvoiceById((long) invoiceId)
-                )
-        );
 
         punishments = sql.createIfNotExists(Punishment.class);
 
@@ -260,136 +248,6 @@ public class DatabaseManager {
                 return hasOpenedTicket(userId);
         }
         return false;
-    }
-
-    // gets the invoices by an email
-    public List<Invoice> getInvoicesByEmail(String email) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE user_id  = (SELECT id from finalelite.users WHERE email = ?)")) {
-            st.setString(1, email);
-            val rs = st.executeQuery();
-            val invoices = new ArrayList<Invoice>();
-            while (rs.next()) {
-                invoices.add(new Invoice(rs.getLong("id"), rs.getLong("user_id"), rs.getInt("price_id"), rs.getBoolean("paid")));
-            }
-            return invoices;
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getInvoicesByEmail(email);
-        }
-        return null;
-    }
-
-    // gets a invoice by its id
-    public Invoice getInvoiceById(long id) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("SELECT id, user_id, price_id, paid FROM finalelite.invoices WHERE id  = ?")) {
-            st.setLong(1, id);
-            val rs = st.executeQuery();
-            if (rs.next())
-                return new Invoice(rs.getLong("id"), rs.getLong("user_id"), rs.getInt("price_id"), rs.getBoolean("paid"));
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getInvoiceById(id);
-        }
-        return null;
-    }
-
-    // set the invoice paid status to true (or 1)
-    public void setInvoicePaid(long id) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("UPDATE finalelite.invoices SET paid = 1 WHERE id  = ?")) {
-            st.setLong(1, id);
-            st.executeUpdate();
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                setInvoicePaid(id);
-        }
-    }
-
-    // changes the username used in the site
-    public byte setUsername(long id, String name) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("UPDATE finalelite.users SET username = ? WHERE id  = ?")) {
-            st.setString(1, name);
-            st.setLong(2, id);
-            st.executeUpdate();
-            return 0;
-        } catch (SQLException e) {
-            if (e.getMessage().startsWith("Duplicate entry"))
-                return 1;
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return setUsername(id, name);
-        }
-        return 2;
-    }
-
-    // gets the username
-    public String getUsername(long id) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("SELECT username FROM finalelite.users WHERE id  = ?")) {
-            st.setLong(1, id);
-            val rs = st.executeQuery();
-            if (rs.next())
-                return rs.getString("username");
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getUsername(id);
-        }
-        return null;
-    }
-
-    // gets the discord used to active an invoice
-    public String getDiscordIdByInvoiceId(long invoiceId) {
-        val connection = sql.getConnection();
-        try (val st = connection.prepareStatement("SELECT discordId FROM enabled_vips WHERE invoiceId  = ?")) {
-            st.setLong(1, invoiceId);
-            val rs = st.executeQuery();
-            if (rs.next())
-                return rs.getString("discordId");
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getDiscordIdByInvoiceId(invoiceId);
-        }
-        return null;
-    }
-
-    // registers a vip to a invoice (to avoid 2 people to use the same invoice)
-    public byte registerVIP(VIP vip) {
-        AtomicInteger status = new AtomicInteger();
-        enabledVIPS.insert(vip).executeAndClose(e -> {
-            // haha, someone trying to use the same invoice to get the VIP?
-            if (e.getMessage().startsWith("Duplicate entry"))
-                status.set(1);
-            reconnectSQL((SQLException) e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                status.set(2);
-        });
-        if (status.get() == 2)
-            return registerVIP(vip);
-
-        return (byte) status.get();
-    }
-
-    // gets the user id by the email used in the site
-    public long getUserIdByEmail(String email) {
-        try (val st = sql.getConnection().prepareStatement("SELECT id from finalelite.users WHERE email = ?")) {
-            st.setString(1, email);
-            val rs = st.executeQuery();
-            if (rs.next())
-                return rs.getLong("id");
-        } catch (SQLException e) {
-            reconnectSQL(e);
-            if (e.getMessage().startsWith("The last packet successfully received from the server was"))
-                return getUserIdByEmail(email);
-        }
-        return -1;
     }
 
     // try to reconnect to the SQL because sometimes we get timed out :(

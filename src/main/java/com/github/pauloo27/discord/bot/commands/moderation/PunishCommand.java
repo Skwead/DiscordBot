@@ -79,7 +79,7 @@ public class PunishCommand extends CommandBase {
                         .append("\n"));
 
         val embed = new EmbedBuilder()
-                .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
+                .setAuthor(Bot.getInstance().getConfig().getBotName(), Bot.getInstance().getConfig().getBotURL(), Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
 
                 .appendDescription(sb.toString())
 
