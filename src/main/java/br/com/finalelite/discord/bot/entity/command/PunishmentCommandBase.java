@@ -35,9 +35,11 @@ public abstract class PunishmentCommandBase extends CommandBase {
     protected abstract String getErrorMessage();
 
     @Override
+
     public void run(Message message, Guild guild, TextChannel textChannel, User author, String[] args) {
         if (!isArgumentsValid(message, args)) {
             sendError(textChannel, author, getErrorMessage(), 30);
+            return;
         }
 
         val user = message.getMentionedUsers().get(0);
