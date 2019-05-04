@@ -40,15 +40,15 @@ public class DeleteCommand extends CommandBase {
 
         val log = guild.getTextChannelById(logChannel.getId());
         val ticket = Bot.getInstance().getDatabase().getTicketByChannelId(channel.getId());
-        val base64 = Bot.getInstance().getTicketLogger().generateLog(ticket);
+//        val base64 = Bot.getInstance().getTicketLogger().generateLog(ticket);
 
-        val logEmbed = createLogEmbed(ticket, base64);
+        val logEmbed = createLogEmbed(ticket);
 
         val logMessage = log.sendMessage(logEmbed.build()).complete();
 
         val privateEmbed = new EmbedBuilder()
                 .setColor(0x23f723)
-                .setTitle("Ticket Fechado - Abrir Resumo", "https://finalelite.com.br/docs/tickets/" + base64)
+                .setTitle("Ticket Fechado", null)
                 .setTimestamp(new Date().toInstant())
                 .setDescription("O seu ticket foi fechado, por favor, avalie o ticket clicando nos emojis abaixo.")
                 .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
@@ -81,16 +81,16 @@ public class DeleteCommand extends CommandBase {
 
     }
 
-    private static EmbedBuilder createLogEmbed(Ticket ticket, String base64) {
+    private static EmbedBuilder createLogEmbed(Ticket ticket) {
         return new EmbedBuilder()
                 .setColor(0x23f723)
-                .setTitle("Ticket Fechado - Abrir Resumo", "https://finalelite.com.br/docs/tickets/" + base64)
+                .setTitle("Ticket Fechado", null)
                 .setAuthor("Final Elite", "https://finalelite.com.br", Bot.getInstance().getJda().getSelfUser().getAvatarUrl())
                 .addField("ID", String.valueOf(ticket.getId()), true)
                 .addField("Nome", ticket.getName() == null ? "Não definido" : ticket.getName(), true)
                 .addField("Avaliação", ticket.getRate() == null ?
                         "Não avaliado" : ticket.getRate().getEmoji() + " " + ticket.getRate().getPortugueseName(), true)
-                .addField("Base64", base64, true)
+//                .addField("Base64", base64, true)
                 .addField("Assunto", ticket.getSubject(), true)
                 .addField("Tipo", "Não definido", true)
                 .setFooter(String.format("%s#%s - %s",
@@ -146,11 +146,11 @@ public class DeleteCommand extends CommandBase {
             }
 
             val logMessage = logChannel.getMessageById(ticket.getLogMessageId()).complete();
-            val base64 = logMessage.getEmbeds().get(0).getFields().stream()
-                    .filter(field -> field.getName().equals("Base64"))
-                    .findFirst().orElse(null).getValue();
+//            val base64 = logMessage.getEmbeds().get(0).getFields().stream()
+//                    .filter(field -> field.getName().equals("Base64"))
+//                    .findFirst().orElse(null).getValue();
 
-            val embed = createLogEmbed(ticket, base64);
+            val embed = createLogEmbed(ticket);
 
             logMessage.editMessage(embed.build()).queue();
         }
