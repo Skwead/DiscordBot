@@ -1,9 +1,7 @@
 package br.com.finalelite.discord.bot;
 
 import br.com.finalelite.discord.bot.commands.moderation.*;
-import br.com.finalelite.discord.bot.commands.server.*;
 import br.com.finalelite.discord.bot.commands.support.*;
-import br.com.finalelite.discord.bot.commands.support.utils.TicketLogger;
 import br.com.finalelite.discord.bot.commands.utils.*;
 import br.com.finalelite.discord.bot.entity.Config;
 import br.com.finalelite.discord.bot.listeners.JoinListener;
@@ -41,9 +39,6 @@ public class Bot {
     // a captchaManager builder
     // (used to verify user account)
     private CaptchaManager captchaManager = new CaptchaManager();
-    // the ticket transcriptor
-    @Getter
-    private TicketLogger ticketLogger = new TicketLogger();
     @Getter
     private PunishmentManager punishmentManager;
     @Getter
@@ -159,15 +154,8 @@ public class Bot {
         commandManager.registerCommand(new PresenceCommand());
         commandManager.registerCommand(new ClearCommand());
 
-        /* finalelite */
-        commandManager.registerCommand(new VIPCommand());
-        commandManager.registerCommand(new GetUserIdCommand());
-        commandManager.registerCommand(new GetNickCommand());
-        commandManager.registerCommand(new SetNickCommand());
-        commandManager.registerCommand(new GetDiscordCommand());
-        commandManager.registerCommand(new InvoicesCommand());
-
         /* moderation */
+        commandManager.registerCommand(new PunishCommand());
         commandManager.registerCommand(new BanCommand());
         commandManager.registerCommand(new WarnCommand());
         commandManager.registerCommand(new KickCommand());
