@@ -33,55 +33,55 @@ public class Config {
     private final Map<String, Rule> rules = getDefaultRules();
 
     @Builder.Default
-    private final String ownerId = "the owner id";
+    private final String ownerId = "owner's id";
 
     @Builder.Default
-    private final String supportRoleId = "support role id";
+    private final String supportRoleId = "support's role id";
 
     @Builder.Default
-    private final String moderatorRoleId = "moderator role id";
+    private final String moderatorRoleId = "moderator's role id";
 
     @Builder.Default
-    private final String adminRoleId = "admin role id";
+    private final String adminRoleId = "admin's role id";
 
     @Builder.Default
-    private final String managerRoleId = "manager role id";
+    private final String managerRoleId = "manager role's id";
 
     @Builder.Default
-    private final String masterRoleId = "master role id";
+    private final String masterRoleId = "master role's id";
 
     @Builder.Default
-    private final String modLogId = "moderation log channel id";
+    private final String modLogId = "moderation's log channel id";
 
     @Builder.Default
     private final String welcomeMessage = "Welcome to the party!";
 
     @Builder.Default
-    private final String supportChannelId = "support channel id";
+    private final String supportChannelId = "support's channel id";
 
     @Builder.Default
-    private final String captchaCategoryId = "captchas category id";
+    private final String captchaCategoryId = "captchas' category id";
 
     @Builder.Default
-    private final String verifiedRoleId = "verified role id";
+    private final String verifiedRoleId = "verified role's id";
 
     @Builder.Default
-    private final String verifyChannelId = "verified channel id";
+    private final String verifyChannelId = "verified channel's id";
 
     @Builder.Default
-    private final String staffChannelId = "staff channel id";
+    private final String staffChannelId = "staff channel's id";
 
     @Builder.Default
-    private final String mutedRoleId = "muted role id";
+    private final String mutedRoleId = "muted's role id";
 
     @Builder.Default
-    private final String openedCategoryId = "support category id";
+    private final String openedCategoryId = "support's category id";
 
     @Builder.Default
-    private final String closedCategoryId = "closed tickets category id";
+    private final String closedCategoryId = "closed tickets category's id";
 
     @Builder.Default
-    private final String imgurClientId = "imgur api client id";
+    private final String imgurClientId = "imgur api client's id";
 
     @Builder.Default
     private final Presence presence = new Presence(Game.GameType.DEFAULT, "Here to help", "https://example.com");
@@ -112,14 +112,14 @@ public class Config {
     private static Map<String, String> getDefaultMessages() {
         val map = new HashMap<String, String>();
         map.put("welcome", "Welcome, ${user_mention}, what can we do for you today?");
-        map.put("bye", "Bye, ${user_mention}, we're to help.");
+        map.put("bye", "Bye, ${user_mention}, we're here to help.");
         return map;
     }
 
     private static Map<String, Rule> getDefaultRules() {
         val rules = new HashMap<String, Rule>();
 
-        rules.put("Spam", new Rule("Mensagem repetitivas ou inrritantes.", PunishmentType.WARN, -1, false, "\uD83D\uDCE7"));
+        rules.put("Spam", new Rule("Mensagens repetitivas ou inrritantes.", PunishmentType.WARN, -1, false, "\uD83D\uDCE7"));
 
         rules.put("Ofensa", new Rule("Desrespeitar algum membro do grupo.", PunishmentType.TEMP_MUTE,
                 (long) TimeUnits.DAYS.convert(1, TimeUnits.SECONDS), false, "\uD83D\uDD95"));
