@@ -8,7 +8,7 @@ This is a simple Discord Bot wrote in Java by @Pauloo27 and @Craftzao using JDA.
 ## Features
 The bot features are:
 
-- **Welcome Message**:  A simple welcome message with a image.  
+- **Welcome Message**:  A simple welcome message with an image.  
 - **Support System**: A ticket system.  
 - **Punishment System**: A punishment system.  
 - **Human Verification**: The user have to solve a Captcha to join the server.  
