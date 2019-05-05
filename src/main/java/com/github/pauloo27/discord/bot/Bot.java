@@ -71,9 +71,9 @@ public class Bot {
 
             // check if the bot is in our guild and only in our guild
             if (jda.getGuilds().size() == 0)
-                System.out.printf("Invite-me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
+                System.out.printf("Invite me for a server: https://discordapp.com/oauth2/authorize?client_id=%s&permissions=8&scope=bot%n", jda.getSelfUser().getId());
             else if (jda.getGuilds().size() > 1)
-                shutdown(String.format("The bot is in %d guilds. For security, the bot only run in the official guild.", jda.getGuilds().size()));
+                shutdown(String.format("The bot is in %d guilds. For security, the bot only runs on the official guild.", jda.getGuilds().size()));
 
             // set the "Playing" status
             jda.getPresence().setGame(config.getPresence().toGame());
